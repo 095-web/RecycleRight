@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RecycleRight - Learn Better Recycling Habits</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <i class="fas fa-recycle logo-icon"></i>
+        <span class="logo-text">RecycleRight</span>
+      </div>
+      <nav class="nav">
+        <button class="nav-btn active" data-tab="scanner">
+          <i class="fas fa-camera"></i><span>Scanner</span>
+        </button>
+        <button class="nav-btn" data-tab="index">
+          <i class="fas fa-book-open"></i><span>Index</span>
+        </button>
+        <button class="nav-btn" data-tab="quiz">
+          <i class="fas fa-bullseye"></i><span>Quiz</span>
+        </button>
+      </nav>
+
+      <!-- Auth Section -->
+      <div class="auth-section">
+        <div id="auth-signed-out" class="auth-state" style="display:flex">
+          <button class="btn btn-sm auth-google-btn" id="auth-google-btn" onclick="AuthModule.signInWithGoogle()" title="Sign in to sync your progress across devices">
+            <i class="fab fa-google"></i> <span class="auth-btn-text">Sign In</span>
+          </button>
+        </div>
+        <div id="auth-signed-in" class="auth-state auth-user-row" style="display:none">
+          <div id="auth-user-photo" class="auth-user-photo"></div>
+          <span id="auth-user-name" class="auth-user-name"></span>
+          <button class="btn btn-sm btn-outline auth-signout-btn" onclick="AuthModule.signOut()" title="Sign out">
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- ==================== SCANNER TAB ==================== -->
+    <section id="tab-scanner" class="tab-content active">
+      <div class="container">
+        <div class="page-header">
+          <h1><i class="fas fa-camera-retro"></i> Barcode Scanner</h1>
+          <p>Scan or enter a product barcode to instantly check its recyclability</p>
+        </div>
+
+        <div class="scanner-wrapper">
+          <div class="scanner-box">
+            <div id="scanner-reader"></div>
+            <div class="scanner-placeholder" id="scanner-placeholder">
+              <i class="fas fa-camera fa-3x"></i>
+              <p>Click <strong>Start Scanner</strong> to activate your camera</p>
+              <p class="scanner-hint">Works with UPC, EAN-13, EAN-8 barcodes</p>
+            </div>
+          </div>
+
+          <div class="scanner-controls">
+            <button class="btn btn-primary" id="start-scanner-btn">
+              <i class="fas fa-play"></i> Start Scanner
+            </button>
+            <button class="btn btn-danger" id="stop-scanner-btn" style="display:none">
+              <i class="fas fa-stop"></i> Stop
+            </button>
+          </div>
+
+          <div class="divider"><span>or enter barcode manually</span></div>
+
+          <div class="manual-input">
+            <input type="text" id="barcode-input" placeholder="Enter barcode number (e.g. 012345678905)" maxlength="14" inputmode="numeric">
+            <button class="btn btn-primary" id="lookup-btn">
+              <i class="fas fa-search"></i> Look Up
+            </button>
+          </div>
+        </div>
+
+        <div id="scan-result" class="scan-result hidden"></div>
+        <div id="scan-error" class="scan-error hidden"></div>
+      </div>
+    </section>
+
+    <!-- ==================== INDEX TAB ==================== -->
+    <section id="tab-index" class="tab-content">
+      <div class="container">
+        <div class="page-header">
+          <h1><i class="fas fa-book-open"></i> Recycling Index</h1>
+          <p>Browse our database of 75+ items to learn what goes where</p>
+        </div>
+
+        <!-- ZIP Code / Local Rules -->
+        <div id="zip-form-section" class="zip-form-section">
+          <div class="zip-form">
+            <i class="fas fa-location-dot zip-icon"></i>
+            <input type="text" class="zip-input" placeholder="Enter your ZIP code to see local laws..." maxlength="5" inputmode="numeric" pattern="\d{5}">
+            <button class="btn btn-primary btn-sm zip-submit-btn">
+              <i class="fas fa-map-pin"></i> Look Up
+            </button>
+          </div>
+          <span id="zip-error" class="zip-error"></span>
+        </div>
+
+        <div id="location-banner" class="location-banner hidden"></div>
+
+        <div class="index-controls">
+          <div class="search-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text" id="index-search" placeholder="Search items (e.g. plastic bottle, cardboard, battery...)">
+            <button class="clear-search" id="clear-search" style="display:none" title="Clear search">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="category-filters" id="category-filters"></div>
+
+        <p class="index-summary" id="index-summary"></p>
+
+        <div class="items-grid" id="items-grid"></div>
+
+        <div class="no-results hidden" id="no-results">
+          <i class="fas fa-search fa-2x"></i>
+          <p>No items found. Try a different search term or category.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== QUIZ TAB ==================== -->
+    <section id="tab-quiz" class="tab-content">
+      <div class="container">
+
+        <!-- Profile Setup Screen -->
+        <div id="quiz-profile-setup" class="quiz-screen">
+          <div class="setup-card">
+            <div class="setup-icon"><i class="fas fa-recycle fa-3x"></i></div>
+            <h1>RecycleRight Quiz</h1>
+            <p class="setup-subtitle">Test your recycling knowledge, earn points, and compete with friends!</p>
+            <div class="avatar-section">
+              <label>Choose your avatar:</label>
+              <div class="avatar-picker" id="avatar-picker"></div>
+            </div>
+            <div class="setup-form">
+              <input type="text" id="setup-username" placeholder="Choose a username..." maxlength="20" autocomplete="off">
+              <button class="btn btn-primary btn-lg" id="create-profile-btn">
+                <i class="fas fa-rocket"></i> Start Playing!
+              </button>
+            </div>
+            <p class="setup-note" id="setup-error"></p>
+          </div>
+        </div>
+
+        <!-- Quiz Home Screen -->
+        <div id="quiz-home" class="quiz-screen hidden">
+          <div class="player-banner">
+            <div class="player-avatar-lg" id="banner-avatar"></div>
+            <div class="player-banner-info">
+              <h2 id="banner-username"></h2>
+              <div class="player-stats-row">
+                <div class="pstat"><i class="fas fa-star"></i> <span id="stat-points">0</span> <small>pts</small></div>
+                <div class="pstat"><i class="fas fa-layer-group"></i> Lv <span id="stat-level">1</span></div>
+                <div class="pstat"><i class="fas fa-fire"></i> <span id="stat-streak">0</span> best streak</div>
+                <div class="pstat"><i class="fas fa-check-circle"></i> <span id="stat-quizzes">0</span> played</div>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-outline-light" id="switch-user-btn">
+              <i class="fas fa-exchange-alt"></i> Switch
+            </button>
+          </div>
+
+          <div class="quiz-sub-nav">
+            <button class="qnav-btn active" data-qsection="play">
+              <i class="fas fa-play-circle"></i> Play
+            </button>
+            <button class="qnav-btn" data-qsection="leaderboard">
+              <i class="fas fa-trophy"></i> Leaderboard
+            </button>
+            <button class="qnav-btn" data-qsection="friends">
+              <i class="fas fa-users"></i> Friends
+            </button>
+            <button class="qnav-btn" data-qsection="achievements">
+              <i class="fas fa-medal"></i> Badges
+            </button>
+          </div>
+
+          <!-- Play -->
+          <div id="qsection-play" class="qsection active">
+            <h3 class="section-title">Choose a Category</h3>
+            <div class="quiz-cat-grid" id="quiz-cat-grid"></div>
+          </div>
+
+          <!-- Leaderboard -->
+          <div id="qsection-leaderboard" class="qsection">
+            <h3 class="section-title"><i class="fas fa-trophy"></i> Top Recyclers</h3>
+            <div class="leaderboard-list" id="leaderboard-list"></div>
+          </div>
+
+          <!-- Friends -->
+          <div id="qsection-friends" class="qsection">
+            <h3 class="section-title"><i class="fas fa-users"></i> Friends</h3>
+            <div class="friends-share-box">
+              <p class="helper-text"><i class="fas fa-share-alt"></i> Share your code with friends so they can add you:</p>
+              <div class="share-code-row">
+                <code class="share-code" id="my-share-code"></code>
+                <button class="btn btn-sm btn-secondary" onclick="copyMyCode()">
+                  <i class="fas fa-copy"></i> Copy
+                </button>
+              </div>
+            </div>
+            <div class="add-friend-form">
+              <input type="text" id="friend-code-input" placeholder="Paste a friend's share code here...">
+              <button class="btn btn-primary" onclick="addFriendByCode()">
+                <i class="fas fa-user-plus"></i> Add
+              </button>
+            </div>
+            <p id="friend-msg" class="friend-msg"></p>
+            <div id="friends-list" class="friends-list"></div>
+          </div>
+
+          <!-- Achievements -->
+          <div id="qsection-achievements" class="qsection">
+            <h3 class="section-title"><i class="fas fa-medal"></i> Achievements</h3>
+            <div class="achievements-grid" id="achievements-grid"></div>
+          </div>
+        </div>
+
+        <!-- Active Quiz Screen -->
+        <div id="quiz-active" class="quiz-screen hidden">
+          <div class="quiz-top-bar">
+            <button class="btn btn-sm btn-outline" onclick="Quiz.exit()">
+              <i class="fas fa-arrow-left"></i> Exit
+            </button>
+            <div class="quiz-progress-wrap">
+              <div class="quiz-q-label" id="q-label">Question 1 / 10</div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="q-progress" style="width:10%"></div>
+              </div>
+            </div>
+            <div class="live-score">
+              <i class="fas fa-star"></i> <span id="live-score">0</span>
+            </div>
+          </div>
+
+          <div id="streak-alert" class="streak-alert hidden"></div>
+
+          <div class="question-card" id="question-card">
+            <div class="q-cat-label" id="q-cat-label"></div>
+            <p class="question-text" id="question-text"></p>
+            <div class="options-list" id="options-list"></div>
+          </div>
+
+          <div id="answer-feedback" class="answer-feedback hidden">
+            <div id="feedback-content"></div>
+            <button class="btn btn-primary" id="next-btn">
+              Next <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="quiz-results" class="quiz-screen hidden">
+          <div class="results-card">
+            <div class="results-emoji" id="results-emoji"></div>
+            <h1 id="results-heading"></h1>
+            <p class="results-subtext" id="results-subtext"></p>
+            <div class="results-stats-grid">
+              <div class="rstat"><div class="rstat-val" id="r-pts">0</div><div class="rstat-lbl">Points Earned</div></div>
+              <div class="rstat"><div class="rstat-val" id="r-correct">0/10</div><div class="rstat-lbl">Correct</div></div>
+              <div class="rstat"><div class="rstat-val" id="r-streak">0</div><div class="rstat-lbl">Best Streak</div></div>
+              <div class="rstat"><div class="rstat-val" id="r-acc">0%</div><div class="rstat-lbl">Accuracy</div></div>
+            </div>
+            <div id="new-badges-section" class="new-badges-section hidden">
+              <h3><i class="fas fa-award"></i> New Badges Unlocked!</h3>
+              <div id="new-badges-list"></div>
+            </div>
+            <div class="results-actions">
+              <button class="btn btn-primary btn-lg" onclick="Quiz.playAgain()">
+                <i class="fas fa-redo"></i> Play Again
+              </button>
+              <button class="btn btn-outline btn-lg" onclick="Quiz.goHome()">
+                <i class="fas fa-home"></i> Menu
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span><i class="fas fa-recycle"></i> RecycleRight — Helping the planet one scan at a time.</span>
+      <span>Open source on GitHub &middot; Data from <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a></span>
+    </div>
+  </footer>
+
+  <!-- Firebase SDK (loaded first; safe if FIREBASE_CONFIG is placeholder) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/location.js"></script>
+  <script src="js/scanner.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
