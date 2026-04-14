@@ -35,10 +35,10 @@
 */
 
 window.FIREBASE_CONFIG = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId:             "YOUR_APP_ID"
+  apiKey:            "AIzaSyCBnzh3KTrQ4CvdF6hhuVD4fqH0fW_CJx0",
+  authDomain:        "asda-9cdc0.firebaseapp.com",
+  projectId:         "asda-9cdc0",
+  storageBucket:     "asda-9cdc0.firebasestorage.app",
+  messagingSenderId: "249367806192",
+  appId:             "1:249367806192:web:595d13552f562ff7b24235"
 };
