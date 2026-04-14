@@ -1268,6 +1268,81 @@ input[type="text"]:focus {
 }
 
 /* ============================================================
+   DARK MODE
+   ============================================================ */
+[data-theme="dark"] {
+  --bg:      #0f172a;
+  --border:  #334155;
+  --white:   #1e293b;
+  --gray-50:  #162032;
+  --gray-100: #1e293b;
+  --gray-200: #263548;
+  --gray-300: #334155;
+  --gray-400: #475569;
+  --gray-500: #64748b;
+  --gray-600: #94a3b8;
+  --gray-700: #cbd5e1;
+  --gray-800: #e2e8f0;
+  --gray-900: #f1f5f9;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.4);
+  --shadow:    0 4px 14px rgba(0,0,0,.5);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,.6);
+}
+[data-theme="dark"] body { background: var(--bg); }
+[data-theme="dark"] .main { background: var(--bg); }
+[data-theme="dark"] .item-card,
+[data-theme="dark"] .result-card,
+[data-theme="dark"] .setup-card,
+[data-theme="dark"] .results-card,
+[data-theme="dark"] .question-card,
+[data-theme="dark"] .quiz-cat-card,
+[data-theme="dark"] .profile-section-card,
+[data-theme="dark"] .profile-setup-card,
+[data-theme="dark"] .ach-card {
+  background: var(--white);
+  border-color: var(--border);
+  color: var(--gray-900);
+}
+[data-theme="dark"] .answer-feedback { background: var(--white); border-color: var(--border); }
+[data-theme="dark"] .option-btn { background: var(--gray-100); border-color: var(--border); color: var(--gray-900); }
+[data-theme="dark"] .option-btn:hover { background: var(--gray-200); }
+[data-theme="dark"] .zip-form-section,
+[data-theme="dark"] .zip-form { background: var(--white); border-color: var(--border); }
+[data-theme="dark"] input[type="text"] { background: var(--gray-100); border-color: var(--border); color: var(--gray-900); }
+[data-theme="dark"] input[type="text"]::placeholder { color: var(--gray-500); }
+[data-theme="dark"] .site-footer { background: #0b111e; border-color: var(--border); }
+[data-theme="dark"] .item-card { color: var(--gray-900); }
+[data-theme="dark"] .scan-pts-earned { background: #14532d; border-color: var(--green-700); color: var(--green-300); }
+[data-theme="dark"] .location-banner { background: var(--white); border-color: var(--border); }
+[data-theme="dark"] .achievement-item { background: var(--gray-100); border-color: var(--border); }
+[data-theme="dark"] .achievement-item.unlocked { background: #14532d40; border-color: var(--green-700); }
+[data-theme="dark"] .lb-entry { background: var(--white); border-color: var(--border); }
+[data-theme="dark"] .lb-entry.is-me { background: #14532d40; border-color: var(--green-600); }
+[data-theme="dark"] .lb-badges-wrap { background: var(--gray-100); border-color: var(--border); }
+[data-theme="dark"] .friend-entry { background: var(--white); border-color: var(--border); }
+[data-theme="dark"] .profile-setup-google-info { background: #14532d30; border-color: var(--green-800); }
+[data-theme="dark"] .filter-chip { background: var(--gray-100); border-color: var(--border); color: var(--gray-700); }
+[data-theme="dark"] .filter-chip.active { background: var(--green-700); color: #fff; border-color: var(--green-700); }
+
+/* Dark mode toggle button */
+.dark-mode-toggle {
+  background: none;
+  border: 1.5px solid rgba(255,255,255,.35);
+  border-radius: 50%;
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: rgba(255,255,255,.85);
+  font-size: .95rem;
+  transition: background .15s, border-color .15s;
+  flex-shrink: 0;
+}
+.dark-mode-toggle:hover {
+  background: rgba(255,255,255,.15);
+  border-color: rgba(255,255,255,.6);
+}
+
+/* ============================================================
    PROFILE TAB
    ============================================================ */
 
@@ -1612,9 +1687,198 @@ input[type="text"]:focus {
   to   { transform: scale(1);   opacity: 1; }
 }
 
+/* Profile title tag */
+.profile-title-tag {
+  display: inline-block;
+  font-size: .78rem;
+  font-weight: 700;
+  background: rgba(255,255,255,.2);
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 20px;
+  padding: 2px 10px;
+  margin-top: 4px;
+  color: #fff;
+  letter-spacing: .02em;
+}
+
+/* Banner title (quiz home screen) */
+.banner-title-display {
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--green-200);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+/* Leaderboard title badge */
+.lb-title-badge {
+  display: inline-block;
+  font-size: .68rem;
+  font-weight: 700;
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 20px;
+  padding: 1px 7px;
+  margin-left: 6px;
+  color: var(--green-200);
+  vertical-align: middle;
+}
+.lb-entry.is-me .lb-title-badge {
+  background: rgba(255,255,255,.25);
+}
+
+/* Locked avatars */
+.avatar-opt {
+  position: relative;
+  font-size: 1.5rem;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color .15s, background .15s;
+  user-select: none;
+}
+.avatar-opt:hover:not(.av-locked)  { background: var(--green-100); }
+.avatar-opt.selected {
+  border-color: var(--green-500);
+  background: var(--green-100);
+}
+.avatar-opt.av-locked {
+  cursor: not-allowed;
+  opacity: .5;
+  filter: grayscale(.6);
+}
+.av-lock-label {
+  position: absolute;
+  bottom: -6px; left: 50%;
+  transform: translateX(-50%);
+  font-size: .55rem;
+  font-weight: 700;
+  background: var(--gray-700);
+  color: #fff;
+  border-radius: 4px;
+  padding: 1px 4px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.unlock-hint {
+  font-size: .75rem;
+  color: var(--gray-500);
+  font-weight: 400;
+  margin-left: 6px;
+}
+
+/* Title picker */
+.title-picker-section {
+  margin-bottom: 4px;
+}
+.title-picker-section label {
+  display: block;
+  font-size: .85rem;
+  color: var(--gray-700);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.title-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.title-opt {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 2px solid var(--border);
+  background: var(--gray-50);
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--gray-700);
+  cursor: pointer;
+  transition: all .15s;
+  position: relative;
+}
+.title-opt:hover:not(.locked) { border-color: var(--green-400); background: var(--green-50); color: var(--green-700); }
+.title-opt.selected {
+  border-color: var(--green-500);
+  background: var(--green-100);
+  color: var(--green-800);
+}
+.title-opt.locked {
+  opacity: .45;
+  cursor: not-allowed;
+}
+.title-req {
+  font-size: .65rem;
+  font-weight: 700;
+  background: var(--gray-300);
+  color: var(--gray-700);
+  border-radius: 4px;
+  padding: 1px 4px;
+  margin-left: 4px;
+}
+
+/* Leaderboard badges panel */
+.lb-badges-section {
+  margin-top: 28px;
+}
+.lb-badges-wrap {
+  background: var(--gray-50);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.lb-badges-group {}
+.lb-badges-header {
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lb-badge-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.lb-badge-icon {
+  font-size: 1.6rem;
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius);
+  border: 2px solid transparent;
+  cursor: default;
+  transition: transform .15s;
+  position: relative;
+}
+.lb-badge-icon:hover { transform: scale(1.15); }
+.lb-badge-icon.earned {
+  background: var(--green-100);
+  border-color: var(--green-300);
+}
+.lb-badge-icon.locked {
+  background: var(--gray-100);
+  border-color: var(--gray-200);
+  filter: grayscale(.7);
+  opacity: .6;
+}
+.lb-empty-small {
+  font-size: .82rem;
+  color: var(--gray-500);
+  font-style: italic;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .profile-stats-band { grid-template-columns: repeat(2, 1fr); }
   .profile-setup-card { padding: 28px 18px; }
   .profile-account-row { flex-direction: column; align-items: flex-start; }
+  .title-picker { gap: 6px; }
 }

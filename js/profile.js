@@ -1,14 +1,14 @@
 /* ============================================================
    RecycleRight — Profile Module
-   Account management, friends, achievements, username rules
+   Account management, friends, achievements, titles, unlocks
    ============================================================ */
 
 const ProfileModule = (function () {
 
-  const KEY_PROFILES  = 'rr_profiles';
-  const KEY_CURRENT   = 'rr_current';
-  const KEY_FRIENDS   = 'rr_friends';
-  const KEY_UN_CHANGES = 'rr_username_changes'; // array of ISO timestamps
+  const KEY_PROFILES   = 'rr_profiles';
+  const KEY_CURRENT    = 'rr_current';
+  const KEY_FRIENDS    = 'rr_friends';
+  const KEY_UN_CHANGES = 'rr_username_changes';
 
   /* ====================================================
      PROFANITY FILTER
@@ -17,35 +17,33 @@ const ProfileModule = (function () {
     'fuck','shit','bitch','cunt','dick','cock','pussy','nigger','nigga',
     'faggot','fag','retard','whore','slut','bastard','asshole','piss',
     'rape','nazi','porn','sex','weed','drug','hack','kill','die',
-    'arse','twat','wank','damn','crap','ass',
+    'arse','twat','wank','crap','ass',
   ];
-
   function isProfane(str) {
-    const lower = str.toLowerCase().replace(/[^a-z0-9]/g, '');
-    return BANNED.some(w => lower.includes(w));
+    const s = str.toLowerCase().replace(/[^a-z0-9]/g,'');
+    return BANNED.some(w => s.includes(w));
   }
 
   /* ====================================================
      USERNAME VALIDATION
      ==================================================== */
-  function validateUsername(username) {
-    if (!username)                         return 'Please enter a username.';
-    if (username.length < 4)               return 'Username must be at least 4 characters.';
-    if (username.length > 20)              return 'Username must be 20 characters or fewer.';
-    if (/[^a-zA-Z0-9_]/.test(username))   return 'Only letters, numbers, and underscores allowed.';
-    if (isProfane(username))               return 'That username is not allowed. Please choose another.';
-    return null; // valid
+  function validateUsername(u) {
+    if (!u)                          return 'Please enter a username.';
+    if (u.length < 4)                return 'Username must be at least 4 characters.';
+    if (u.length > 20)               return 'Username must be 20 characters or fewer.';
+    if (/[^a-zA-Z0-9_]/.test(u))    return 'Only letters, numbers, and underscores allowed.';
+    if (isProfane(u))                return 'That username is not allowed. Please choose another.';
+    return null;
   }
 
   /* ====================================================
-     USERNAME CHANGE TRACKING (2 per calendar month)
+     USERNAME CHANGE LIMIT (2 per calendar month)
      ==================================================== */
   function changesThisMonth() {
     const all = JSON.parse(localStorage.getItem(KEY_UN_CHANGES) || '[]');
-    const ym  = new Date().toISOString().slice(0, 7); // "2026-04"
+    const ym  = new Date().toISOString().slice(0, 7);
     return all.filter(d => d.startsWith(ym));
   }
-
   function recordUsernameChange() {
     const all = JSON.parse(localStorage.getItem(KEY_UN_CHANGES) || '[]');
     all.push(new Date().toISOString());
@@ -67,6 +65,14 @@ const ProfileModule = (function () {
     return 5;
   }
 
+  function getTitle(profile) {
+    if (!window.TITLES) return '';
+    const t = TITLES.find(t => t.id === profile.selectedTitle)
+      || [...TITLES].reverse().find(t => (profile.points || 0) >= t.pts)
+      || TITLES[0];
+    return t.label;
+  }
+
   /* ====================================================
      INIT / RELOAD
      ==================================================== */
@@ -74,14 +80,12 @@ const ProfileModule = (function () {
 
   async function reload() {
     if (!AuthModule.isAvailable) { renderOfflineMode(); return; }
-
     const user = AuthModule.currentUser;
     if (!user) { renderSignedOut(); return; }
 
     const hasProf = await AuthModule.hasProfile();
     if (!hasProf) {
-      const local = localStorage.getItem(KEY_CURRENT);
-      renderSetupScreen(user, local || null);
+      renderSetupScreen(user, localStorage.getItem(KEY_CURRENT) || null);
     } else {
       const username = localStorage.getItem(KEY_CURRENT);
       const profile  = loadProfiles().find(p => p.username === username) || null;
@@ -106,12 +110,12 @@ const ProfileModule = (function () {
   }
 
   /* ====================================================
-     SETUP (new Google user picking username)
+     SETUP SCREEN (new Google user)
      ==================================================== */
   function renderSetupScreen(user, suggestedUsername) {
     const photoHTML = user.photoURL
       ? `<img src="${esc(user.photoURL)}" alt="avatar" class="profile-google-photo">`
-      : `<div class="profile-google-initials">${(user.displayName || 'U')[0].toUpperCase()}</div>`;
+      : `<div class="profile-google-initials">${(user.displayName||'U')[0].toUpperCase()}</div>`;
 
     getContainer().innerHTML = `
       <div class="profile-setup-card">
@@ -123,7 +127,7 @@ const ProfileModule = (function () {
           </div>
         </div>
         <h2>Choose Your Username</h2>
-        <p class="profile-setup-subtitle">Pick a username (4–20 characters) that will appear on the leaderboard.</p>
+        <p class="profile-setup-subtitle">Pick a username (4–20 characters) for the leaderboard.</p>
         <div class="avatar-section" style="margin-bottom:1.5rem">
           <label>Pick an avatar:</label>
           <div class="avatar-picker" id="profile-avatar-picker"></div>
@@ -140,12 +144,12 @@ const ProfileModule = (function () {
         <p class="setup-note" id="profile-setup-error"></p>
       </div>`;
 
-    let selectedIdx = 0;
-    buildAvatarPicker('profile-avatar-picker', selectedIdx, i => { selectedIdx = i; });
+    let selAvatar = 0;
+    buildAvatarPicker('profile-avatar-picker', selAvatar, 0, i => { selAvatar = i; });
 
-    document.getElementById('profile-save-btn').addEventListener('click', () => saveNewProfile(user, selectedIdx));
+    document.getElementById('profile-save-btn').addEventListener('click', () => saveNewProfile(user, selAvatar));
     document.getElementById('profile-username-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter') saveNewProfile(user, selectedIdx);
+      if (e.key === 'Enter') saveNewProfile(user, selAvatar);
     });
   }
 
@@ -161,23 +165,22 @@ const ProfileModule = (function () {
     const existing = await AuthModule.findUserByUsername(username);
     if (existing) { errorEl.textContent = 'That username is already taken. Try another.'; return; }
 
-    const oldProfile = loadProfiles().find(p => p.username === localStorage.getItem(KEY_CURRENT));
+    const old = loadProfiles().find(p => p.username === localStorage.getItem(KEY_CURRENT));
     const profile = {
-      username,
-      avatarIdx,
-      points:     oldProfile?.points     || 0,
-      quizzes:    oldProfile?.quizzes    || 0,
-      bestStreak: oldProfile?.bestStreak || 0,
-      catsPlayed: oldProfile?.catsPlayed || [],
-      catBests:   oldProfile?.catBests   || {},
-      badges:     oldProfile?.badges     || [],
+      username, avatarIdx,
+      selectedTitle: 'newcomer',
+      points:     old?.points     || 0,
+      quizzes:    old?.quizzes    || 0,
+      bestStreak: old?.bestStreak || 0,
+      catsPlayed: old?.catsPlayed || [],
+      catBests:   old?.catBests   || {},
+      badges:     old?.badges     || [],
     };
 
     const profiles = loadProfiles().filter(p => p.username !== username);
     profiles.push(profile);
     localStorage.setItem(KEY_PROFILES, JSON.stringify(profiles));
     localStorage.setItem(KEY_CURRENT, username);
-
     await AuthModule.syncProfileFlat(profile);
     reload();
     window.QuizModule?.reload?.();
@@ -189,21 +192,21 @@ const ProfileModule = (function () {
   function renderProfile(user, profile) {
     if (!profile) { renderSetupScreen(user, null); return; }
 
-    const avatar = AVATARS[profile.avatarIdx] || AVATARS[0];
-    const level  = calcLevel(profile.points || 0);
+    const avatar    = AVATARS[profile.avatarIdx] || AVATARS[0];
+    const level     = calcLevel(profile.points || 0);
+    const titleText = getTitle(profile);
     const photoHTML = user.photoURL
-      ? `<img src="${esc(user.photoURL)}" alt="avatar" class="profile-google-photo-sm">`
-      : '';
+      ? `<img src="${esc(user.photoURL)}" alt="" class="profile-google-photo-sm">` : '';
 
     getContainer().innerHTML = `
       <div class="profile-page">
 
-        <!-- Profile Card -->
         <div class="profile-card">
           <div class="profile-card-top">
             <div class="profile-big-avatar">${avatar}</div>
             <div class="profile-card-info">
               <div class="profile-display-name">${esc(profile.username)} ${photoHTML}</div>
+              <div class="profile-title-tag">${esc(titleText)}</div>
               <div class="profile-google-linked"><i class="fab fa-google"></i> ${esc(user.email || '')}</div>
               <div class="profile-level-badge">Level ${level}</div>
             </div>
@@ -212,14 +215,13 @@ const ProfileModule = (function () {
             </button>
           </div>
           <div class="profile-stats-band">
-            <div class="pstat-lg"><div class="pstat-val">${(profile.points || 0).toLocaleString()}</div><div class="pstat-lbl">Points</div></div>
-            <div class="pstat-lg"><div class="pstat-val">${profile.quizzes || 0}</div><div class="pstat-lbl">Quizzes</div></div>
-            <div class="pstat-lg"><div class="pstat-val">${profile.bestStreak || 0}</div><div class="pstat-lbl">Best Streak</div></div>
-            <div class="pstat-lg"><div class="pstat-val">${(profile.badges || []).length}</div><div class="pstat-lbl">Badges</div></div>
+            <div class="pstat-lg"><div class="pstat-val">${(profile.points||0).toLocaleString()}</div><div class="pstat-lbl">Points</div></div>
+            <div class="pstat-lg"><div class="pstat-val">${profile.quizzes||0}</div><div class="pstat-lbl">Quizzes</div></div>
+            <div class="pstat-lg"><div class="pstat-val">${profile.bestStreak||0}</div><div class="pstat-lbl">Best Streak</div></div>
+            <div class="pstat-lg"><div class="pstat-val">${(profile.badges||[]).length}</div><div class="pstat-lbl">Badges</div></div>
           </div>
         </div>
 
-        <!-- Account -->
         <div class="profile-section-card">
           <h3 class="profile-section-title"><i class="fas fa-shield-halved"></i> Account</h3>
           <div class="profile-account-row">
@@ -233,8 +235,7 @@ const ProfileModule = (function () {
           </div>
         </div>
 
-        <!-- Friends -->
-        <div class="profile-section-card" id="profile-friends-section">
+        <div class="profile-section-card" id="profile-friends-card">
           <h3 class="profile-section-title"><i class="fas fa-users"></i> Friends</h3>
           <div class="add-friend-form" style="margin-bottom:12px">
             <input type="text" id="prof-friend-input" placeholder="Search by username…">
@@ -246,7 +247,6 @@ const ProfileModule = (function () {
           <div id="prof-friends-list" class="friends-list"></div>
         </div>
 
-        <!-- Achievements -->
         <div class="profile-section-card">
           <h3 class="profile-section-title">
             <i class="fas fa-medal"></i> Badges
@@ -258,7 +258,7 @@ const ProfileModule = (function () {
       </div>`;
 
     document.getElementById('profile-edit-btn').addEventListener('click', () => renderEditScreen(user, profile));
-    document.getElementById('prof-friend-add-btn').addEventListener('click', () => addFriendByUsername());
+    document.getElementById('prof-friend-add-btn').addEventListener('click', addFriendByUsername);
     document.getElementById('prof-friend-input').addEventListener('keydown', e => {
       if (e.key === 'Enter') addFriendByUsername();
     });
@@ -271,51 +271,35 @@ const ProfileModule = (function () {
      FRIENDS
      ==================================================== */
   async function addFriendByUsername() {
-    const input  = document.getElementById('prof-friend-input');
-    const msgEl  = document.getElementById('prof-friend-msg');
+    const input = document.getElementById('prof-friend-input');
+    const msgEl = document.getElementById('prof-friend-msg');
     const username = (input?.value || '').trim().toLowerCase();
 
     msgEl.className = 'friend-msg';
     if (!username) { msgEl.textContent = 'Enter a username to search.'; msgEl.classList.add('error'); return; }
-
     if (!AuthModule.isAvailable || !AuthModule.currentUser) {
-      msgEl.textContent = 'Sign in with Google to add friends.';
-      msgEl.classList.add('error');
-      return;
+      msgEl.textContent = 'Sign in with Google to add friends.'; msgEl.classList.add('error'); return;
     }
 
     msgEl.textContent = 'Searching…';
     const found = await AuthModule.findUserByUsername(username);
 
-    if (!found) {
-      msgEl.textContent = `No user found with username "${username}".`;
-      msgEl.classList.add('error');
-      return;
-    }
-    if (found.uid === AuthModule.currentUser?.uid) {
-      msgEl.textContent = "That's you!";
-      msgEl.classList.add('error');
-      return;
-    }
+    if (!found) { msgEl.textContent = `No user found with username "${username}".`; msgEl.classList.add('error'); return; }
+    if (found.uid === AuthModule.currentUser?.uid) { msgEl.textContent = "That's you!"; msgEl.classList.add('error'); return; }
 
     const friends = loadFriends();
     if (friends.find(f => f.uid === found.uid)) {
       msgEl.textContent = `${found.displayName || found.username} is already your friend.`;
-      msgEl.classList.add('error');
-      return;
+      msgEl.classList.add('error'); return;
     }
 
     friends.push({
-      uid: found.uid,
-      username: found.username,
+      uid: found.uid, username: found.username,
       displayName: found.displayName || found.username,
-      avatarIdx: found.avatarIdx || 0,
-      points: found.points || 0,
-      quizzes: found.quizzes || 0,
-      bestStreak: found.bestStreak || 0,
+      avatarIdx: found.avatarIdx || 0, points: found.points || 0,
+      quizzes: found.quizzes || 0, bestStreak: found.bestStreak || 0,
     });
     saveFriends(friends);
-
     input.value = '';
     msgEl.textContent = `Added ${found.displayName || found.username} as a friend!`;
     msgEl.classList.add('success');
@@ -326,23 +310,19 @@ const ProfileModule = (function () {
     const container = document.getElementById('prof-friends-list');
     if (!container) return;
     const friends = loadFriends();
-
     if (friends.length === 0) {
       container.innerHTML = '<p class="friends-empty"><i class="fas fa-user-plus"></i> No friends yet — search by username above!</p>';
       return;
     }
-
-    container.innerHTML = friends
-      .sort((a, b) => b.points - a.points)
-      .map(f => `
-        <div class="friend-entry">
-          <div class="friend-avatar">${AVATARS[f.avatarIdx || 0]}</div>
-          <div class="friend-info">
-            <div class="friend-name">${esc(f.displayName || f.username)}</div>
-            <div class="friend-meta">Lv ${calcLevel(f.points)} · ${f.quizzes || 0} quizzes · Best streak: ${f.bestStreak || 0}</div>
-          </div>
-          <div class="friend-score">${(f.points || 0).toLocaleString()} pts</div>
-        </div>`).join('');
+    container.innerHTML = friends.sort((a,b) => b.points - a.points).map(f => `
+      <div class="friend-entry">
+        <div class="friend-avatar">${AVATARS[f.avatarIdx||0]}</div>
+        <div class="friend-info">
+          <div class="friend-name">${esc(f.displayName || f.username)}</div>
+          <div class="friend-meta">Lv ${calcLevel(f.points)} · ${f.quizzes||0} quizzes · Best streak: ${f.bestStreak||0}</div>
+        </div>
+        <div class="friend-score">${(f.points||0).toLocaleString()} pts</div>
+      </div>`).join('');
   }
 
   /* ====================================================
@@ -352,10 +332,8 @@ const ProfileModule = (function () {
     const container = document.getElementById('prof-achievements-list');
     const pill      = document.getElementById('badge-count-pill');
     if (!container || !window.ACHIEVEMENTS) return;
-
     const earned = profile.badges || [];
     if (pill) pill.textContent = `${earned.length}/${ACHIEVEMENTS.length}`;
-
     container.innerHTML = ACHIEVEMENTS.map(ach => {
       const unlocked = earned.includes(ach.id);
       return `
@@ -365,75 +343,80 @@ const ProfileModule = (function () {
             <div class="ach-name">${ach.name}</div>
             <div class="ach-desc">${ach.desc}</div>
           </div>
-          ${unlocked
-            ? '<i class="fas fa-check-circle ach-check"></i>'
-            : '<i class="fas fa-lock ach-lock"></i>'}
+          ${unlocked ? '<i class="fas fa-check-circle ach-check"></i>' : '<i class="fas fa-lock ach-lock"></i>'}
         </div>`;
     }).join('');
   }
 
   /* ====================================================
-     EDIT PROFILE
+     EDIT SCREEN (avatar, title, username)
      ==================================================== */
   function renderEditScreen(user, profile) {
     const remaining = 2 - changesThisMonth().length;
-    const limitNote = remaining <= 0
-      ? '<p class="setup-note" style="color:var(--amber-700)"><i class="fas fa-triangle-exclamation"></i> You have used all 2 username changes for this month.</p>'
-      : `<p class="setup-note" style="color:var(--gray-500)">${remaining} username change${remaining === 1 ? '' : 's'} remaining this month.</p>`;
+    const pts = profile.points || 0;
 
     getContainer().innerHTML = `
       <div class="profile-setup-card">
         <h2><i class="fas fa-pencil"></i> Edit Profile</h2>
+
         <div class="avatar-section" style="margin-bottom:1.5rem">
-          <label>Avatar:</label>
+          <label>Avatar: <span class="unlock-hint">New avatars unlock with points!</span></label>
           <div class="avatar-picker" id="profile-edit-picker"></div>
         </div>
-        <div class="setup-form">
+
+        <div class="title-picker-section">
+          <label>Title <span class="unlock-hint">(shown on leaderboard)</span></label>
+          <div class="title-picker" id="title-picker"></div>
+        </div>
+
+        <div class="setup-form" style="margin-top:1.5rem">
+          <label style="font-size:.85rem;color:var(--gray-600);margin-bottom:4px;display:block">
+            Username
+            <span class="unlock-hint">${remaining > 0 ? `${remaining} change${remaining===1?'':'s'} remaining this month` : 'No changes left this month'}</span>
+          </label>
           <input type="text" id="profile-edit-username"
             placeholder="Username" maxlength="20" autocomplete="off"
             value="${esc(profile.username)}"
             ${remaining <= 0 ? 'disabled' : ''}>
-          <button class="btn btn-primary btn-lg" id="profile-edit-save"
-            ${remaining <= 0 ? 'disabled' : ''}>
+          <button class="btn btn-primary btn-lg" id="profile-edit-save">
             <i class="fas fa-check"></i> Save Changes
           </button>
           <button class="btn btn-outline btn-lg" id="profile-edit-cancel">Cancel</button>
         </div>
-        ${limitNote}
         <p class="setup-note" id="profile-edit-error"></p>
       </div>`;
 
-    let selectedIdx = profile.avatarIdx || 0;
-    buildAvatarPicker('profile-edit-picker', selectedIdx, i => { selectedIdx = i; });
+    let selAvatar = profile.avatarIdx || 0;
+    buildAvatarPicker('profile-edit-picker', selAvatar, pts, i => { selAvatar = i; });
 
-    document.getElementById('profile-edit-save')?.addEventListener('click', () => saveEditedProfile(user, profile, selectedIdx));
-    document.getElementById('profile-edit-cancel').addEventListener('click', () => renderProfile(user, profile));
+    let selTitle = profile.selectedTitle || 'newcomer';
+    buildTitlePicker('title-picker', selTitle, pts, id => { selTitle = id; });
+
+    document.getElementById('profile-edit-save').addEventListener('click', () =>
+      saveEditedProfile(user, profile, selAvatar, selTitle));
+    document.getElementById('profile-edit-cancel').addEventListener('click', () =>
+      renderProfile(user, profile));
   }
 
-  async function saveEditedProfile(user, oldProfile, avatarIdx) {
+  async function saveEditedProfile(user, oldProfile, avatarIdx, selectedTitle) {
     const input   = document.getElementById('profile-edit-username');
     const errorEl = document.getElementById('profile-edit-error');
     const newUsername = (input?.value || '').trim();
-
-    // Avatar-only change (no username change)
     const usernameChanged = newUsername.toLowerCase() !== oldProfile.username.toLowerCase();
 
     if (usernameChanged) {
       const err = validateUsername(newUsername);
       if (err) { errorEl.textContent = err; return; }
-
       if (changesThisMonth().length >= 2) {
-        errorEl.textContent = 'You have used all 2 username changes for this month.';
-        return;
+        errorEl.textContent = 'You have used all 2 username changes for this month.'; return;
       }
-
       errorEl.textContent = 'Checking availability…';
       const existing = await AuthModule.findUserByUsername(newUsername);
       if (existing) { errorEl.textContent = 'That username is already taken. Try another.'; return; }
     }
 
     const finalUsername = usernameChanged ? newUsername : oldProfile.username;
-    const updatedProfile = { ...oldProfile, username: finalUsername, avatarIdx };
+    const updatedProfile = { ...oldProfile, username: finalUsername, avatarIdx, selectedTitle };
 
     const profiles = loadProfiles()
       .filter(p => p.username !== oldProfile.username && p.username !== finalUsername);
@@ -456,20 +439,26 @@ const ProfileModule = (function () {
       <div class="profile-signin-prompt">
         <div class="profile-signin-icon"><i class="fas fa-cloud-arrow-up"></i></div>
         <h2>Cloud Sync Unavailable</h2>
-        <p>Firebase is not configured. The app is running in offline mode — your progress is saved locally on this device.</p>
+        <p>Firebase is not configured. Your progress is saved locally on this device.</p>
       </div>`;
   }
 
   /* ====================================================
-     UTILS
+     AVATAR PICKER (with locked state)
      ==================================================== */
-  function buildAvatarPicker(containerId, selectedIdx, onSelect) {
+  function buildAvatarPicker(containerId, selectedIdx, userPts, onSelect) {
     const container = document.getElementById(containerId);
     if (!container) return;
-    container.innerHTML = AVATARS.map((av, i) =>
-      `<div class="avatar-opt${i === selectedIdx ? ' selected' : ''}" data-idx="${i}">${av}</div>`
-    ).join('');
-    container.querySelectorAll('.avatar-opt').forEach(el => {
+    container.innerHTML = AVATARS.map((av, i) => {
+      const req    = window.AVATAR_UNLOCKS?.[i];
+      const locked = req && userPts < req;
+      return `
+        <div class="avatar-opt${i === selectedIdx ? ' selected' : ''}${locked ? ' av-locked' : ''}"
+          data-idx="${i}" ${locked ? `title="Unlocks at ${req} pts"` : ''}>
+          ${av}${locked ? `<span class="av-lock-label">${req}pts</span>` : ''}
+        </div>`;
+    }).join('');
+    container.querySelectorAll('.avatar-opt:not(.av-locked)').forEach(el => {
       el.addEventListener('click', () => {
         container.querySelectorAll('.avatar-opt').forEach(a => a.classList.remove('selected'));
         el.classList.add('selected');
@@ -478,6 +467,34 @@ const ProfileModule = (function () {
     });
   }
 
+  /* ====================================================
+     TITLE PICKER
+     ==================================================== */
+  function buildTitlePicker(containerId, selectedId, userPts, onSelect) {
+    const container = document.getElementById(containerId);
+    if (!container || !window.TITLES) return;
+    container.innerHTML = TITLES.map(t => {
+      const unlocked = userPts >= t.pts;
+      const sel      = t.id === selectedId;
+      return `
+        <div class="title-opt${sel ? ' selected' : ''}${!unlocked ? ' locked' : ''}"
+          data-id="${t.id}" ${!unlocked ? `title="Unlocks at ${t.pts} pts"` : ''}>
+          ${t.label}
+          ${!unlocked ? `<span class="title-req">${t.pts}pts</span>` : ''}
+        </div>`;
+    }).join('');
+    container.querySelectorAll('.title-opt:not(.locked)').forEach(el => {
+      el.addEventListener('click', () => {
+        container.querySelectorAll('.title-opt').forEach(a => a.classList.remove('selected'));
+        el.classList.add('selected');
+        onSelect(el.dataset.id);
+      });
+    });
+  }
+
+  /* ====================================================
+     UTILS
+     ==================================================== */
   function getContainer() { return document.getElementById('profile-content'); }
 
   function esc(str) {
@@ -486,9 +503,6 @@ const ProfileModule = (function () {
       .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  /* ====================================================
-     PUBLIC API
-     ==================================================== */
   return { init, reload, isProfane };
 })();
 

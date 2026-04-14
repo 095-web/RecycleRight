@@ -215,6 +215,15 @@ const Quiz = (function () {
     const badge = document.getElementById('cloud-badge');
     if (badge) badge.style.display = isCloud ? 'inline-flex' : 'none';
 
+    // Show title
+    const titleEl = document.getElementById('banner-title');
+    if (titleEl && window.TITLES) {
+      const t = TITLES.find(t => t.id === profile.selectedTitle)
+        || [...TITLES].reverse().find(t => profile.points >= t.pts)
+        || TITLES[0];
+      titleEl.textContent = t.label;
+    }
+
     // Switch back to Play tab
     document.querySelectorAll('.qnav-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.qsection').forEach(s => s.classList.remove('active'));
@@ -470,27 +479,70 @@ const Quiz = (function () {
     }
 
     container.innerHTML = `<div class="lb-loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>`;
+    _renderLbBadges();
 
     _lbUnsubscribe = window.AuthModule.subscribeLeaderboard(entries => {
       if (entries.length === 0) {
         container.innerHTML = '<p class="lb-empty">No players yet — be the first!</p>';
-        return;
+      } else {
+        container.innerHTML = entries.map((entry, i) => {
+          const rankClass  = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+          const rankLabel  = i < 3 ? ['🥇','🥈','🥉'][i] : `#${i + 1}`;
+          const titleLabel = window.TITLES
+            ? (TITLES.find(t => t.id === entry.selectedTitle) || TITLES[0]).label
+            : '';
+          return `
+            <div class="lb-entry ${entry.isMe ? 'is-me' : ''}">
+              <div class="lb-rank ${rankClass}">${rankLabel}</div>
+              <div class="lb-avatar">${AVATARS[entry.avatarIdx || 0]}</div>
+              <div class="lb-info">
+                <div class="lb-name">
+                  ${escapeHtml(entry.displayName || entry.username)}
+                  <span class="lb-title-badge">${escapeHtml(titleLabel)}</span>
+                </div>
+                <div class="lb-sub">@${escapeHtml(entry.username)} · Lv ${calcLevel(entry.points)} · ${entry.quizzes} quizzes${entry.isMe ? ' · <strong>You</strong>' : ''}</div>
+              </div>
+              <div class="lb-score">${entry.points.toLocaleString()}<small>pts</small></div>
+            </div>`;
+        }).join('');
       }
-      container.innerHTML = entries.map((entry, i) => {
-        const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
-        const rankLabel = i < 3 ? ['🥇','🥈','🥉'][i] : `#${i + 1}`;
-        return `
-          <div class="lb-entry ${entry.isMe ? 'is-me' : ''}">
-            <div class="lb-rank ${rankClass}">${rankLabel}</div>
-            <div class="lb-avatar">${AVATARS[entry.avatarIdx || 0]}</div>
-            <div class="lb-info">
-              <div class="lb-name">${escapeHtml(entry.displayName || entry.username)}</div>
-              <div class="lb-sub">${escapeHtml(entry.username)} · Lv ${calcLevel(entry.points)} · ${entry.quizzes} quizzes${entry.isMe ? ' · <strong>You</strong>' : ''}</div>
-            </div>
-            <div class="lb-score">${entry.points.toLocaleString()}<small>pts</small></div>
-          </div>`;
-      }).join('');
+
+      // Badges panel (always rendered, not dependent on sign-in state)
+      _renderLbBadges();
     });
+  }
+
+  /* ====================================================
+     LEADERBOARD — BADGES PANEL
+     ==================================================== */
+  function _renderLbBadges() {
+    const section = document.getElementById('lb-badges-section');
+    if (!section || !window.ACHIEVEMENTS) return;
+
+    const user    = currentUser();
+    const profile = getProfile(user);
+    const earned  = profile?.badges || [];
+
+    const inventory = ACHIEVEMENTS.filter(a =>  earned.includes(a.id));
+    const available = ACHIEVEMENTS.filter(a => !earned.includes(a.id));
+
+    section.innerHTML = `
+      <div class="lb-badges-wrap">
+        <div class="lb-badges-group">
+          <div class="lb-badges-header"><i class="fas fa-archive"></i> Your Inventory (${inventory.length}/${ACHIEVEMENTS.length})</div>
+          <div class="lb-badge-icons">
+            ${inventory.length === 0
+              ? '<span class="lb-empty-small">Complete quizzes to earn badges!</span>'
+              : inventory.map(a => `<div class="lb-badge-icon earned" title="${a.name}: ${a.desc}">${a.icon}</div>`).join('')}
+          </div>
+        </div>
+        <div class="lb-badges-group">
+          <div class="lb-badges-header"><i class="fas fa-medal"></i> Badges to Earn (${available.length})</div>
+          <div class="lb-badge-icons">
+            ${available.map(a => `<div class="lb-badge-icon locked" title="${a.name}: ${a.desc}">${a.icon}</div>`).join('')}
+          </div>
+        </div>
+      </div>`;
   }
 
   /* ====================================================

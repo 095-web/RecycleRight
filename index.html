@@ -32,6 +32,11 @@
         </button>
       </nav>
 
+      <!-- Dark Mode Toggle -->
+      <button class="dark-mode-toggle" id="dark-mode-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+        <i class="fas fa-moon" id="dark-mode-icon"></i>
+      </button>
+
       <!-- Auth Section -->
       <div class="auth-section">
         <div id="auth-signed-out" class="auth-state" style="display:flex">
@@ -190,6 +195,7 @@
             <div class="player-avatar-lg" id="banner-avatar"></div>
             <div class="player-banner-info">
               <h2 id="banner-username"></h2>
+              <div id="banner-title" class="banner-title-display"></div>
               <div class="player-stats-row">
                 <div class="pstat"><i class="fas fa-star"></i> <span id="stat-points">0</span> <small>pts</small></div>
                 <div class="pstat"><i class="fas fa-layer-group"></i> Lv <span id="stat-level">1</span></div>
@@ -224,6 +230,7 @@
           <div id="qsection-leaderboard" class="qsection">
             <h3 class="section-title"><i class="fas fa-trophy"></i> Top Recyclers</h3>
             <div class="leaderboard-list" id="leaderboard-list"></div>
+            <div id="lb-badges-section" class="lb-badges-section"></div>
           </div>
         </div>
 

@@ -155,13 +155,14 @@ const AuthModule = (function () {
       await db.collection('users').doc(_currentUser.uid).set({
         username:    (profile.username  || '').toLowerCase(),
         displayName: profile.username   || '',
-        avatarIdx:   profile.avatarIdx  || 0,
-        points:      profile.points     || 0,
-        quizzes:     profile.quizzes    || 0,
-        bestStreak:  profile.bestStreak || 0,
-        catsPlayed:  profile.catsPlayed || [],
-        catBests:    profile.catBests   || {},
-        badges:      profile.badges     || [],
+        avatarIdx:     profile.avatarIdx    || 0,
+        points:        profile.points       || 0,
+        quizzes:       profile.quizzes      || 0,
+        bestStreak:    profile.bestStreak   || 0,
+        catsPlayed:    profile.catsPlayed   || [],
+        catBests:      profile.catBests     || {},
+        badges:        profile.badges       || [],
+        selectedTitle: profile.selectedTitle || 'newcomer',
         profile,   // keep nested copy for backwards compat
         updatedAt:  firebase.firestore.FieldValue.serverTimestamp(),
       }, { merge: true });
@@ -232,14 +233,15 @@ const AuthModule = (function () {
         .onSnapshot(snapshot => {
           const uid = _currentUser?.uid;
           const entries = snapshot.docs.map(doc => ({
-            uid:         doc.id,
-            username:    doc.data().username    || '?',
-            displayName: doc.data().displayName || doc.data().username || '?',
-            avatarIdx:   doc.data().avatarIdx   || 0,
-            points:      doc.data().points      || 0,
-            quizzes:     doc.data().quizzes     || 0,
-            bestStreak:  doc.data().bestStreak  || 0,
-            isMe:        doc.id === uid,
+            uid:           doc.id,
+            username:      doc.data().username      || '?',
+            displayName:   doc.data().displayName   || doc.data().username || '?',
+            avatarIdx:     doc.data().avatarIdx      || 0,
+            points:        doc.data().points         || 0,
+            quizzes:       doc.data().quizzes        || 0,
+            bestStreak:    doc.data().bestStreak     || 0,
+            selectedTitle: doc.data().selectedTitle  || 'newcomer',
+            isMe:          doc.id === uid,
           }));
           callback(entries);
         }, err => console.error('Leaderboard listener error:', err));

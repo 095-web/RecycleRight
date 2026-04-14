@@ -6,6 +6,26 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   /* ====================================================
+     DARK MODE
+     ==================================================== */
+  const dmToggle = document.getElementById('dark-mode-toggle');
+  const dmIcon   = document.getElementById('dark-mode-icon');
+  const DM_KEY   = 'rr_dark_mode';
+
+  function applyTheme(dark) {
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    if (dmIcon) dmIcon.className = dark ? 'fas fa-sun' : 'fas fa-moon';
+  }
+
+  applyTheme(localStorage.getItem(DM_KEY) === 'true');
+
+  dmToggle?.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    localStorage.setItem(DM_KEY, String(!isDark));
+    applyTheme(!isDark);
+  });
+
+  /* ====================================================
      TAB ROUTING
      ==================================================== */
   const navBtns    = document.querySelectorAll('.nav-btn');

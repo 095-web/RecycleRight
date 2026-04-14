@@ -316,7 +316,23 @@ const ACHIEVEMENTS = [
 ];
 
 /* ---------- Avatars ---------- */
-const AVATARS = ['🌱','🌿','♻️','🌍','🌊','🦋','🌻','🍃','🌳','💚'];
+// Indices 0-9: free. Indices 10-17: unlocked with points (see AVATAR_UNLOCKS).
+const AVATARS = [
+  '🌱','🌿','♻️','🌍','🌊','🦋','🌻','🍃','🌳','💚',  // free
+  '🦝','🐸','🌵','🦉','🐬','🌈','⭐','🏆',             // unlocked
+];
+
+const AVATAR_UNLOCKS = { 10:150, 11:300, 12:500, 13:750, 14:1000, 15:1500, 16:2500, 17:4000 };
+
+/* ---------- Titles (unlocked by points) ---------- */
+const TITLES = [
+  { id:'newcomer',   label:'Newcomer',          pts:0    },
+  { id:'recycler',   label:'Recycler',           pts:100  },
+  { id:'greenthumb', label:'Green Thumb',        pts:300  },
+  { id:'warrior',    label:'Eco Warrior',        pts:700  },
+  { id:'guardian',   label:'Planet Guardian',    pts:1500 },
+  { id:'legend',     label:'Recycling Legend',   pts:3000 },
+];
 
 /* ---------- Packaging → Recyclability Map (for Scanner) ---------- */
 const PACKAGING_MAP = {
