@@ -39,10 +39,10 @@ const AuthModule = (function () {
 
         if (user) {
           await loadAndMergeProfile(user);
-          window.QuizModule?.reload?.();
-        } else {
-          window.QuizModule?.reload?.();
         }
+        // Notify both modules
+        window.QuizModule?.reload?.();
+        window.ProfileModule?.reload?.();
       });
     } catch (err) {
       console.error('Firebase init error:', err);
@@ -68,6 +68,8 @@ const AuthModule = (function () {
 
   function signOut() {
     if (!auth) return;
+    // Clear local current-user pointer so quiz shows setup after sign-out
+    localStorage.removeItem('rr_current');
     auth.signOut().catch(console.error);
   }
 
@@ -75,7 +77,6 @@ const AuthModule = (function () {
      PROFILE SYNC (Firestore ↔ localStorage)
      ==================================================== */
 
-  /* Load from Firestore, migrate localStorage data if needed */
   async function loadAndMergeProfile(user) {
     if (!db) return;
     try {
@@ -84,20 +85,29 @@ const AuthModule = (function () {
 
       if (snap.exists) {
         const data = snap.data();
-        // Write cloud profile to localStorage so quiz.js can read it synchronously
-        if (data.profile) {
+        // Reconstruct a profile object from flat fields or nested profile
+        const profile = data.profile || {
+          username:    data.username    || '',
+          avatarIdx:   data.avatarIdx   || 0,
+          points:      data.points      || 0,
+          quizzes:     data.quizzes     || 0,
+          bestStreak:  data.bestStreak  || 0,
+          catsPlayed:  data.catsPlayed  || [],
+          catBests:    data.catBests    || {},
+          badges:      data.badges      || [],
+        };
+
+        if (profile.username) {
           const profiles = JSON.parse(localStorage.getItem('rr_profiles') || '[]')
-            .filter(p => p.username !== data.profile.username);
-          profiles.push(data.profile);
+            .filter(p => p.username !== profile.username);
+          profiles.push(profile);
           localStorage.setItem('rr_profiles', JSON.stringify(profiles));
-          localStorage.setItem('rr_current', data.profile.username);
+          localStorage.setItem('rr_current', profile.username);
         }
-        if (data.friends) {
-          localStorage.setItem('rr_friends', JSON.stringify(data.friends));
-        }
+        if (data.friends) localStorage.setItem('rr_friends', JSON.stringify(data.friends));
         if (data.zipCode) {
           const existing = JSON.parse(localStorage.getItem('rr_location') || 'null');
-          if (!existing) localStorage.setItem('rr_location', JSON.stringify({ zip: data.zipCode, state: data.state || '', city: data.city || '' }));
+          if (!existing) localStorage.setItem('rr_location', JSON.stringify({ zip: data.zipCode, state: data.state || '', stateAbbr: data.stateAbbr || '', city: data.city || '' }));
         }
       } else {
         // First sign-in: migrate existing localStorage profile to Firestore
@@ -106,28 +116,74 @@ const AuthModule = (function () {
           const profiles = JSON.parse(localStorage.getItem('rr_profiles') || '[]');
           const local = profiles.find(p => p.username === username);
           if (local) {
-            await docRef.set({ profile: local, friends: [], updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+            await docRef.set({
+              username:   local.username,
+              displayName: local.username,
+              avatarIdx:  local.avatarIdx || 0,
+              points:     local.points    || 0,
+              quizzes:    local.quizzes   || 0,
+              bestStreak: local.bestStreak|| 0,
+              catsPlayed: local.catsPlayed|| [],
+              catBests:   local.catBests  || {},
+              badges:     local.badges    || [],
+              profile:    local,
+              friends:    [],
+              updatedAt:  firebase.firestore.FieldValue.serverTimestamp(),
+            });
           }
         }
+        // No localStorage profile either — quiz.js will show username picker
       }
     } catch (err) {
       console.error('Firestore load error:', err);
     }
   }
 
-  /* Save a profile object to Firestore (fire-and-forget) */
+  /* Check if the current user has a Firestore document with a username */
+  async function hasProfile() {
+    if (!db || !_currentUser) return false;
+    try {
+      const snap = await db.collection('users').doc(_currentUser.uid).get();
+      return snap.exists && !!snap.data()?.username;
+    } catch { return false; }
+  }
+
+  /* Save flat fields to Firestore — enables leaderboard ordering & username search */
+  async function syncProfileFlat(profile) {
+    if (!db || !_currentUser) return;
+    try {
+      await db.collection('users').doc(_currentUser.uid).set({
+        username:    (profile.username  || '').toLowerCase(),
+        displayName: profile.username   || '',
+        avatarIdx:   profile.avatarIdx  || 0,
+        points:      profile.points     || 0,
+        quizzes:     profile.quizzes    || 0,
+        bestStreak:  profile.bestStreak || 0,
+        catsPlayed:  profile.catsPlayed || [],
+        catBests:    profile.catBests   || {},
+        badges:      profile.badges     || [],
+        profile,   // keep nested copy for backwards compat
+        updatedAt:  firebase.firestore.FieldValue.serverTimestamp(),
+      }, { merge: true });
+    } catch (err) {
+      console.error('Firestore flat sync error:', err);
+    }
+  }
+
+  /* Legacy nested sync — also calls flat sync to keep both in step */
   async function syncProfile(profile) {
     if (!db || !_currentUser) return;
+    syncProfileFlat(profile); // fire flat sync alongside
     try {
       const friends = JSON.parse(localStorage.getItem('rr_friends') || '[]');
       const loc     = JSON.parse(localStorage.getItem('rr_location') || 'null');
       await db.collection('users').doc(_currentUser.uid).set({
-        profile,
         friends,
-        zipCode:    loc?.zip   || null,
-        state:      loc?.state || null,
-        city:       loc?.city  || null,
-        updatedAt:  firebase.firestore.FieldValue.serverTimestamp(),
+        zipCode:   loc?.zip       || null,
+        state:     loc?.state     || null,
+        stateAbbr: loc?.stateAbbr || null,
+        city:      loc?.city      || null,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       }, { merge: true });
     } catch (err) {
       console.error('Firestore sync error:', err);
@@ -139,13 +195,57 @@ const AuthModule = (function () {
     if (!db || !_currentUser) return;
     try {
       await db.collection('users').doc(_currentUser.uid).set({
-        zipCode: locData.zip,
-        state:   locData.state,
-        city:    locData.city,
+        zipCode:   locData.zip,
+        state:     locData.state,
+        stateAbbr: locData.stateAbbr || '',
+        city:      locData.city,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       }, { merge: true });
     } catch (err) {
       console.error('Firestore location sync error:', err);
+    }
+  }
+
+  /* Search for a user by username (case-insensitive) */
+  async function findUserByUsername(username) {
+    if (!db || !_currentUser) return null;
+    try {
+      const snap = await db.collection('users')
+        .where('username', '==', username.toLowerCase().trim())
+        .limit(1)
+        .get();
+      if (snap.empty) return null;
+      return { uid: snap.docs[0].id, ...snap.docs[0].data() };
+    } catch (err) {
+      console.error('Username search error:', err);
+      return null;
+    }
+  }
+
+  /* Subscribe to real-time leaderboard — returns unsubscribe fn */
+  function subscribeLeaderboard(callback) {
+    if (!db || !_currentUser) return () => {};
+    try {
+      return db.collection('users')
+        .orderBy('points', 'desc')
+        .limit(50)
+        .onSnapshot(snapshot => {
+          const uid = _currentUser?.uid;
+          const entries = snapshot.docs.map(doc => ({
+            uid:         doc.id,
+            username:    doc.data().username    || '?',
+            displayName: doc.data().displayName || doc.data().username || '?',
+            avatarIdx:   doc.data().avatarIdx   || 0,
+            points:      doc.data().points      || 0,
+            quizzes:     doc.data().quizzes     || 0,
+            bestStreak:  doc.data().bestStreak  || 0,
+            isMe:        doc.id === uid,
+          }));
+          callback(entries);
+        }, err => console.error('Leaderboard listener error:', err));
+    } catch (err) {
+      console.error('subscribeLeaderboard error:', err);
+      return () => {};
     }
   }
 
@@ -160,8 +260,8 @@ const AuthModule = (function () {
     if (user) {
       signedOut.style.display = 'none';
       signedIn.style.display  = 'flex';
-      const nameEl   = document.getElementById('auth-user-name');
-      const photoEl  = document.getElementById('auth-user-photo');
+      const nameEl  = document.getElementById('auth-user-name');
+      const photoEl = document.getElementById('auth-user-photo');
       if (nameEl)  nameEl.textContent = user.displayName?.split(' ')[0] || 'You';
       if (photoEl) {
         if (user.photoURL) {
@@ -178,10 +278,7 @@ const AuthModule = (function () {
 
   function showSetupHint() {
     const btn = document.getElementById('auth-google-btn');
-    if (btn) {
-      btn.title = 'Firebase not configured — see firebase-config.js';
-      btn.style.opacity = '.6';
-    }
+    if (btn) { btn.title = 'Firebase not configured — see firebase-config.js'; btn.style.opacity = '.6'; }
   }
 
   /* ====================================================
@@ -192,7 +289,11 @@ const AuthModule = (function () {
     signInWithGoogle,
     signOut,
     syncProfile,
+    syncProfileFlat,
     syncLocation,
+    hasProfile,
+    findUserByUsername,
+    subscribeLeaderboard,
     get currentUser() { return _currentUser; },
     get isAvailable()  { return isConfigured(); },
   };

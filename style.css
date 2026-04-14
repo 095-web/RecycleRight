@@ -1266,3 +1266,333 @@ input[type="text"]:focus {
   .achievements-grid { grid-template-columns: 1fr; }
   .results-stats-grid { grid-template-columns: repeat(2,1fr); }
 }
+
+/* ============================================================
+   PROFILE TAB
+   ============================================================ */
+
+/* Cloud sync badge in quiz banner */
+.cloud-sync-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--green-300);
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 20px;
+  padding: 3px 10px;
+}
+
+/* Google setup screen elements */
+.google-setup-photo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+.google-setup-img {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  border: 3px solid var(--green-300);
+}
+.google-setup-avatar-fallback {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: var(--green-600);
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.google-setup-name-hint {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--green-700);
+  margin-bottom: 4px;
+}
+
+/* Profile page layout */
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* Sign-in prompt */
+.profile-signin-prompt {
+  max-width: 440px;
+  margin: 40px auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.profile-signin-icon {
+  font-size: 4rem;
+  color: var(--green-400);
+}
+.profile-signin-prompt h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+.profile-signin-prompt p {
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+.profile-google-btn {
+  width: 100%;
+  max-width: 280px;
+  justify-content: center;
+  gap: 10px;
+}
+.profile-guest-note {
+  font-size: .82rem;
+  color: var(--gray-500);
+}
+
+/* Setup card (username picker) */
+.profile-setup-card {
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 32px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.profile-setup-card h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin: 0;
+}
+.profile-setup-subtitle {
+  color: var(--gray-600);
+  margin: 0;
+}
+.profile-setup-google-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--green-50);
+  border: 1px solid var(--green-200);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.profile-google-photo {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  border: 2px solid var(--green-300);
+  flex-shrink: 0;
+}
+.profile-google-initials {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--green-600);
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.profile-setup-name {
+  font-weight: 600;
+  color: var(--gray-900);
+}
+.profile-setup-email {
+  font-size: .82rem;
+  color: var(--gray-500);
+}
+
+/* Avatar option pill (profile module uses .avatar-opt) */
+.avatar-opt {
+  font-size: 1.5rem;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color .15s, background .15s;
+  user-select: none;
+}
+.avatar-opt:hover  { background: var(--green-100); }
+.avatar-opt.selected {
+  border-color: var(--green-500);
+  background: var(--green-100);
+}
+
+/* Main profile card */
+.profile-card {
+  background: linear-gradient(135deg, var(--green-800) 0%, var(--green-700) 100%);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  color: #fff;
+  box-shadow: var(--shadow-lg);
+}
+.profile-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.profile-big-avatar {
+  font-size: 3rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.profile-card-info {
+  flex: 1;
+  min-width: 0;
+}
+.profile-display-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.profile-google-photo-sm {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.6);
+}
+.profile-google-linked {
+  font-size: .8rem;
+  color: var(--green-200);
+  margin-top: 2px;
+}
+.profile-level-badge {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: .75rem;
+  font-weight: 700;
+  background: rgba(255,255,255,.2);
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 20px;
+  padding: 2px 10px;
+}
+.profile-stats-band {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  border-top: 1px solid rgba(255,255,255,.2);
+  padding-top: 16px;
+}
+.pstat-lg {
+  text-align: center;
+}
+.pstat-val {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.pstat-lbl {
+  font-size: .72rem;
+  color: var(--green-200);
+  margin-top: 2px;
+}
+
+/* Section card (account, badges) */
+.profile-section-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-sm);
+}
+.profile-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.badge-count-pill {
+  font-size: .72rem;
+  font-weight: 600;
+  background: var(--green-100);
+  color: var(--green-700);
+  border-radius: 20px;
+  padding: 2px 9px;
+}
+
+/* Account row */
+.profile-account-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.profile-account-label {
+  font-size: .78rem;
+  color: var(--gray-500);
+  margin-bottom: 2px;
+}
+.profile-account-value {
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+/* Badges list in profile */
+.profile-achievements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.achievement-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--gray-50);
+}
+.achievement-item.unlocked {
+  background: var(--green-50);
+  border-color: var(--green-200);
+}
+.achievement-item .ach-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+.achievement-item .ach-info {
+  flex: 1;
+  min-width: 0;
+}
+.achievement-item .ach-name {
+  font-weight: 600;
+  font-size: .9rem;
+  color: var(--gray-800);
+}
+.achievement-item .ach-desc {
+  font-size: .78rem;
+  color: var(--gray-500);
+}
+.ach-check {
+  color: var(--green-500);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.ach-lock {
+  color: var(--gray-300);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .profile-stats-band { grid-template-columns: repeat(2, 1fr); }
+  .profile-setup-card { padding: 28px 18px; }
+  .profile-account-row { flex-direction: column; align-items: flex-start; }
+}

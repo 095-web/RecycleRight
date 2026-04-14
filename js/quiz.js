@@ -6,28 +6,25 @@
 const Quiz = (function () {
 
   /* ---- Storage keys ---- */
-  const KEY_PROFILES     = 'rr_profiles';    // [{ username, avatarIdx, points, quizzes, bestStreak, catsPlayed, badges }]
-  const KEY_CURRENT      = 'rr_current';     // username string
-  const KEY_FRIENDS      = 'rr_friends';     // [{ username, avatarIdx, points, quizzes, importedAt }]
+  const KEY_PROFILES = 'rr_profiles';
+  const KEY_CURRENT  = 'rr_current';
+  const KEY_FRIENDS  = 'rr_friends';
 
   /* ---- Game state ---- */
   let state = {
-    questions:    [],
-    current:      0,
-    score:        0,
-    streak:       0,
-    bestStreak:   0,
-    correct:      0,
-    answered:     false,
-    category:     null,
+    questions: [], current: 0, score: 0, streak: 0,
+    bestStreak: 0, correct: 0, answered: false, category: null,
   };
+
+  /* ---- Leaderboard live listener handle ---- */
+  let _lbUnsubscribe = null;
 
   /* ====================================================
      STORAGE HELPERS
      ==================================================== */
-  function loadProfiles()  { return JSON.parse(localStorage.getItem(KEY_PROFILES)  || '[]'); }
+  function loadProfiles()  { return JSON.parse(localStorage.getItem(KEY_PROFILES) || '[]'); }
   function saveProfiles(p) { localStorage.setItem(KEY_PROFILES, JSON.stringify(p)); }
-  function loadFriends()   { return JSON.parse(localStorage.getItem(KEY_FRIENDS)   || '[]'); }
+  function loadFriends()   { return JSON.parse(localStorage.getItem(KEY_FRIENDS)  || '[]'); }
   function saveFriends(f)  { localStorage.setItem(KEY_FRIENDS, JSON.stringify(f)); }
   function currentUser()   { return localStorage.getItem(KEY_CURRENT) || null; }
   function setCurrentUser(u) { localStorage.setItem(KEY_CURRENT, u); }
@@ -39,8 +36,8 @@ const Quiz = (function () {
     const list = loadProfiles().filter(p => p.username !== profile.username);
     list.push(profile);
     saveProfiles(list);
-    // Fire-and-forget cloud sync when signed in
     window.AuthModule?.syncProfile?.(profile);
+    window.AuthModule?.syncProfileFlat?.(profile);
   }
   function newProfile(username, avatarIdx) {
     return { username, avatarIdx, points: 0, quizzes: 0, bestStreak: 0, catsPlayed: [], badges: [] };
@@ -54,10 +51,18 @@ const Quiz = (function () {
     buildQuizCategories();
     buildAchievementsGrid();
 
+    // Normal (guest) setup form
     document.getElementById('create-profile-btn').addEventListener('click', createProfile);
     document.getElementById('setup-username').addEventListener('keydown', e => {
       if (e.key === 'Enter') createProfile();
     });
+
+    // Google user setup form
+    document.getElementById('google-create-btn').addEventListener('click', createGoogleProfile);
+    document.getElementById('google-username-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') createGoogleProfile();
+    });
+
     document.getElementById('switch-user-btn').addEventListener('click', switchUser);
     document.getElementById('next-btn').addEventListener('click', nextQuestion);
 
@@ -71,28 +76,27 @@ const Quiz = (function () {
         if (sec) {
           sec.classList.add('active');
           if (btn.dataset.qsection === 'leaderboard') renderLeaderboard();
-          if (btn.dataset.qsection === 'friends') renderFriends();
+          if (btn.dataset.qsection === 'friends')     renderFriends();
           if (btn.dataset.qsection === 'achievements') renderAchievements();
+        } else {
+          // Cancel leaderboard listener when leaving
+          if (_lbUnsubscribe) { _lbUnsubscribe(); _lbUnsubscribe = null; }
         }
       });
     });
 
-    // Decide which screen to show
-    const user = currentUser();
-    if (user && getProfile(user)) {
-      showHome();
-    } else {
-      showSetup();
-    }
+    // Initial screen is decided by reload()
+    _decideScreen();
   }
 
   /* ====================================================
-     PROFILE
+     PROFILE CREATION
      ==================================================== */
   let selectedAvatar = 0;
 
   function buildAvatarPicker() {
     const container = document.getElementById('avatar-picker');
+    if (!container) return;
     container.innerHTML = AVATARS.map((av, i) =>
       `<div class="avatar-option ${i === 0 ? 'selected' : ''}" data-idx="${i}" onclick="Quiz._selectAvatar(${i})">${av}</div>`
     ).join('');
@@ -105,6 +109,7 @@ const Quiz = (function () {
     });
   }
 
+  /* Guest / local profile creation */
   function createProfile() {
     const input = document.getElementById('setup-username');
     const errEl = document.getElementById('setup-error');
@@ -112,7 +117,7 @@ const Quiz = (function () {
 
     if (!username) { errEl.textContent = 'Please enter a username.'; return; }
     if (username.length < 2) { errEl.textContent = 'Username must be at least 2 characters.'; return; }
-    if (/[^a-zA-Z0-9_ ]/.test(username)) { errEl.textContent = 'Only letters, numbers, spaces, and underscores allowed.'; return; }
+    if (/[^a-zA-Z0-9_]/.test(username)) { errEl.textContent = 'Only letters, numbers, and underscores allowed.'; return; }
     if (getProfile(username)) { errEl.textContent = 'That username is already taken on this device.'; return; }
 
     errEl.textContent = '';
@@ -122,51 +127,121 @@ const Quiz = (function () {
     showHome();
   }
 
+  /* Google-authenticated user picking a username for the first time */
+  function createGoogleProfile() {
+    const input = document.getElementById('google-username-input');
+    const errEl = document.getElementById('google-setup-error');
+    const username = input.value.trim();
+
+    if (!username) { errEl.textContent = 'Please enter a username.'; return; }
+    if (username.length < 2) { errEl.textContent = 'Username must be at least 2 characters.'; return; }
+    if (/[^a-zA-Z0-9_]/.test(username)) { errEl.textContent = 'Only letters, numbers, and underscores allowed.'; return; }
+
+    errEl.textContent = '';
+    const profile = newProfile(username, selectedAvatar);
+    saveProfile(profile);
+    setCurrentUser(username);
+    showHome();
+  }
+
   function switchUser() {
-    localStorage.removeItem(KEY_CURRENT);
-    showSetup();
-    document.getElementById('setup-username').value = '';
-    document.getElementById('setup-error').textContent = '';
+    if (window.AuthModule?.currentUser) {
+      if (confirm('Sign out of your Google account?')) window.AuthModule.signOut();
+    } else {
+      localStorage.removeItem(KEY_CURRENT);
+      showSetup();
+    }
   }
 
   /* ====================================================
-     HOME SCREEN
+     SCREEN MANAGEMENT
      ==================================================== */
+  function _hideAll() {
+    ['quiz-profile-setup','quiz-google-setup','quiz-home','quiz-active','quiz-results']
+      .forEach(id => document.getElementById(id)?.classList.add('hidden'));
+  }
+
   function showSetup() {
+    _hideAll();
     document.getElementById('quiz-profile-setup').classList.remove('hidden');
-    document.getElementById('quiz-home').classList.add('hidden');
-    document.getElementById('quiz-active').classList.add('hidden');
-    document.getElementById('quiz-results').classList.add('hidden');
+  }
+
+  function showGoogleSetup() {
+    const fbUser = window.AuthModule?.currentUser;
+    _hideAll();
+    document.getElementById('quiz-google-setup').classList.remove('hidden');
+    // Pre-fill name hint
+    const hint = document.getElementById('google-setup-name-hint');
+    if (hint && fbUser?.displayName) hint.textContent = `Welcome, ${fbUser.displayName.split(' ')[0]}!`;
+    const photo = document.getElementById('google-setup-photo');
+    if (photo) {
+      photo.innerHTML = fbUser?.photoURL
+        ? `<img src="${fbUser.photoURL}" alt="avatar" class="google-setup-img">`
+        : `<div class="google-setup-avatar-fallback">${(fbUser?.displayName||'G')[0]}</div>`;
+    }
+    // Pre-fill with Google first name as suggestion
+    const input = document.getElementById('google-username-input');
+    if (input && !input.value && fbUser?.displayName) {
+      input.value = fbUser.displayName.split(' ')[0].replace(/[^a-zA-Z0-9_]/g, '').toLowerCase();
+    }
   }
 
   function showHome() {
-    const user = currentUser();
+    const user    = currentUser();
     const profile = getProfile(user);
-    if (!profile) { showSetup(); return; }
+    if (!profile) { _decideScreen(); return; }
 
-    document.getElementById('quiz-profile-setup').classList.add('hidden');
+    _hideAll();
     document.getElementById('quiz-home').classList.remove('hidden');
-    document.getElementById('quiz-active').classList.add('hidden');
-    document.getElementById('quiz-results').classList.add('hidden');
 
     // Update banner
-    document.getElementById('banner-avatar').textContent    = AVATARS[profile.avatarIdx];
-    document.getElementById('banner-username').textContent  = profile.username;
-    document.getElementById('stat-points').textContent      = profile.points.toLocaleString();
-    document.getElementById('stat-level').textContent       = calcLevel(profile.points);
-    document.getElementById('stat-streak').textContent      = profile.bestStreak;
-    document.getElementById('stat-quizzes').textContent     = profile.quizzes;
+    const isCloud = !!window.AuthModule?.currentUser;
+    document.getElementById('banner-avatar').textContent   = AVATARS[profile.avatarIdx] || AVATARS[0];
+    document.getElementById('banner-username').textContent = profile.username;
+    document.getElementById('stat-points').textContent     = profile.points.toLocaleString();
+    document.getElementById('stat-level').textContent      = calcLevel(profile.points);
+    document.getElementById('stat-streak').textContent     = profile.bestStreak;
+    document.getElementById('stat-quizzes').textContent    = profile.quizzes;
 
-    // Share code
-    document.getElementById('my-share-code').textContent = generateShareCode(profile);
+    // Show cloud sync indicator
+    const badge = document.getElementById('cloud-badge');
+    if (badge) badge.style.display = isCloud ? 'inline-flex' : 'none';
 
     // Switch back to Play tab
     document.querySelectorAll('.qnav-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.qsection').forEach(s => s.classList.remove('active'));
-    document.querySelector('.qnav-btn[data-qsection="play"]').classList.add('active');
-    document.getElementById('qsection-play').classList.add('active');
+    document.querySelector('.qnav-btn[data-qsection="play"]')?.classList.add('active');
+    document.getElementById('qsection-play')?.classList.add('active');
 
     updateCatBests();
+  }
+
+  /* Decides which screen to show based on auth + profile state */
+  async function _decideScreen() {
+    const fbUser = window.AuthModule?.currentUser;
+
+    if (fbUser) {
+      // Google user — check if they already have a local profile loaded
+      const localUser = currentUser();
+      if (localUser && getProfile(localUser)) {
+        showHome();
+      } else {
+        // No local profile yet — check Firestore
+        const cloudHas = await window.AuthModule?.hasProfile?.();
+        if (cloudHas) {
+          // Profile was loaded by auth.js into localStorage — try again
+          const u2 = currentUser();
+          if (u2 && getProfile(u2)) showHome();
+          else showGoogleSetup();
+        } else {
+          showGoogleSetup();
+        }
+      }
+    } else {
+      const user = currentUser();
+      if (user && getProfile(user)) showHome();
+      else showSetup();
+    }
   }
 
   function calcLevel(points) {
@@ -182,6 +257,7 @@ const Quiz = (function () {
      ==================================================== */
   function buildQuizCategories() {
     const grid = document.getElementById('quiz-cat-grid');
+    if (!grid) return;
     grid.innerHTML = QUIZ_CATEGORIES.map(cat => `
       <div class="quiz-cat-card" onclick="Quiz.startQuiz('${cat.id}')">
         <div class="cat-icon"><i class="fas ${cat.icon}"></i></div>
@@ -195,9 +271,9 @@ const Quiz = (function () {
   }
 
   function updateCatBests() {
-    const user = currentUser();
+    const user    = currentUser();
     const profile = getProfile(user);
-    if (!profile || !profile.catBests) return;
+    if (!profile?.catBests) return;
     for (const [catId, pts] of Object.entries(profile.catBests)) {
       const el = document.getElementById('best-' + catId);
       if (el) el.textContent = `Best: ${pts} pts`;
@@ -214,33 +290,20 @@ const Quiz = (function () {
 
     if (pool.length === 0) { alert('No questions available for this category yet.'); return; }
 
-    // Shuffle and take 10
     const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
+    state = { questions: shuffled, current: 0, score: 0, streak: 0, bestStreak: 0, correct: 0, answered: false, category: categoryId };
 
-    state = {
-      questions:  shuffled,
-      current:    0,
-      score:      0,
-      streak:     0,
-      bestStreak: 0,
-      correct:    0,
-      answered:   false,
-      category:   categoryId,
-    };
-
-    document.getElementById('quiz-home').classList.add('hidden');
+    _hideAll();
     document.getElementById('quiz-active').classList.remove('hidden');
-    document.getElementById('quiz-results').classList.add('hidden');
-
     renderQuestion();
   }
 
   function renderQuestion() {
-    const q    = state.questions[state.current];
-    const num  = state.current + 1;
+    const q     = state.questions[state.current];
+    const num   = state.current + 1;
     const total = state.questions.length;
 
-    document.getElementById('q-label').textContent   = `Question ${num} / ${total}`;
+    document.getElementById('q-label').textContent    = `Question ${num} / ${total}`;
     document.getElementById('q-progress').style.width = `${(num / total) * 100}%`;
     document.getElementById('live-score').textContent = state.score;
     document.getElementById('streak-alert').classList.add('hidden');
@@ -251,14 +314,11 @@ const Quiz = (function () {
     document.getElementById('question-text').textContent = q.q;
 
     const letters = ['A','B','C','D'];
-    const opts = [...q.opts].map((opt, i) => ({ opt, origIdx: i }));
-    // Shuffle answer options for variety
-    opts.sort(() => Math.random() - 0.5);
+    const opts = [...q.opts].map((opt, i) => ({ opt, origIdx: i })).sort(() => Math.random() - 0.5);
 
     document.getElementById('options-list').innerHTML = opts.map((item, i) => `
-      <button class="option-btn" data-orig="${item.origIdx}" onclick="Quiz._answer(this, ${item.origIdx})" >
-        <span class="option-letter">${letters[i]}</span>
-        ${escapeHtml(item.opt)}
+      <button class="option-btn" data-orig="${item.origIdx}" onclick="Quiz._answer(this, ${item.origIdx})">
+        <span class="option-letter">${letters[i]}</span>${escapeHtml(item.opt)}
       </button>`).join('');
 
     state.answered = false;
@@ -268,31 +328,26 @@ const Quiz = (function () {
     if (state.answered) return;
     state.answered = true;
 
-    const q = state.questions[state.current];
+    const q       = state.questions[state.current];
     const correct = chosenOrigIdx === q.ans;
 
-    // Mark buttons
     document.querySelectorAll('.option-btn').forEach(b => {
       b.disabled = true;
-      const origIdx = parseInt(b.dataset.orig);
-      if (origIdx === q.ans)      b.classList.add('correct');
-      if (b === btn && !correct)  b.classList.add('wrong');
+      if (parseInt(b.dataset.orig) === q.ans) b.classList.add('correct');
+      if (b === btn && !correct)              b.classList.add('wrong');
     });
 
-    // Scoring
     if (correct) {
       state.streak++;
       state.correct++;
       if (state.streak > state.bestStreak) state.bestStreak = state.streak;
 
       let pts = 10;
-      let bonusMsg = '';
       if (state.streak >= 3) {
         const bonus = Math.min((state.streak - 2) * 5, 25);
         pts += bonus;
-        bonusMsg = ` (+${bonus} streak bonus!)`;
         const alertEl = document.getElementById('streak-alert');
-        alertEl.innerHTML = `<i class="fas fa-fire"></i> ${state.streak}x Streak!${bonusMsg}`;
+        alertEl.innerHTML = `<i class="fas fa-fire"></i> ${state.streak}x Streak! +${bonus} bonus pts!`;
         alertEl.classList.remove('hidden');
       }
       state.score += pts;
@@ -301,13 +356,11 @@ const Quiz = (function () {
       state.streak = 0;
     }
 
-    // Feedback
     const feedbackEl = document.getElementById('answer-feedback');
     document.getElementById('feedback-content').innerHTML = `
       <div class="fb-result ${correct ? 'correct' : 'wrong'}">
         <i class="fas fa-${correct ? 'check-circle' : 'circle-xmark'}"></i>
         ${correct ? 'Correct!' : 'Not quite.'}
-        ${correct && state.score > 0 ? `<span style="font-size:.85rem;font-weight:400;color:var(--green-600);margin-left:6px">+${correct ? (state.streak >= 3 ? (10 + Math.min((state.streak-2)*5,25)) : 10) : 0} pts</span>` : ''}
       </div>
       <div class="fb-explanation">${q.exp}</div>`;
     feedbackEl.classList.remove('hidden');
@@ -315,37 +368,29 @@ const Quiz = (function () {
 
   function nextQuestion() {
     state.current++;
-    if (state.current >= state.questions.length) {
-      endQuiz();
-    } else {
-      renderQuestion();
-    }
+    if (state.current >= state.questions.length) endQuiz();
+    else renderQuestion();
   }
 
   function endQuiz() {
     const user    = currentUser();
     const profile = getProfile(user);
+    if (!profile) return;
 
     profile.points     += state.score;
     profile.quizzes    += 1;
     profile.bestStreak  = Math.max(profile.bestStreak, state.bestStreak);
-
     if (!profile.catsPlayed) profile.catsPlayed = [];
     if (!profile.catsPlayed.includes(state.category)) profile.catsPlayed.push(state.category);
-
     if (!profile.catBests) profile.catBests = {};
     profile.catBests[state.category] = Math.max(profile.catBests[state.category] || 0, state.score);
 
-    // Check achievements
     const statObj = {
-      quizzes:     profile.quizzes,
-      totalPoints: profile.points,
-      bestStreak:  profile.bestStreak,
+      quizzes: profile.quizzes, totalPoints: profile.points, bestStreak: profile.bestStreak,
       lastPerfect: state.correct === state.questions.length,
-      catsPlayed:  new Set(profile.catsPlayed),
+      catsPlayed: new Set(profile.catsPlayed),
       friendsAdded: loadFriends().length,
     };
-
     if (!profile.badges) profile.badges = [];
     const newBadges = [];
     ACHIEVEMENTS.forEach(ach => {
@@ -360,20 +405,19 @@ const Quiz = (function () {
   }
 
   function showResults(newBadges) {
-    document.getElementById('quiz-active').classList.add('hidden');
+    _hideAll();
     document.getElementById('quiz-results').classList.remove('hidden');
 
     const pct = Math.round((state.correct / state.questions.length) * 100);
-    const emojis = pct === 100 ? '🏆' : pct >= 70 ? '⭐' : pct >= 40 ? '👍' : '🌱';
-    const headings = pct === 100 ? 'Perfect Score!' : pct >= 70 ? 'Great Job!' : pct >= 40 ? 'Nice Try!' : 'Keep Learning!';
-    const subs = pct === 100
-      ? 'You answered every question correctly. Outstanding!'
-      : pct >= 70 ? `You got ${state.correct} out of ${state.questions.length} right. Well done!`
-      : `You got ${state.correct} out of ${state.questions.length}. Practice makes perfect!`;
+    const emojis  = pct === 100 ? '🏆' : pct >= 70 ? '⭐' : pct >= 40 ? '👍' : '🌱';
+    const heading = pct === 100 ? 'Perfect Score!' : pct >= 70 ? 'Great Job!' : pct >= 40 ? 'Nice Try!' : 'Keep Learning!';
+    const sub     = pct === 100
+      ? 'You answered every question correctly!'
+      : `You got ${state.correct} out of ${state.questions.length} correct.`;
 
     document.getElementById('results-emoji').textContent   = emojis;
-    document.getElementById('results-heading').textContent = headings;
-    document.getElementById('results-subtext').textContent = subs;
+    document.getElementById('results-heading').textContent = heading;
+    document.getElementById('results-subtext').textContent = sub;
     document.getElementById('r-pts').textContent     = '+' + state.score;
     document.getElementById('r-correct').textContent = `${state.correct}/${state.questions.length}`;
     document.getElementById('r-streak').textContent  = state.bestStreak;
@@ -382,140 +426,133 @@ const Quiz = (function () {
     const badgesSec  = document.getElementById('new-badges-section');
     const badgesList = document.getElementById('new-badges-list');
     if (newBadges.length > 0) {
-      badgesList.innerHTML = newBadges.map(b =>
-        `<span class="badge-pill">${b.icon} ${b.name}</span>`).join('');
+      badgesList.innerHTML = newBadges.map(b => `<span class="badge-pill">${b.icon} ${b.name}</span>`).join('');
       badgesSec.classList.remove('hidden');
     } else {
       badgesSec.classList.add('hidden');
     }
   }
 
-  function playAgain() {
-    startQuiz(state.category);
-  }
-
-  function goHome() {
-    showHome();
-  }
-
-  function exit() {
-    if (confirm('Exit quiz? Your progress will not be saved.')) {
-      showHome();
-    }
+  function playAgain() { startQuiz(state.category); }
+  function goHome()    { showHome(); }
+  function exit()      {
+    if (confirm('Exit quiz? Your progress will not be saved.')) showHome();
   }
 
   /* ====================================================
-     LEADERBOARD
+     LEADERBOARD (live Firestore when signed in)
      ==================================================== */
   function renderLeaderboard() {
-    const user = currentUser();
-    const profiles = loadProfiles();
-    const friends  = loadFriends();
-
-    // Merge local profiles + friends
-    const entries = [
-      ...profiles.map(p => ({ ...p, isMe: p.username === user, isFriend: false })),
-      ...friends.map(f  => ({ ...f, isMe: false,               isFriend: true  })),
-    ].sort((a, b) => b.points - a.points);
-
     const container = document.getElementById('leaderboard-list');
-    if (entries.length === 0) {
-      container.innerHTML = '<p class="lb-empty">No players yet. Play some quizzes to appear here!</p>';
+    if (!container) return;
+
+    // Cancel any previous listener
+    if (_lbUnsubscribe) { _lbUnsubscribe(); _lbUnsubscribe = null; }
+
+    if (!window.AuthModule?.isAvailable || !window.AuthModule?.currentUser) {
+      container.innerHTML = `
+        <div class="lb-signin-prompt">
+          <i class="fas fa-trophy fa-2x"></i>
+          <p>Sign in with Google to see the live leaderboard.</p>
+          <button class="btn btn-primary" onclick="AuthModule.signInWithGoogle()">
+            <i class="fab fa-google"></i> Sign In
+          </button>
+        </div>`;
       return;
     }
 
-    container.innerHTML = entries.map((entry, i) => {
-      const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
-      const rankLabel = i < 3 ? ['🥇','🥈','🥉'][i] : `#${i + 1}`;
-      const avatar = AVATARS[entry.avatarIdx || 0];
-      const sub = entry.isFriend ? 'Friend' : entry.isMe ? 'You' : 'Local player';
-      return `
-        <div class="lb-entry ${entry.isMe ? 'is-me' : ''}">
-          <div class="lb-rank ${rankClass}">${rankLabel}</div>
-          <div class="lb-avatar">${avatar}</div>
-          <div class="lb-info">
-            <div class="lb-name">${escapeHtml(entry.username)}</div>
-            <div class="lb-sub">${sub} · Lv ${calcLevel(entry.points)} · ${entry.quizzes || 0} quizzes</div>
-          </div>
-          <div class="lb-score">${(entry.points || 0).toLocaleString()}<small>pts</small></div>
-        </div>`;
-    }).join('');
-  }
+    container.innerHTML = `<div class="lb-loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>`;
 
-  /* ====================================================
-     FRIENDS
-     ==================================================== */
-  function generateShareCode(profile) {
-    const data = {
-      v: 1,
-      u: profile.username,
-      a: profile.avatarIdx,
-      p: profile.points,
-      q: profile.quizzes,
-      s: profile.bestStreak,
-    };
-    return btoa(JSON.stringify(data));
-  }
-
-  function copyMyCode() {
-    const code = document.getElementById('my-share-code').textContent;
-    navigator.clipboard.writeText(code).then(() => {
-      const btn = document.querySelector('[onclick="copyMyCode()"]');
-      if (btn) { btn.innerHTML = '<i class="fas fa-check"></i> Copied!'; setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copy'; }, 2000); }
-    }).catch(() => {
-      window.prompt('Copy this code:', code);
+    _lbUnsubscribe = window.AuthModule.subscribeLeaderboard(entries => {
+      if (entries.length === 0) {
+        container.innerHTML = '<p class="lb-empty">No players yet — be the first!</p>';
+        return;
+      }
+      container.innerHTML = entries.map((entry, i) => {
+        const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+        const rankLabel = i < 3 ? ['🥇','🥈','🥉'][i] : `#${i + 1}`;
+        return `
+          <div class="lb-entry ${entry.isMe ? 'is-me' : ''}">
+            <div class="lb-rank ${rankClass}">${rankLabel}</div>
+            <div class="lb-avatar">${AVATARS[entry.avatarIdx || 0]}</div>
+            <div class="lb-info">
+              <div class="lb-name">${escapeHtml(entry.displayName || entry.username)}</div>
+              <div class="lb-sub">${escapeHtml(entry.username)} · Lv ${calcLevel(entry.points)} · ${entry.quizzes} quizzes${entry.isMe ? ' · <strong>You</strong>' : ''}</div>
+            </div>
+            <div class="lb-score">${entry.points.toLocaleString()}<small>pts</small></div>
+          </div>`;
+      }).join('');
     });
   }
 
-  function addFriendByCode() {
-    const input   = document.getElementById('friend-code-input');
-    const msgEl   = document.getElementById('friend-msg');
-    const code    = input.value.trim();
+  /* ====================================================
+     FRIENDS (by username via Firestore)
+     ==================================================== */
+  async function _addFriendByUsername() {
+    const input = document.getElementById('friend-username-input');
+    const msgEl = document.getElementById('friend-msg');
+    const username = (input?.value || '').trim().toLowerCase();
 
     msgEl.className = 'friend-msg';
-    if (!code) { msgEl.textContent = 'Please paste a share code.'; msgEl.classList.add('error'); return; }
+    if (!username) { msgEl.textContent = 'Enter a username to search.'; msgEl.classList.add('error'); return; }
 
-    try {
-      const data = JSON.parse(atob(code));
-      if (!data.u || typeof data.p !== 'number') throw new Error('Invalid');
-      if (data.p > 99999 || data.p < 0) throw new Error('Suspicious score');
-
-      const user = currentUser();
-      if (data.u === user) { msgEl.textContent = 'That\'s your own code!'; msgEl.classList.add('error'); return; }
-
-      const friends = loadFriends();
-      if (friends.find(f => f.username === data.u)) {
-        msgEl.textContent = `${data.u} is already your friend.`;
-        msgEl.classList.add('error');
-        return;
-      }
-
-      friends.push({ username: data.u, avatarIdx: data.a || 0, points: data.p, quizzes: data.q || 0, bestStreak: data.s || 0, importedAt: Date.now() });
-      saveFriends(friends);
-
-      // Check friend achievement
-      const profile = getProfile(user);
-      if (profile && !profile.badges.includes('friend_added')) {
-        profile.badges.push('friend_added');
-        saveProfile(profile);
-      }
-
-      input.value = '';
-      msgEl.textContent = `Added ${data.u} as a friend!`;
-      msgEl.classList.add('success');
-      renderFriends();
-    } catch {
-      msgEl.textContent = 'Invalid share code. Ask your friend to copy it again.';
+    if (!window.AuthModule?.isAvailable || !window.AuthModule?.currentUser) {
+      msgEl.textContent = 'Sign in with Google to add friends.';
       msgEl.classList.add('error');
+      return;
     }
+
+    msgEl.textContent = 'Searching...';
+    const found = await window.AuthModule.findUserByUsername(username);
+
+    if (!found) { msgEl.textContent = `No user found with username "${username}".`; msgEl.classList.add('error'); return; }
+    if (found.uid === window.AuthModule.currentUser?.uid) { msgEl.textContent = "That's you!"; msgEl.classList.add('error'); return; }
+
+    const friends = loadFriends();
+    if (friends.find(f => f.uid === found.uid)) {
+      msgEl.textContent = `${found.username} is already your friend.`;
+      msgEl.classList.add('error');
+      return;
+    }
+
+    friends.push({ uid: found.uid, username: found.username, avatarIdx: found.avatarIdx || 0, points: found.points || 0, quizzes: found.quizzes || 0, bestStreak: found.bestStreak || 0 });
+    saveFriends(friends);
+
+    // Achievement
+    const user = currentUser();
+    const profile = getProfile(user);
+    if (profile && !profile.badges.includes('friend_added')) {
+      profile.badges.push('friend_added');
+      saveProfile(profile);
+    }
+
+    input.value = '';
+    msgEl.textContent = `Added ${found.username} as a friend!`;
+    msgEl.classList.add('success');
+    renderFriends();
   }
 
   function renderFriends() {
     const friends   = loadFriends();
     const container = document.getElementById('friends-list');
+    if (!container) return;
+
+    const isSignedIn = window.AuthModule?.isAvailable && window.AuthModule?.currentUser;
+
+    if (!isSignedIn) {
+      container.innerHTML = `
+        <div class="friends-empty">
+          <i class="fas fa-users fa-2x"></i>
+          <p>Sign in with Google to add and view friends.</p>
+          <button class="btn btn-primary btn-sm" onclick="AuthModule.signInWithGoogle()">
+            <i class="fab fa-google"></i> Sign In
+          </button>
+        </div>`;
+      return;
+    }
 
     if (friends.length === 0) {
-      container.innerHTML = '<p class="friends-empty"><i class="fas fa-user-plus"></i> No friends added yet. Share your code and add theirs!</p>';
+      container.innerHTML = '<p class="friends-empty"><i class="fas fa-user-plus"></i> No friends yet — search by username above!</p>';
       return;
     }
 
@@ -537,6 +574,7 @@ const Quiz = (function () {
      ==================================================== */
   function buildAchievementsGrid() {
     const grid = document.getElementById('achievements-grid');
+    if (!grid) return;
     grid.innerHTML = ACHIEVEMENTS.map(ach => `
       <div class="ach-card locked" id="ach-${ach.id}">
         <div class="ach-icon">${ach.icon}</div>
@@ -549,17 +587,12 @@ const Quiz = (function () {
     const user    = currentUser();
     const profile = getProfile(user);
     if (!profile) return;
-
     ACHIEVEMENTS.forEach(ach => {
       const el = document.getElementById('ach-' + ach.id);
       if (!el) return;
-      if (profile.badges && profile.badges.includes(ach.id)) {
-        el.classList.remove('locked');
-        el.classList.add('unlocked');
-      } else {
-        el.classList.remove('unlocked');
-        el.classList.add('locked');
-      }
+      const unlocked = profile.badges?.includes(ach.id);
+      el.classList.toggle('unlocked', unlocked);
+      el.classList.toggle('locked',   !unlocked);
     });
   }
 
@@ -570,30 +603,15 @@ const Quiz = (function () {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  /* ---- Public API ---- */
+  /* ====================================================
+     PUBLIC API
+     ==================================================== */
   const publicAPI = {
-    init,
-    startQuiz,
-    playAgain,
-    goHome,
-    exit,
-    _answer,
-    _selectAvatar,
-    _copyMyCode:   copyMyCode,
-    _addFriend:    addFriendByCode,
-    // Called by AuthModule after sign-in / sign-out to refresh the UI
-    reload: () => {
-      const user = currentUser();
-      if (user && getProfile(user)) showHome();
-      else showSetup();
-    },
+    init, startQuiz, playAgain, goHome, exit,
+    _answer, _selectAvatar,
+    _addFriendByUsername,
+    reload: _decideScreen,
   };
-
-  // Expose for AuthModule communication
   window.QuizModule = publicAPI;
   return publicAPI;
 })();
-
-/* Global helpers called from inline onclick */
-function copyMyCode()      { Quiz._copyMyCode(); }
-function addFriendByCode() { Quiz._addFriend(); }

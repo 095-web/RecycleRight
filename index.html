@@ -27,6 +27,9 @@
         <button class="nav-btn" data-tab="quiz">
           <i class="fas fa-bullseye"></i><span>Quiz</span>
         </button>
+        <button class="nav-btn" data-tab="profile">
+          <i class="fas fa-user-circle"></i><span>Profile</span>
+        </button>
       </nav>
 
       <!-- Auth Section -->
@@ -160,6 +163,27 @@
           </div>
         </div>
 
+        <!-- Google User Setup Screen -->
+        <div id="quiz-google-setup" class="quiz-screen hidden">
+          <div class="setup-card">
+            <div id="google-setup-photo" class="google-setup-photo"></div>
+            <div id="google-setup-name-hint" class="google-setup-name-hint"></div>
+            <h2>Choose a Username</h2>
+            <p class="setup-subtitle">Pick a username for the leaderboard — you only need to do this once.</p>
+            <div class="avatar-section">
+              <label>Choose your avatar:</label>
+              <div class="avatar-picker" id="avatar-picker"></div>
+            </div>
+            <div class="setup-form">
+              <input type="text" id="google-username-input" placeholder="Username (letters, numbers, _ only)" maxlength="20" autocomplete="off">
+              <button class="btn btn-primary btn-lg" id="google-create-btn">
+                <i class="fas fa-rocket"></i> Start Playing!
+              </button>
+            </div>
+            <p class="setup-note" id="google-setup-error"></p>
+          </div>
+        </div>
+
         <!-- Quiz Home Screen -->
         <div id="quiz-home" class="quiz-screen hidden">
           <div class="player-banner">
@@ -173,6 +197,9 @@
                 <div class="pstat"><i class="fas fa-check-circle"></i> <span id="stat-quizzes">0</span> played</div>
               </div>
             </div>
+            <span id="cloud-badge" class="cloud-sync-badge" style="display:none">
+              <i class="fas fa-cloud"></i> Cloud
+            </span>
             <button class="btn btn-sm btn-outline-light" id="switch-user-btn">
               <i class="fas fa-exchange-alt"></i> Switch
             </button>
@@ -208,18 +235,9 @@
           <!-- Friends -->
           <div id="qsection-friends" class="qsection">
             <h3 class="section-title"><i class="fas fa-users"></i> Friends</h3>
-            <div class="friends-share-box">
-              <p class="helper-text"><i class="fas fa-share-alt"></i> Share your code with friends so they can add you:</p>
-              <div class="share-code-row">
-                <code class="share-code" id="my-share-code"></code>
-                <button class="btn btn-sm btn-secondary" onclick="copyMyCode()">
-                  <i class="fas fa-copy"></i> Copy
-                </button>
-              </div>
-            </div>
             <div class="add-friend-form">
-              <input type="text" id="friend-code-input" placeholder="Paste a friend's share code here...">
-              <button class="btn btn-primary" onclick="addFriendByCode()">
+              <input type="text" id="friend-username-input" placeholder="Search by username...">
+              <button class="btn btn-primary" onclick="Quiz._addFriendByUsername()">
                 <i class="fas fa-user-plus"></i> Add
               </button>
             </div>
@@ -297,6 +315,17 @@
       </div>
     </section>
 
+    <!-- ==================== PROFILE TAB ==================== -->
+    <section id="tab-profile" class="tab-content">
+      <div class="container">
+        <div class="page-header">
+          <h1><i class="fas fa-user-circle"></i> Profile</h1>
+          <p>Manage your account, track progress, and view your badges</p>
+        </div>
+        <div id="profile-content"></div>
+      </div>
+    </section>
+
   </main>
 
   <footer class="site-footer">
@@ -318,6 +347,7 @@
   <script src="js/scanner.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/quiz.js"></script>
+  <script src="js/profile.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

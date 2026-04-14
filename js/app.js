@@ -25,6 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
         buildIndex();
         indexBuilt = true;
       }
+      // Reload profile tab on every visit so it reflects latest auth state
+      if (target === 'profile') {
+        ProfileModule.reload();
+      }
     });
   });
 
@@ -43,6 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
      QUIZ INIT
      ==================================================== */
   Quiz.init();
+
+  /* ====================================================
+     PROFILE INIT
+     ==================================================== */
+  ProfileModule.init();
 
   /* ====================================================
      INDEX
