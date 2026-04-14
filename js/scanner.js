@@ -39,7 +39,19 @@ const Scanner = (function () {
     stopBtn().style.display  = 'inline-flex';
 
     html5QrCode = new Html5Qrcode('scanner-reader');
-    const config = { fps: 10, qrbox: { width: 260, height: 120 }, supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA] };
+    // Restrict to real product barcode formats only — prevents the scanner
+    // from misreading the human-readable digits printed beside the barcode.
+    const config = {
+      fps: 10,
+      qrbox: { width: 280, height: 100 },
+      formatsToSupport: [
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.UPC_A,
+        Html5QrcodeSupportedFormats.UPC_E,
+        Html5QrcodeSupportedFormats.CODE_128,
+      ],
+    };
 
     html5QrCode.start(
       { facingMode: 'environment' },
