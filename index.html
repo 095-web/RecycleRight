@@ -172,7 +172,7 @@
             <p class="setup-subtitle">Pick a username for the leaderboard — you only need to do this once.</p>
             <div class="avatar-section">
               <label>Choose your avatar:</label>
-              <div class="avatar-picker" id="avatar-picker"></div>
+              <div class="avatar-picker" id="google-avatar-picker"></div>
             </div>
             <div class="setup-form">
               <input type="text" id="google-username-input" placeholder="Username (letters, numbers, _ only)" maxlength="20" autocomplete="off">
@@ -212,12 +212,6 @@
             <button class="qnav-btn" data-qsection="leaderboard">
               <i class="fas fa-trophy"></i> Leaderboard
             </button>
-            <button class="qnav-btn" data-qsection="friends">
-              <i class="fas fa-users"></i> Friends
-            </button>
-            <button class="qnav-btn" data-qsection="achievements">
-              <i class="fas fa-medal"></i> Badges
-            </button>
           </div>
 
           <!-- Play -->
@@ -230,25 +224,6 @@
           <div id="qsection-leaderboard" class="qsection">
             <h3 class="section-title"><i class="fas fa-trophy"></i> Top Recyclers</h3>
             <div class="leaderboard-list" id="leaderboard-list"></div>
-          </div>
-
-          <!-- Friends -->
-          <div id="qsection-friends" class="qsection">
-            <h3 class="section-title"><i class="fas fa-users"></i> Friends</h3>
-            <div class="add-friend-form">
-              <input type="text" id="friend-username-input" placeholder="Search by username...">
-              <button class="btn btn-primary" onclick="Quiz._addFriendByUsername()">
-                <i class="fas fa-user-plus"></i> Add
-              </button>
-            </div>
-            <p id="friend-msg" class="friend-msg"></p>
-            <div id="friends-list" class="friends-list"></div>
-          </div>
-
-          <!-- Achievements -->
-          <div id="qsection-achievements" class="qsection">
-            <h3 class="section-title"><i class="fas fa-medal"></i> Achievements</h3>
-            <div class="achievements-grid" id="achievements-grid"></div>
           </div>
         </div>
 

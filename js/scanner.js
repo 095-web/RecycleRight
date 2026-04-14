@@ -100,7 +100,7 @@ const Scanner = (function () {
     const cached = sessionStorage.getItem(cacheKey);
     if (cached) {
       clearResults();
-      renderResult(JSON.parse(cached));
+      renderResult(JSON.parse(cached), 0); // no points for repeated lookup
       return;
     }
 
@@ -117,8 +117,9 @@ const Scanner = (function () {
 
       const result = parseProduct(barcode, data.product);
       sessionStorage.setItem(cacheKey, JSON.stringify(result));
+      const pts = awardScanPoints(barcode);
       clearResults();
-      renderResult(result);
+      renderResult(result, pts);
     } catch (err) {
       clearResults();
       if (err.message === 'Failed to fetch') {
@@ -181,8 +182,45 @@ const Scanner = (function () {
     return { verdict: worstVerdict, tips: [...new Set(allTips)] };
   }
 
+  /* ---- Award scan points (5 pts, max 5 unique barcodes/day) ---- */
+  function awardScanPoints(barcode) {
+    const username = localStorage.getItem('rr_current');
+    if (!username) return 0;
+
+    const today = new Date().toISOString().slice(0, 10);
+    const daily = JSON.parse(localStorage.getItem('rr_scan_daily') || '{}');
+
+    // Reset if new day
+    if (daily.date !== today) {
+      daily.date = today;
+      daily.barcodes = [];
+    }
+
+    // Already scanned this barcode today
+    if ((daily.barcodes || []).includes(barcode)) return 0;
+
+    // Daily cap: 5 unique barcodes
+    if ((daily.barcodes || []).length >= 5) return 0;
+
+    const pts = 5;
+    daily.barcodes = [...(daily.barcodes || []), barcode];
+    localStorage.setItem('rr_scan_daily', JSON.stringify(daily));
+
+    // Update profile
+    const profiles = JSON.parse(localStorage.getItem('rr_profiles') || '[]');
+    const idx = profiles.findIndex(p => p.username === username);
+    if (idx === -1) return 0;
+    profiles[idx].points = (profiles[idx].points || 0) + pts;
+    localStorage.setItem('rr_profiles', JSON.stringify(profiles));
+
+    // Sync to cloud
+    window.AuthModule?.syncProfileFlat?.(profiles[idx]);
+
+    return pts;
+  }
+
   /* ---- Render ---- */
-  function renderResult(result) {
+  function renderResult(result, earnedPts) {
     const { name, brand, materials, verdict, tips } = result;
 
     const verdictConfig = {
@@ -214,8 +252,13 @@ const Scanner = (function () {
         </ul>
       </div>` : '';
 
+    const ptsHTML = earnedPts > 0
+      ? `<div class="scan-pts-earned"><i class="fas fa-star"></i> +${earnedPts} pts earned!</div>`
+      : '';
+
     resultEl().innerHTML = `
       <div class="result-card">
+        ${ptsHTML}
         <div class="verdict-banner ${verdict}">
           <div class="verdict-icon">${vc.icon}</div>
           <div>

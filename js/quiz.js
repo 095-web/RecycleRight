@@ -49,7 +49,6 @@ const Quiz = (function () {
   function init() {
     buildAvatarPicker();
     buildQuizCategories();
-    buildAchievementsGrid();
 
     // Normal (guest) setup form
     document.getElementById('create-profile-btn').addEventListener('click', createProfile);
@@ -76,8 +75,6 @@ const Quiz = (function () {
         if (sec) {
           sec.classList.add('active');
           if (btn.dataset.qsection === 'leaderboard') renderLeaderboard();
-          if (btn.dataset.qsection === 'friends')     renderFriends();
-          if (btn.dataset.qsection === 'achievements') renderAchievements();
         } else {
           // Cancel leaderboard listener when leaving
           if (_lbUnsubscribe) { _lbUnsubscribe(); _lbUnsubscribe = null; }
@@ -116,8 +113,10 @@ const Quiz = (function () {
     const username = input.value.trim();
 
     if (!username) { errEl.textContent = 'Please enter a username.'; return; }
-    if (username.length < 2) { errEl.textContent = 'Username must be at least 2 characters.'; return; }
+    if (username.length < 4) { errEl.textContent = 'Username must be at least 4 characters.'; return; }
+    if (username.length > 20) { errEl.textContent = 'Username must be 20 characters or fewer.'; return; }
     if (/[^a-zA-Z0-9_]/.test(username)) { errEl.textContent = 'Only letters, numbers, and underscores allowed.'; return; }
+    if (window.ProfileModule?.isProfane?.(username)) { errEl.textContent = 'That username is not allowed. Please choose another.'; return; }
     if (getProfile(username)) { errEl.textContent = 'That username is already taken on this device.'; return; }
 
     errEl.textContent = '';
@@ -134,8 +133,10 @@ const Quiz = (function () {
     const username = input.value.trim();
 
     if (!username) { errEl.textContent = 'Please enter a username.'; return; }
-    if (username.length < 2) { errEl.textContent = 'Username must be at least 2 characters.'; return; }
+    if (username.length < 4) { errEl.textContent = 'Username must be at least 4 characters.'; return; }
+    if (username.length > 20) { errEl.textContent = 'Username must be 20 characters or fewer.'; return; }
     if (/[^a-zA-Z0-9_]/.test(username)) { errEl.textContent = 'Only letters, numbers, and underscores allowed.'; return; }
+    if (window.ProfileModule?.isProfane?.(username)) { errEl.textContent = 'That username is not allowed. Please choose another.'; return; }
 
     errEl.textContent = '';
     const profile = newProfile(username, selectedAvatar);
@@ -183,6 +184,13 @@ const Quiz = (function () {
     const input = document.getElementById('google-username-input');
     if (input && !input.value && fbUser?.displayName) {
       input.value = fbUser.displayName.split(' ')[0].replace(/[^a-zA-Z0-9_]/g, '').toLowerCase();
+    }
+    // Build google avatar picker (separate ID to avoid duplicate)
+    const googlePicker = document.getElementById('google-avatar-picker');
+    if (googlePicker && googlePicker.children.length === 0) {
+      googlePicker.innerHTML = AVATARS.map((av, i) =>
+        `<div class="avatar-option ${i === selectedAvatar ? 'selected' : ''}" data-idx="${i}" onclick="Quiz._selectAvatar(${i})">${av}</div>`
+      ).join('');
     }
   }
 
