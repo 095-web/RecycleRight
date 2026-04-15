@@ -217,7 +217,7 @@ const Quiz = (function () {
 
     // Show title
     const titleEl = document.getElementById('banner-title');
-    if (titleEl && window.TITLES) {
+    if (titleEl && TITLES) {
       const t = TITLES.find(t => t.id === profile.selectedTitle)
         || [...TITLES].reverse().find(t => profile.points >= t.pts)
         || TITLES[0];
@@ -488,7 +488,7 @@ const Quiz = (function () {
         container.innerHTML = entries.map((entry, i) => {
           const rankClass  = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
           const rankLabel  = i < 3 ? ['🥇','🥈','🥉'][i] : `#${i + 1}`;
-          const titleLabel = window.TITLES
+          const titleLabel = TITLES
             ? (TITLES.find(t => t.id === entry.selectedTitle) || TITLES[0]).label
             : '';
           return `
@@ -517,7 +517,7 @@ const Quiz = (function () {
      ==================================================== */
   function _renderLbBadges() {
     const section = document.getElementById('lb-badges-section');
-    if (!section || !window.ACHIEVEMENTS) return;
+    if (!section || !ACHIEVEMENTS) return;
 
     const user    = currentUser();
     const profile = getProfile(user);

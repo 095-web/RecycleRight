@@ -64,7 +64,7 @@ const ProfileModule = (function () {
     return 5;
   }
   function getTitle(profile) {
-    if (!window.TITLES) return '';
+    if (!TITLES) return '';
     return (TITLES.find(t => t.id === profile.selectedTitle)
       || [...TITLES].reverse().find(t => (profile.points||0) >= t.pts)
       || TITLES[0]).label;
@@ -398,7 +398,7 @@ const ProfileModule = (function () {
   function renderAchievementsList(profile) {
     const container = document.getElementById('prof-achievements-list');
     const pill      = document.getElementById('badge-count-pill');
-    if (!container || !window.ACHIEVEMENTS) return;
+    if (!container || !ACHIEVEMENTS) return;
     const earned = profile.badges || [];
     if (pill) pill.textContent = `${earned.length}/${ACHIEVEMENTS.length}`;
     container.innerHTML = ACHIEVEMENTS.map(ach => {
@@ -527,7 +527,7 @@ const ProfileModule = (function () {
      ==================================================== */
   function buildTitlePicker(containerId, selectedId, profile, onSelect) {
     const container = document.getElementById(containerId);
-    if (!container || !window.TITLES) return;
+    if (!container || !TITLES) return;
     container.innerHTML = TITLES.map(t => {
       const unlocked = window.ShopModule
         ? ShopModule.isTitleUnlocked(t.id, profile)

@@ -13,7 +13,7 @@ const ShopModule = (function () {
      UNLOCK HELPERS (used by profile.js avatar/title pickers too)
      ==================================================== */
   function isAvatarUnlocked(idx, profile) {
-    if (!window.AVATAR_UNLOCKS?.[idx]) return true; // free
+    if (!AVATAR_UNLOCKS?.[idx]) return true; // free
     if ((profile?.points || 0) >= AVATAR_UNLOCKS[idx]) return true;
     return (profile?.purchasedItems || []).some(id => {
       const item = allShopItems().find(s => s.id === id);
@@ -22,7 +22,7 @@ const ShopModule = (function () {
   }
 
   function isTitleUnlocked(titleId, profile) {
-    const def = window.TITLES?.find(t => t.id === titleId);
+    const def = TITLES?.find(t => t.id === titleId);
     if (!def || (profile?.points || 0) >= def.pts) return true;
     return (profile?.purchasedItems || []).some(id => {
       const item = allShopItems().find(s => s.id === id);
@@ -31,7 +31,7 @@ const ShopModule = (function () {
   }
 
   function allShopItems() {
-    return [...(window.SHOP_PERMANENT || []), ...(window.SHOP_ROTATING || [])];
+    return [...(SHOP_PERMANENT || []), ...(SHOP_ROTATING || [])];
   }
 
   /* ====================================================
@@ -102,7 +102,7 @@ const ShopModule = (function () {
             </div>
           </div>
           <div class="shop-grid">
-            ${(window.SHOP_PERMANENT || []).map(item => renderItem(item, profile)).join('')}
+            ${SHOP_PERMANENT.map(item => renderItem(item, profile)).join('')}
           </div>
         </div>
 
@@ -115,6 +115,7 @@ const ShopModule = (function () {
           </div>
           <div class="shop-grid">
             ${daily.map(item => renderItem(item, profile)).join('')}
+
           </div>
         </div>
 
