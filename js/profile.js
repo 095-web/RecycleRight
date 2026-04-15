@@ -286,6 +286,16 @@ const ProfileModule = (function () {
           <div class="profile-achievements-list" id="prof-achievements-list"></div>
         </div>
 
+        <div class="profile-section-card danger-zone-card">
+          <h3 class="profile-section-title danger-zone-title">
+            <i class="fas fa-triangle-exclamation"></i> Danger Zone
+          </h3>
+          <p class="danger-zone-desc">Permanently wipes your points, stats, badges, and purchased items. Your username and Google account are kept.</p>
+          <button class="btn btn-sm btn-danger" id="profile-reset-btn">
+            <i class="fas fa-rotate-left"></i> Reset All Progress
+          </button>
+        </div>
+
       </div>`;
 
     document.getElementById('profile-edit-btn').addEventListener('click', () => renderEditScreen(user, profile));
@@ -293,6 +303,7 @@ const ProfileModule = (function () {
     document.getElementById('prof-friend-input').addEventListener('keydown', e => {
       if (e.key === 'Enter') sendFriendRequest();
     });
+    document.getElementById('profile-reset-btn').addEventListener('click', () => confirmResetProgress(user, profile));
 
     renderFriendsList();
     renderAchievementsList(profile);
@@ -416,6 +427,49 @@ const ProfileModule = (function () {
   }
 
   /* ====================================================
+     RESET PROGRESS
+     ==================================================== */
+  async function confirmResetProgress(user, profile) {
+    const confirmed = confirm(
+      '⚠️ Reset ALL progress?\n\n' +
+      'This will permanently erase:\n' +
+      '  • All points & total points\n' +
+      '  • Quiz stats & badges\n' +
+      '  • Purchased items & power-ups\n\n' +
+      'Your username and Google account will be kept.\n\n' +
+      'This CANNOT be undone. Continue?'
+    );
+    if (!confirmed) return;
+
+    const reset = {
+      username:      profile.username,
+      avatarIdx:     0,
+      selectedTitle: 'newcomer',
+      points:        0,
+      totalPoints:   0,
+      quizzes:       0,
+      bestStreak:    0,
+      catsPlayed:    [],
+      catBests:      {},
+      catPerfects:   [],
+      badges:        [],
+      purchasedItems:[],
+      powerups:      {},
+      scanCount:     0,
+      powerupsUsed:  0,
+    };
+
+    const profiles = loadProfiles().filter(p => p.username !== profile.username);
+    profiles.push(reset);
+    localStorage.setItem(KEY_PROFILES, JSON.stringify(profiles));
+    localStorage.removeItem('rr_scan_daily');
+
+    await AuthModule.syncProfileFlat(reset);
+    reload();
+    window.QuizModule?.reload?.();
+  }
+
+  /* ====================================================
      EDIT SCREEN
      ==================================================== */
   function renderEditScreen(user, profile) {
@@ -506,11 +560,11 @@ const ProfileModule = (function () {
     container.innerHTML = AVATARS.map((av, i) => {
       const unlocked = window.ShopModule
         ? ShopModule.isAvatarUnlocked(i, profile)
-        : (profile?.points || 0) >= (AVATAR_UNLOCKS?.[i] || 0);
+        : i <= 2; // only first 3 free without ShopModule
       return `
         <div class="avatar-opt${i === selectedIdx ? ' selected' : ''}${!unlocked ? ' av-locked' : ''}"
-          data-idx="${i}" ${!unlocked ? `title="Unlock via points or Shop"` : ''}>
-          ${av}${!unlocked ? `<span class="av-lock-label">${AVATAR_UNLOCKS[i]}pts</span>` : ''}
+          data-idx="${i}" ${!unlocked ? `title="Buy in the Shop to unlock"` : ''}>
+          ${av}${!unlocked ? `<span class="av-lock-label">🛒 Shop</span>` : ''}
         </div>`;
     }).join('');
     container.querySelectorAll('.avatar-opt:not(.av-locked)').forEach(el => {
@@ -531,13 +585,13 @@ const ProfileModule = (function () {
     container.innerHTML = TITLES.map(t => {
       const unlocked = window.ShopModule
         ? ShopModule.isTitleUnlocked(t.id, profile)
-        : (profile?.points || 0) >= t.pts;
+        : t.id === 'newcomer'; // only newcomer free without ShopModule
       const sel = t.id === selectedId;
       return `
         <div class="title-opt${sel ? ' selected' : ''}${!unlocked ? ' locked' : ''}"
-          data-id="${t.id}" ${!unlocked ? `title="Unlock via points or Shop"` : ''}>
+          data-id="${t.id}" ${!unlocked ? `title="Buy in the Shop to unlock"` : ''}>
           ${t.label}
-          ${!unlocked ? `<span class="title-req">${t.pts}pts</span>` : ''}
+          ${!unlocked ? `<span class="title-req">🛒 Shop</span>` : ''}
         </div>`;
     }).join('');
     container.querySelectorAll('.title-opt:not(.locked)').forEach(el => {

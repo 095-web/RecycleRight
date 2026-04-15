@@ -13,8 +13,7 @@ const ShopModule = (function () {
      UNLOCK HELPERS (used by profile.js avatar/title pickers too)
      ==================================================== */
   function isAvatarUnlocked(idx, profile) {
-    if (!AVATAR_UNLOCKS?.[idx]) return true; // free
-    if ((profile?.points || 0) >= AVATAR_UNLOCKS[idx]) return true;
+    if (!AVATAR_UNLOCKS?.[idx]) return true; // indices 0-2 are always free
     return (profile?.purchasedItems || []).some(id => {
       const item = allShopItems().find(s => s.id === id);
       return item?.type === 'avatar' && item.idx === idx;
@@ -22,8 +21,7 @@ const ShopModule = (function () {
   }
 
   function isTitleUnlocked(titleId, profile) {
-    const def = TITLES?.find(t => t.id === titleId);
-    if (!def || (profile?.points || 0) >= def.pts) return true;
+    if (titleId === 'newcomer') return true; // always free
     return (profile?.purchasedItems || []).some(id => {
       const item = allShopItems().find(s => s.id === id);
       return item?.type === 'title' && item.titleId === titleId;

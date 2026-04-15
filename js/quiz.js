@@ -18,6 +18,7 @@ const Quiz = (function () {
 
   /* ---- Leaderboard live listener handle ---- */
   let _lbUnsubscribe = null;
+  let _lbMode = 'current'; // 'current' | 'total'
 
   /* ====================================================
      STORAGE HELPERS
@@ -215,12 +216,10 @@ const Quiz = (function () {
     const badge = document.getElementById('cloud-badge');
     if (badge) badge.style.display = isCloud ? 'inline-flex' : 'none';
 
-    // Show title
+    // Show selected title (only unlocked titles; newcomer is always the fallback)
     const titleEl = document.getElementById('banner-title');
     if (titleEl && TITLES) {
-      const t = TITLES.find(t => t.id === profile.selectedTitle)
-        || [...TITLES].reverse().find(t => profile.points >= t.pts)
-        || TITLES[0];
+      const t = TITLES.find(t => t.id === profile.selectedTitle) || TITLES[0];
       titleEl.textContent = t.label;
     }
 
@@ -410,8 +409,9 @@ const Quiz = (function () {
     const profile = getProfile(user);
     if (!profile) return;
 
-    profile.points     += state.score;
-    profile.quizzes    += 1;
+    profile.points      += state.score;
+    profile.totalPoints  = (profile.totalPoints || 0) + state.score;
+    profile.quizzes     += 1;
     profile.bestStreak  = Math.max(profile.bestStreak, state.bestStreak);
     if (!profile.catsPlayed) profile.catsPlayed = [];
     if (!profile.catsPlayed.includes(state.category)) profile.catsPlayed.push(state.category);
@@ -490,8 +490,17 @@ const Quiz = (function () {
     const container = document.getElementById('leaderboard-list');
     if (!container) return;
 
-    // Cancel any previous listener
-    if (_lbUnsubscribe) { _lbUnsubscribe(); _lbUnsubscribe = null; }
+    // Wire up type-toggle buttons
+    document.querySelectorAll('.lb-type-btn').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.lb-type-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        _lbMode = btn.dataset.lb;
+        _subscribeLeaderboardData();
+      };
+      // Keep active state in sync with current mode
+      btn.classList.toggle('active', btn.dataset.lb === _lbMode);
+    });
 
     if (!window.AuthModule?.isAvailable || !window.AuthModule?.currentUser) {
       container.innerHTML = `
@@ -502,11 +511,22 @@ const Quiz = (function () {
             <i class="fab fa-google"></i> Sign In
           </button>
         </div>`;
+      _renderLbBadges();
       return;
     }
 
-    container.innerHTML = `<div class="lb-loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>`;
+    _subscribeLeaderboardData();
     _renderLbBadges();
+  }
+
+  function _subscribeLeaderboardData() {
+    const container = document.getElementById('leaderboard-list');
+    if (!container) return;
+    if (_lbUnsubscribe) { _lbUnsubscribe(); _lbUnsubscribe = null; }
+
+    container.innerHTML = `<div class="lb-loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>`;
+
+    const orderField = _lbMode === 'total' ? 'totalPoints' : 'points';
 
     _lbUnsubscribe = window.AuthModule.subscribeLeaderboard(entries => {
       if (entries.length === 0) {
@@ -518,6 +538,7 @@ const Quiz = (function () {
           const titleLabel = TITLES
             ? (TITLES.find(t => t.id === entry.selectedTitle) || TITLES[0]).label
             : '';
+          const pts = _lbMode === 'total' ? (entry.totalPoints || 0) : entry.points;
           return `
             <div class="lb-entry ${entry.isMe ? 'is-me' : ''}">
               <div class="lb-rank ${rankClass}">${rankLabel}</div>
@@ -527,16 +548,14 @@ const Quiz = (function () {
                   ${escapeHtml(entry.displayName || entry.username)}
                   <span class="lb-title-badge">${escapeHtml(titleLabel)}</span>
                 </div>
-                <div class="lb-sub">@${escapeHtml(entry.username)} · Lv ${calcLevel(entry.points)} · ${entry.quizzes} quizzes${entry.isMe ? ' · <strong>You</strong>' : ''}</div>
+                <div class="lb-sub">@${escapeHtml(entry.username)} · ${entry.quizzes} quizzes${entry.isMe ? ' · <strong>You</strong>' : ''}</div>
               </div>
-              <div class="lb-score">${entry.points.toLocaleString()}<small>pts</small></div>
+              <div class="lb-score">${pts.toLocaleString()}<small>pts</small></div>
             </div>`;
         }).join('');
       }
-
-      // Badges panel (always rendered, not dependent on sign-in state)
       _renderLbBadges();
-    });
+    }, orderField);
   }
 
   /* ====================================================

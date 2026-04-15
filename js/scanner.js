@@ -220,8 +220,9 @@ const Scanner = (function () {
     const profiles = JSON.parse(localStorage.getItem('rr_profiles') || '[]');
     const idx = profiles.findIndex(p => p.username === username);
     if (idx === -1) return 0;
-    profiles[idx].points   = (profiles[idx].points   || 0) + pts;
-    profiles[idx].scanCount = (profiles[idx].scanCount || 0) + 1;
+    profiles[idx].points      = (profiles[idx].points      || 0) + pts;
+    profiles[idx].totalPoints = (profiles[idx].totalPoints || 0) + pts;
+    profiles[idx].scanCount   = (profiles[idx].scanCount   || 0) + 1;
 
     // Award scan-related badges
     _checkScanBadges(profiles[idx]);

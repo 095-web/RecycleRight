@@ -153,18 +153,21 @@ const AuthModule = (function () {
     if (!db || !_currentUser) return;
     try {
       await db.collection('users').doc(_currentUser.uid).set({
-        username:    (profile.username  || '').toLowerCase(),
-        displayName: profile.username   || '',
-        avatarIdx:      profile.avatarIdx      || 0,
-        points:         profile.points         || 0,
-        quizzes:        profile.quizzes        || 0,
-        bestStreak:     profile.bestStreak     || 0,
-        catsPlayed:     profile.catsPlayed     || [],
-        catBests:       profile.catBests       || {},
-        badges:         profile.badges         || [],
-        selectedTitle:  profile.selectedTitle  || 'newcomer',
-        purchasedItems: profile.purchasedItems || [],
-        powerups:       profile.powerups       || {},
+        username:       (profile.username  || '').toLowerCase(),
+        displayName:     profile.username  || '',
+        avatarIdx:       profile.avatarIdx      || 0,
+        points:          profile.points         || 0,
+        totalPoints:     profile.totalPoints    || profile.points || 0,
+        quizzes:         profile.quizzes        || 0,
+        bestStreak:      profile.bestStreak     || 0,
+        catsPlayed:      profile.catsPlayed     || [],
+        catBests:        profile.catBests       || {},
+        badges:          profile.badges         || [],
+        selectedTitle:   profile.selectedTitle  || 'newcomer',
+        purchasedItems:  profile.purchasedItems || [],
+        powerups:        profile.powerups       || {},
+        scanCount:       profile.scanCount      || 0,
+        powerupsUsed:    profile.powerupsUsed   || 0,
         profile,   // keep nested copy for backwards compat
         updatedAt:  firebase.firestore.FieldValue.serverTimestamp(),
       }, { merge: true });
@@ -226,11 +229,11 @@ const AuthModule = (function () {
   }
 
   /* Subscribe to real-time leaderboard — returns unsubscribe fn */
-  function subscribeLeaderboard(callback) {
+  function subscribeLeaderboard(callback, orderField = 'points') {
     if (!db || !_currentUser) return () => {};
     try {
       return db.collection('users')
-        .orderBy('points', 'desc')
+        .orderBy(orderField, 'desc')
         .limit(50)
         .onSnapshot(snapshot => {
           const uid = _currentUser?.uid;
@@ -240,6 +243,7 @@ const AuthModule = (function () {
             displayName:   doc.data().displayName   || doc.data().username || '?',
             avatarIdx:     doc.data().avatarIdx      || 0,
             points:        doc.data().points         || 0,
+            totalPoints:   doc.data().totalPoints    || doc.data().points || 0,
             quizzes:       doc.data().quizzes        || 0,
             bestStreak:    doc.data().bestStreak     || 0,
             selectedTitle: doc.data().selectedTitle  || 'newcomer',
