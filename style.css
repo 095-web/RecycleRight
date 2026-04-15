@@ -2063,6 +2063,99 @@ input[type="text"]:focus {
 [data-theme="dark"] .shop-item.owned { background: #14532d40; border-color: var(--green-700); }
 [data-theme="dark"] .shop-item-title-preview { background: #14532d40; border-color: var(--green-700); color: var(--green-300); }
 
+/* ---- Friend profile modal ---- */
+.fmodal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn .15s;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.fmodal {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 32px 24px 24px;
+  max-width: 360px;
+  width: 100%;
+  position: relative;
+  box-shadow: var(--shadow-xl);
+  animation: slideUp .2s;
+  text-align: center;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fmodal-close {
+  position: absolute;
+  top: 12px; right: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gray-500);
+  font-size: 1.1rem;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: color .15s, background .15s;
+}
+.fmodal-close:hover { color: var(--gray-900); background: var(--gray-100); }
+.fmodal-loading { padding: 40px; display: flex; justify-content: center; color: var(--green-500); }
+.fmodal-avatar   { font-size: 3.5rem; margin-bottom: 8px; line-height: 1; }
+.fmodal-username { font-size: 1.25rem; font-weight: 700; color: var(--gray-900); }
+.fmodal-title-tag {
+  display: inline-block;
+  font-size: .8rem; font-weight: 600;
+  color: var(--green-700);
+  background: var(--green-100);
+  padding: 2px 12px;
+  border-radius: 12px;
+  margin: 6px 0 18px;
+}
+.fmodal-stats {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.fmodal-stat-val { font-size: 1.1rem; font-weight: 700; color: var(--gray-900); }
+.fmodal-stat-lbl { font-size: .7rem; color: var(--gray-500); margin-top: 2px; }
+.fmodal-badges-section { margin-bottom: 18px; }
+.fmodal-badges-label {
+  font-size: .72rem; font-weight: 700;
+  color: var(--gray-500);
+  text-transform: uppercase; letter-spacing: .04em;
+  margin-bottom: 8px;
+}
+.fmodal-badges-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.fmodal-badge { font-size: 1.5rem; cursor: default; }
+.fmodal-unfriend-btn { margin-top: 4px; }
+
+/* Clickable friend entry + unfriend button */
+.friend-entry-clickable { cursor: pointer; transition: background .15s; }
+.friend-entry-clickable:hover { background: var(--gray-50); }
+.friend-unfriend-btn {
+  background: none !important;
+  border: 1px solid var(--border) !important;
+  color: var(--gray-400) !important;
+  padding: 5px 9px !important;
+  margin-left: 6px;
+  flex-shrink: 0;
+}
+.friend-unfriend-btn:hover {
+  background: var(--red-100) !important;
+  border-color: var(--red-600) !important;
+  color: var(--red-600) !important;
+}
+[data-theme="dark"] .fmodal { background: var(--gray-50); }
+[data-theme="dark"] .fmodal-close:hover { background: var(--gray-200); }
+[data-theme="dark"] .friend-entry-clickable:hover { background: var(--gray-100); }
+
 /* ---- Leaderboard type toggle ---- */
 .lb-type-nav {
   display: flex;

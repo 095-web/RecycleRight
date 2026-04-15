@@ -212,6 +212,32 @@ const AuthModule = (function () {
     }
   }
 
+  /* Sync friends list to Firestore */
+  async function syncFriends(friends) {
+    if (!db || !_currentUser) return;
+    try {
+      await db.collection('users').doc(_currentUser.uid).set({
+        friends,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      }, { merge: true });
+    } catch (err) {
+      console.error('Firestore friends sync error:', err);
+    }
+  }
+
+  /* Fetch any user's public profile by uid */
+  async function getUserByUid(uid) {
+    if (!db) return null;
+    try {
+      const snap = await db.collection('users').doc(uid).get();
+      if (!snap.exists) return null;
+      return { uid: snap.id, ...snap.data() };
+    } catch (err) {
+      console.error('getUserByUid error:', err);
+      return null;
+    }
+  }
+
   /* Search for a user by username (case-insensitive) */
   async function findUserByUsername(username) {
     if (!db || !_currentUser) return null;
@@ -361,9 +387,11 @@ const AuthModule = (function () {
     signOut,
     syncProfile,
     syncProfileFlat,
+    syncFriends,
     syncLocation,
     hasProfile,
     findUserByUsername,
+    getUserByUid,
     subscribeLeaderboard,
     sendFriendRequest,
     subscribeIncomingRequests,

@@ -376,6 +376,7 @@ const ProfileModule = (function () {
       friends.push({ uid:fromUid, username:fromUsername, displayName:fromUsername,
         avatarIdx:fromAvatarIdx, points:fromPoints, quizzes:fromQuizzes, bestStreak:fromBestStreak });
       saveFriends(friends);
+      AuthModule.syncFriends?.(friends); // sync to Firestore
     }
     renderFriendsList();
   }
@@ -393,14 +394,120 @@ const ProfileModule = (function () {
       return;
     }
     container.innerHTML = friends.sort((a,b) => b.points - a.points).map(f => `
-      <div class="friend-entry">
+      <div class="friend-entry friend-entry-clickable" onclick="ProfileModule._viewFriend('${f.uid}')">
         <div class="friend-avatar">${AVATARS[f.avatarIdx||0]}</div>
         <div class="friend-info">
           <div class="friend-name">${esc(f.displayName||f.username)}</div>
           <div class="friend-meta">Lv ${calcLevel(f.points)} · ${f.quizzes||0} quizzes · Best streak: ${f.bestStreak||0}</div>
         </div>
         <div class="friend-score">${(f.points||0).toLocaleString()} pts</div>
+        <button class="btn btn-sm friend-unfriend-btn"
+          onclick="event.stopPropagation(); ProfileModule._unfriend('${f.uid}')"
+          title="Unfriend">
+          <i class="fas fa-user-minus"></i>
+        </button>
       </div>`).join('');
+  }
+
+  /* ====================================================
+     FRIEND PROFILE MODAL
+     ==================================================== */
+  async function _viewFriend(uid) {
+    // Remove any existing modal
+    _closeFriendModal();
+
+    // Build overlay with loading state
+    const overlay = document.createElement('div');
+    overlay.className = 'fmodal-overlay';
+    overlay.id = 'friend-modal-overlay';
+    overlay.innerHTML = `
+      <div class="fmodal" id="friend-modal">
+        <button class="fmodal-close" onclick="ProfileModule._closeFriendModal()">
+          <i class="fas fa-times"></i>
+        </button>
+        <div class="fmodal-loading"><i class="fas fa-spinner fa-spin fa-2x"></i></div>
+      </div>`;
+    overlay.addEventListener('click', e => { if (e.target === overlay) _closeFriendModal(); });
+    document.body.appendChild(overlay);
+
+    // Fetch fresh data from Firestore, fall back to cached local data
+    let data = null;
+    if (AuthModule.isAvailable && AuthModule.currentUser) {
+      data = await AuthModule.getUserByUid(uid);
+    }
+    if (!data) {
+      const f = loadFriends().find(fr => fr.uid === uid);
+      if (f) data = { ...f };
+    }
+
+    const modal = document.getElementById('friend-modal');
+    if (!modal) return;
+
+    if (!data) {
+      modal.querySelector('.fmodal-loading').innerHTML =
+        '<p style="color:var(--gray-500)">Could not load profile.</p>';
+      return;
+    }
+
+    const avatar      = AVATARS[data.avatarIdx || 0];
+    const titleLabel  = TITLES
+      ? (TITLES.find(t => t.id === data.selectedTitle) || TITLES[0]).label : '';
+    const earnedBadges = ACHIEVEMENTS
+      ? ACHIEVEMENTS.filter(a => (data.badges || []).includes(a.id)) : [];
+
+    modal.innerHTML = `
+      <button class="fmodal-close" onclick="ProfileModule._closeFriendModal()">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="fmodal-avatar">${avatar}</div>
+      <div class="fmodal-username">${esc(data.displayName || data.username || '?')}</div>
+      <div class="fmodal-title-tag">${esc(titleLabel)}</div>
+      <div class="fmodal-stats">
+        <div class="fmodal-stat">
+          <div class="fmodal-stat-val">${(data.points||0).toLocaleString()}</div>
+          <div class="fmodal-stat-lbl">Points</div>
+        </div>
+        <div class="fmodal-stat">
+          <div class="fmodal-stat-val">${data.quizzes||0}</div>
+          <div class="fmodal-stat-lbl">Quizzes</div>
+        </div>
+        <div class="fmodal-stat">
+          <div class="fmodal-stat-val">${data.bestStreak||0}</div>
+          <div class="fmodal-stat-lbl">Best Streak</div>
+        </div>
+        <div class="fmodal-stat">
+          <div class="fmodal-stat-val">${(data.badges||[]).length}</div>
+          <div class="fmodal-stat-lbl">Badges</div>
+        </div>
+      </div>
+      ${earnedBadges.length > 0 ? `
+        <div class="fmodal-badges-section">
+          <div class="fmodal-badges-label">Badges Earned</div>
+          <div class="fmodal-badges-row">
+            ${earnedBadges.map(a =>
+              `<span class="fmodal-badge" title="${esc(a.name)}: ${esc(a.desc)}">${a.icon}</span>`
+            ).join('')}
+          </div>
+        </div>` : ''}
+      <button class="btn btn-sm btn-danger fmodal-unfriend-btn"
+        onclick="ProfileModule._unfriend('${uid}')">
+        <i class="fas fa-user-minus"></i> Unfriend
+      </button>`;
+  }
+
+  function _closeFriendModal() {
+    document.getElementById('friend-modal-overlay')?.remove();
+  }
+
+  async function _unfriend(uid) {
+    _closeFriendModal();
+    if (!confirm('Remove this person from your friends list?')) return;
+    const friends = loadFriends().filter(f => f.uid !== uid);
+    saveFriends(friends);
+    if (AuthModule.isAvailable && AuthModule.currentUser) {
+      await AuthModule.syncFriends(friends);
+    }
+    renderFriendsList();
   }
 
   /* ====================================================
@@ -611,7 +718,7 @@ const ProfileModule = (function () {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  return { init, reload, isProfane, _acceptReq, _declineReq };
+  return { init, reload, isProfane, _acceptReq, _declineReq, _viewFriend, _closeFriendModal, _unfriend };
 })();
 
 window.ProfileModule = ProfileModule;
