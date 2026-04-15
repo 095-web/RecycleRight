@@ -322,7 +322,38 @@ const AVATARS = [
   '🦝','🐸','🌵','🦉','🐬','🌈','⭐','🏆',             // unlocked
 ];
 
-const AVATAR_UNLOCKS = { 10:150, 11:300, 12:500, 13:750, 14:1000, 15:1500, 16:2500, 17:4000 };
+// Indices 0-2 are free. Everything else requires points OR a shop purchase.
+const AVATAR_UNLOCKS = {
+  3:75, 4:150, 5:250, 6:400, 7:600, 8:850, 9:1100,
+  10:1400, 11:1800, 12:2200, 13:2700, 14:3200, 15:3800, 16:4500, 17:5500,
+};
+
+/* ---------- Shop ---------- */
+const SHOP_PERMANENT = [
+  { id:'sh_av3',          type:'avatar', idx:3,          name:'Earth 🌍',         cost:120  },
+  { id:'sh_av4',          type:'avatar', idx:4,          name:'Ocean Wave 🌊',    cost:200  },
+  { id:'sh_av5',          type:'avatar', idx:5,          name:'Butterfly 🦋',     cost:320  },
+  { id:'sh_av6',          type:'avatar', idx:6,          name:'Sunflower 🌻',     cost:500  },
+  { id:'sh_t_recycler',   type:'title',  titleId:'recycler',   name:'Recycler',    cost:150  },
+  { id:'sh_t_greenthumb', type:'title',  titleId:'greenthumb', name:'Green Thumb', cost:450  },
+];
+
+const SHOP_ROTATING = [
+  { id:'sh_r_av7',       type:'avatar', idx:7,          name:'Leaf 🍃',          cost:700  },
+  { id:'sh_r_av8',       type:'avatar', idx:8,          name:'Tree 🌳',          cost:950  },
+  { id:'sh_r_av9',       type:'avatar', idx:9,          name:'Green Heart 💚',   cost:1200 },
+  { id:'sh_r_av10',      type:'avatar', idx:10,         name:'Raccoon 🦝',       cost:1500 },
+  { id:'sh_r_av11',      type:'avatar', idx:11,         name:'Frog 🐸',          cost:2000 },
+  { id:'sh_r_av12',      type:'avatar', idx:12,         name:'Cactus 🌵',        cost:2400 },
+  { id:'sh_r_av13',      type:'avatar', idx:13,         name:'Owl 🦉',           cost:2900 },
+  { id:'sh_r_av14',      type:'avatar', idx:14,         name:'Dolphin 🐬',       cost:3400 },
+  { id:'sh_r_av15',      type:'avatar', idx:15,         name:'Rainbow 🌈',       cost:4000 },
+  { id:'sh_r_av16',      type:'avatar', idx:16,         name:'Star ⭐',          cost:4800 },
+  { id:'sh_r_av17',      type:'avatar', idx:17,         name:'Trophy 🏆',        cost:5800 },
+  { id:'sh_r_t_warrior', type:'title',  titleId:'warrior',  name:'Eco Warrior',     cost:800  },
+  { id:'sh_r_t_guardian',type:'title',  titleId:'guardian', name:'Planet Guardian', cost:1600 },
+  { id:'sh_r_t_legend',  type:'title',  titleId:'legend',   name:'Recycling Legend',cost:2800 },
+];
 
 /* ---------- Titles (unlocked by points) ---------- */
 const TITLES = [

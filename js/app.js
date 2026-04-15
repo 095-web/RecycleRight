@@ -49,6 +49,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (target === 'profile') {
         ProfileModule.reload();
       }
+      // Render shop on every visit (points may have changed)
+      if (target === 'shop') {
+        ShopModule.render();
+      }
     });
   });
 
@@ -69,8 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
   Quiz.init();
 
   /* ====================================================
-     PROFILE INIT
+     SHOP + PROFILE INIT
      ==================================================== */
+  ShopModule.init();
   ProfileModule.init();
 
   /* ====================================================

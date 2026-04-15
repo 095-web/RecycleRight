@@ -155,14 +155,15 @@ const AuthModule = (function () {
       await db.collection('users').doc(_currentUser.uid).set({
         username:    (profile.username  || '').toLowerCase(),
         displayName: profile.username   || '',
-        avatarIdx:     profile.avatarIdx    || 0,
-        points:        profile.points       || 0,
-        quizzes:       profile.quizzes      || 0,
-        bestStreak:    profile.bestStreak   || 0,
-        catsPlayed:    profile.catsPlayed   || [],
-        catBests:      profile.catBests     || {},
-        badges:        profile.badges       || [],
-        selectedTitle: profile.selectedTitle || 'newcomer',
+        avatarIdx:      profile.avatarIdx      || 0,
+        points:         profile.points         || 0,
+        quizzes:        profile.quizzes        || 0,
+        bestStreak:     profile.bestStreak     || 0,
+        catsPlayed:     profile.catsPlayed     || [],
+        catBests:       profile.catBests       || {},
+        badges:         profile.badges         || [],
+        selectedTitle:  profile.selectedTitle  || 'newcomer',
+        purchasedItems: profile.purchasedItems || [],
         profile,   // keep nested copy for backwards compat
         updatedAt:  firebase.firestore.FieldValue.serverTimestamp(),
       }, { merge: true });
@@ -252,6 +253,69 @@ const AuthModule = (function () {
   }
 
   /* ====================================================
+     FRIEND REQUESTS
+     ==================================================== */
+  async function sendFriendRequest(toUid, toUsername) {
+    if (!db || !_currentUser) return { error: 'not_signed_in' };
+    const myProfile = JSON.parse(localStorage.getItem('rr_profiles') || '[]')
+      .find(p => p.username === localStorage.getItem('rr_current'));
+    if (!myProfile) return { error: 'no_profile' };
+
+    // Check for duplicate pending request
+    const dup = await db.collection('friendRequests')
+      .where('fromUid', '==', _currentUser.uid)
+      .where('toUid',   '==', toUid)
+      .where('status',  '==', 'pending')
+      .limit(1).get();
+    if (!dup.empty) return { error: 'already_sent' };
+
+    await db.collection('friendRequests').add({
+      fromUid:       _currentUser.uid,
+      fromUsername:  myProfile.username,
+      fromAvatarIdx: myProfile.avatarIdx  || 0,
+      fromPoints:    myProfile.points     || 0,
+      fromQuizzes:   myProfile.quizzes    || 0,
+      fromBestStreak:myProfile.bestStreak || 0,
+      toUid,
+      toUsername,
+      status:  'pending',
+      sentAt:  firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    return { success: true };
+  }
+
+  function subscribeIncomingRequests(callback) {
+    if (!db || !_currentUser) return () => {};
+    try {
+      return db.collection('friendRequests')
+        .where('toUid',  '==', _currentUser.uid)
+        .where('status', '==', 'pending')
+        .onSnapshot(snap => {
+          callback(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        }, err => console.error('Incoming requests error:', err));
+    } catch(e) { return () => {}; }
+  }
+
+  async function respondToFriendRequest(requestId, accept) {
+    if (!db || !_currentUser) return;
+    await db.collection('friendRequests').doc(requestId).update({
+      status: accept ? 'accepted' : 'declined',
+      respondedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+  }
+
+  async function getAcceptedSentRequests() {
+    if (!db || !_currentUser) return [];
+    try {
+      const snap = await db.collection('friendRequests')
+        .where('fromUid', '==', _currentUser.uid)
+        .where('status',  '==', 'accepted')
+        .get();
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch(e) { return []; }
+  }
+
+  /* ====================================================
      HEADER UI
      ==================================================== */
   function updateHeaderUI(user) {
@@ -296,6 +360,10 @@ const AuthModule = (function () {
     hasProfile,
     findUserByUsername,
     subscribeLeaderboard,
+    sendFriendRequest,
+    subscribeIncomingRequests,
+    respondToFriendRequest,
+    getAcceptedSentRequests,
     get currentUser() { return _currentUser; },
     get isAvailable()  { return isConfigured(); },
   };
