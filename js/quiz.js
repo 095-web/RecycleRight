@@ -418,11 +418,22 @@ const Quiz = (function () {
     if (!profile.catBests) profile.catBests = {};
     profile.catBests[state.category] = Math.max(profile.catBests[state.category] || 0, state.score);
 
+    // Track categories where a perfect score was achieved
+    if (state.correct === state.questions.length && state.category !== 'mixed') {
+      if (!profile.catPerfects) profile.catPerfects = [];
+      if (!profile.catPerfects.includes(state.category)) profile.catPerfects.push(state.category);
+    }
+
     const statObj = {
-      quizzes: profile.quizzes, totalPoints: profile.points, bestStreak: profile.bestStreak,
-      lastPerfect: state.correct === state.questions.length,
-      catsPlayed: new Set(profile.catsPlayed),
-      friendsAdded: loadFriends().length,
+      quizzes:       profile.quizzes,
+      totalPoints:   profile.points,
+      bestStreak:    profile.bestStreak,
+      lastPerfect:   state.correct === state.questions.length,
+      catsPlayed:    new Set(profile.catsPlayed),
+      catPerfects:   new Set(profile.catPerfects || []),
+      friendsAdded:  loadFriends().length,
+      scanCount:     profile.scanCount     || 0,
+      powerupsUsed:  profile.powerupsUsed  || 0,
     };
     if (!profile.badges) profile.badges = [];
     const newBadges = [];
@@ -593,6 +604,12 @@ const Quiz = (function () {
     // Consume one use
     if (!profile.powerups) profile.powerups = {};
     profile.powerups[puId] = Math.max(0, (profile.powerups[puId] || 0) - 1);
+
+    // Track powerup usage + award Power Player badge
+    profile.powerupsUsed = (profile.powerupsUsed || 0) + 1;
+    if (!profile.badges) profile.badges = [];
+    if (!profile.badges.includes('power_user')) profile.badges.push('power_user');
+
     saveProfile(profile);
     updatePowerupBar();
   }

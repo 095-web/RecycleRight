@@ -299,33 +299,327 @@ const QUIZ_QUESTIONS = [
   { id:40, cat:'ewaste', q:'Which program operates thousands of battery recycling drop-off locations across North America?',
     opts:['TerraCycle','GreenDisk','Call2Recycle','Earth911'],
     ans:2, exp:'Call2Recycle (call2recycle.org) operates over 16,000 battery recycling drop-off points at retailers and municipal locations across the US and Canada.' },
+
+  /* General — extra pool */
+  { id:41, cat:'general', q:'What is the "circular economy"?',
+    opts:['An economy that avoids all imports','A system where products are kept in use as long as possible through reuse, repair, and recycling','A model where all goods are circular in shape','A financial system that reinvests profits into green energy'],
+    ans:1, exp:'The circular economy contrasts with the traditional linear "make, use, dispose" model by designing out waste and keeping materials in use as long as possible.' },
+
+  { id:42, cat:'general', q:'What does "MRF" stand for in recycling?',
+    opts:['Material Regulation Facility','Mixed Refuse Furnace','Materials Recovery Facility','Multi-Resource Foundation'],
+    ans:2, exp:'A Materials Recovery Facility (MRF) receives, sorts, processes, and prepares recyclable materials for sale to manufacturers.' },
+
+  { id:43, cat:'general', q:'Which of the following takes the longest to decompose in a landfill?',
+    opts:['Paper bag (about 6 weeks)','Aluminum can (80–200 years)','Glass bottle (1 million+ years)','Plastic bag (10–20 years)'],
+    ans:2, exp:'Glass is made from silica that does not biodegrade — it is estimated to take over 1 million years to decompose in a landfill, making recycling critical.' },
+
+  { id:44, cat:'general', q:'What is a "deposit return scheme" (DRS)?',
+    opts:['A bank program for green investments','Consumers pay a small deposit on containers and get it back when they return them for recycling','A government subsidy for recycling companies','A system where businesses deposit recyclables at government centers'],
+    ans:1, exp:'Deposit return schemes (bottle bills) dramatically boost recycling rates. States with bottle bills achieve up to 80–90% return rates for beverage containers.' },
+
+  { id:45, cat:'general', q:'Recycling one ton of paper saves approximately how many trees?',
+    opts:['3–5 trees','7–10 trees','17 trees','50 trees'],
+    ans:2, exp:'Recycling one ton of paper saves approximately 17 trees, 7,000 gallons of water, and 380 gallons of oil, while reducing greenhouse gas emissions.' },
+
+  { id:46, cat:'general', q:'What is "upcycling"?',
+    opts:['Increasing recycling targets by law','Transforming waste into something of higher quality or value','Recycling the same material multiple times','Sending recyclables to be processed abroad'],
+    ans:1, exp:'Upcycling converts waste into products of greater value — like turning wine bottles into glasses, old jeans into bags, or pallet wood into furniture.' },
+
+  { id:47, cat:'general', q:'Which country consistently ranks among the top nations for recycling percentage?',
+    opts:['United States','Japan','Germany','Australia'],
+    ans:2, exp:'Germany consistently leads globally, recycling and composting over 65% of its municipal waste through strict separation rules, deposit systems, and producer responsibility laws.' },
+
+  { id:48, cat:'general', q:'What does "post-consumer recycled content" (PCR) mean on a product label?',
+    opts:['The product was made in a recycling facility','It contains material recovered after use by real consumers — not just manufacturing offcuts','The product can be recycled after use','The product was tested by consumers before manufacture'],
+    ans:1, exp:'PCR content means the material was recovered from consumer use streams — bottles, paper, etc. "Pre-consumer" waste is manufacturing scrap, which is a lower bar.' },
+
+  { id:49, cat:'general', q:'How much energy does recycling aluminum save compared to making it from raw ore?',
+    opts:['About 10%','About 40%','About 75%','About 95%'],
+    ans:3, exp:'Recycling aluminum uses up to 95% less energy than smelting new aluminum from bauxite ore. A recycled can can be back on shelves in as little as 60 days.' },
+
+  { id:50, cat:'general', q:'What does the Green Dot symbol (two interlocking arrows) on packaging mean?',
+    opts:['The product is recyclable','The manufacturer financially contributes to a recycling program in their country','The product contains recycled content','The packaging must be recycled by law'],
+    ans:1, exp:'The Green Dot (Der Grüne Punkt) signals the manufacturer funds a national recycling collection system — NOT that the item itself is necessarily recyclable.' },
+
+  { id:51, cat:'general', q:'What is "open-loop recycling"?',
+    opts:['Recycling that takes place outdoors','Recycling where material is converted into a different product type than the original','A recycling system with no sorting required','Recycling exports to other countries'],
+    ans:1, exp:'Open-loop recycling converts material into a different product (e.g. plastic bottles → polyester fleece). Closed-loop recycles into the same product type.' },
+
+  { id:52, cat:'general', q:'What is "extended producer responsibility" (EPR)?',
+    opts:['A law requiring consumers to sort all recyclables','A policy making manufacturers responsible for end-of-life disposal of their products','A program that extends the shelf life of products','A tax on businesses producing more than 1,000 tons of goods per year'],
+    ans:1, exp:'EPR shifts the cost and responsibility of waste management to manufacturers, incentivizing them to design more recyclable and durable products from the start.' },
+
+  { id:53, cat:'general', q:'What is a "zero-waste" lifestyle?',
+    opts:['Producing absolutely no waste, ever','Aiming to divert all waste from landfills through reduction, reuse, recycling, and composting','Using only recycled products','Living without any packaging of any kind'],
+    ans:1, exp:'Zero-waste is a philosophy and goal, not an absolute standard. The aim is to send nothing to landfill or incineration through careful material use cycles.' },
+
+  { id:54, cat:'general', q:'What is "wishcycling"?',
+    opts:['Recycling holiday wrapping paper','Tossing uncertain items in the recycling bin hoping they will be accepted, even if unsure','A recycling program that operates via donated wish-lists','Sorting recyclables by hand at home'],
+    ans:1, exp:'Wishcycling contaminates entire loads — if you\'re not sure an item is accepted, check your local guidelines rather than guessing. When in doubt, throw it out.' },
+
+  { id:55, cat:'general', q:'What percentage of all plastic produced globally has ever been recycled?',
+    opts:['About 50%','About 30%','About 9%','About 65%'],
+    ans:2, exp:'Only about 9% of all plastic ever produced has been recycled. The vast majority has gone to landfill, incineration, or leaked into the environment.' },
+
+  { id:56, cat:'general', q:'Which item is NOT recyclable in most standard curbside programs?',
+    opts:['Aluminum soda can','Glass wine bottle','Plastic straw','Cardboard cereal box'],
+    ans:2, exp:'Plastic straws are too small and lightweight for sorting machinery and fall through conveyor screens. Switch to paper, metal, or silicone alternatives.' },
+
+  { id:57, cat:'general', q:'Which of the "3 Rs" should come first?',
+    opts:['Recycle','Reuse','Reduce','All three are equal'],
+    ans:2, exp:'Reducing consumption is the most powerful action. Reuse comes second. Recycling is a last resort — it still requires energy, water, and transportation.' },
+
+  { id:58, cat:'general', q:'What is the main benefit of composting food scraps instead of landfilling them?',
+    opts:['Composting produces more energy','Composting produces CO₂ instead of methane, which is far less potent as a greenhouse gas','Composting takes up less space','Composting happens faster'],
+    ans:1, exp:'Landfill decomposition is anaerobic (no oxygen), producing methane — roughly 80× more potent than CO₂ over 20 years. Aerobic composting produces CO₂ and returns carbon to soil.' },
+
+  /* Plastics — extra pool */
+  { id:59, cat:'plastics', q:'What does PET stand for?',
+    opts:['Plastic Environmental Technology','Polyethylene Terephthalate','Petroleum-Extracted Thermoplastic','Polyester Ethylene Tube'],
+    ans:1, exp:'PET (Polyethylene Terephthalate) is resin code #1, used for water bottles, soda bottles, and food containers. It is widely accepted curbside.' },
+
+  { id:60, cat:'plastics', q:'Compostable plastics labeled "PLA" — can they go in curbside recycling bins?',
+    opts:['Yes, they recycle just like regular plastic','No — they contaminate plastic recycling and need industrial composting','Yes, but only if marked with a recycling symbol','Yes — bioplastics always go in the green bin'],
+    ans:1, exp:'Compostable PLA plastics contaminate regular plastic recycling streams. They only break down in industrial composting facilities at sustained high temperatures.' },
+
+  { id:61, cat:'plastics', q:'What is bubble wrap made from?',
+    opts:['#1 PET','#2 HDPE','#4 LDPE','#5 PP'],
+    ans:2, exp:'Bubble wrap is #4 LDPE film. Like all soft film plastics, it cannot go in curbside recycling bins — drop it off at grocery or retail store film collection points.' },
+
+  { id:62, cat:'plastics', q:'What are microplastics?',
+    opts:['A brand of biodegradable plastic','Plastic fragments smaller than 5mm formed by the breakdown of larger plastics','A type of plastic used only in medical devices','Very thin plastic film used in food packaging'],
+    ans:1, exp:'Microplastics (< 5 mm) are now found in oceans, drinking water, soil, human blood, and unborn babies. They originate from fragmented larger plastic items.' },
+
+  { id:63, cat:'plastics', q:'Why is black plastic packaging almost never recycled?',
+    opts:['It is made from a different chemical formula','Infrared sorting machines at recycling facilities cannot detect the carbon-black pigment','It is too heavy for conveyor belts','It costs more to process than other colors'],
+    ans:1, exp:'Optical sorting at MRFs uses near-infrared (NIR) light that is blind to carbon-black pigmented plastics — they are sorted out as contamination.' },
+
+  { id:64, cat:'plastics', q:'Why is recycling plastics more complex than recycling metals like aluminum?',
+    opts:['Plastics are heavier and harder to transport','Different plastics have incompatible chemistry and melting points — they cannot be mixed during processing','Plastics must be recycled in specialized overseas factories','Plastic recycling always releases toxic gases'],
+    ans:1, exp:'Aluminum is one consistent material. Plastics are a family of different polymers with different chemistries that produce weak, useless material when mixed.' },
+
+  { id:65, cat:'plastics', q:'What is "chemical recycling" of plastics?',
+    opts:['Using chemicals to clean plastics before mechanical recycling','Breaking plastics back into their chemical building blocks or fuel using heat or catalysts','Recycling plastic in a chemical plant environment','A natural process where bacteria digest plastic'],
+    ans:1, exp:'Chemical recycling (pyrolysis, gasification, depolymerization) breaks plastic down to monomers or fuel. It can handle mixed or contaminated plastics but is energy-intensive.' },
+
+  { id:66, cat:'plastics', q:'#5 Polypropylene (PP) is most commonly found in which everyday item?',
+    opts:['Water bottles','Yogurt containers and bottle caps','Cling wrap','Styrofoam cups'],
+    ans:1, exp:'PP (#5) is used for yogurt tubs, bottle caps, straws, and medicine bottles. Its acceptance in curbside programs has been growing steadily.' },
+
+  { id:67, cat:'plastics', q:'What fraction of plastic packaging is used just once before disposal?',
+    opts:['About one-quarter','About one-third','About half','About two-thirds'],
+    ans:2, exp:'Roughly half of all plastic produced is designed for single-use applications — packaging, straws, cups, and bags — most of which ends up in landfill or the environment.' },
+
+  { id:68, cat:'plastics', q:'When a plastic bottle says "#1 PET — Please Recycle," what does that guarantee?',
+    opts:['It will definitely be recycled in your municipality','It is a widely recyclable plastic type, but local acceptance still varies','It meets environmental safety standards','It will biodegrade within 10 years'],
+    ans:1, exp:'The resin code only identifies the plastic polymer. Whether it is accepted by your local recycling program depends on local markets and facility capabilities.' },
+
+  { id:69, cat:'plastics', q:'What is the most effective individual action to reduce plastic waste?',
+    opts:['Recycling more items','Switching to reusable bags, bottles, and containers','Buying biodegradable plastic alternatives','Donating plastic items to charity'],
+    ans:1, exp:'Switching to durable reusables eliminates plastic waste at the source. Recycling is still necessary but consumes energy and typically results in downcycling.' },
+
+  { id:70, cat:'plastics', q:'Which of these is a serious concern about "biodegradable" plastic bags?',
+    opts:['They are more expensive to produce','They still require specific industrial conditions to break down and can persist for years in normal environments','They cannot hold as much weight','They contaminate aluminum recycling'],
+    ans:1, exp:'"Biodegradable" plastics often need heat, light, and oxygen levels only found in industrial facilities. In landfill or water, they can persist for years, behaving like conventional plastic.' },
+
+  /* Paper — extra pool */
+  { id:71, cat:'paper', q:'Can paper with ink printed on it still be recycled?',
+    opts:['No — ink permanently ruins the paper fibers','Yes — modern de-inking processes remove most inks during pulping','Only if the ink is vegetable-based','Only black-and-white printed paper can be recycled'],
+    ans:1, exp:'Most printed paper is recyclable. De-inking during paper recycling uses water, chemicals, and flotation to remove ink. Glossy inks may cause minor quality loss.' },
+
+  { id:72, cat:'paper', q:'How many times can a paper fiber typically be recycled before it becomes too short to use?',
+    opts:['1–2 times','5–7 times','10–15 times','Indefinitely'],
+    ans:1, exp:'Paper fibers shorten with each recycling cycle. After about 5–7 cycles, fibers are too short to bond into paper. Virgin fiber is blended in to maintain strength.' },
+
+  { id:73, cat:'paper', q:'What does "FSC certified" mean on a paper product?',
+    opts:['The paper is 100% recycled content','The wood came from responsibly managed forests certified by the Forest Stewardship Council','The paper is free of bleaching chemicals','The product has a guaranteed paper take-back program'],
+    ans:1, exp:'FSC (Forest Stewardship Council) certification means wood fiber was sourced from forests managed to strict environmental and social standards.' },
+
+  { id:74, cat:'paper', q:'Why are paper receipts (thermal paper) generally not recyclable?',
+    opts:['They are always too greasy','Thermal paper is coated with BPA or BPS chemicals that contaminate the recycling stream','They are too small for sorting machines','They are made of a non-paper material'],
+    ans:1, exp:'Thermal paper receipts use BPA or BPS in their heat-sensitive coating. These chemicals contaminate paper recycling batches and should go in the trash.' },
+
+  { id:75, cat:'paper', q:'Should you remove plastic windows from envelopes before recycling?',
+    opts:['No — leave them in; facilities handle it','Yes — remove the plastic film as it contaminates paper recycling','Shred the entire envelope instead','Tear off the entire address area'],
+    ans:1, exp:'Plastic windows on envelopes do not break down in the paper pulping process and contaminate the slurry. Many programs ask you to tear them out before recycling.' },
+
+  { id:76, cat:'paper', q:'Which of these is NOT recyclable in standard paper recycling?',
+    opts:['Brown paper bag','Glossy magazine','Wax-coated cardboard','Cardboard cereal box'],
+    ans:2, exp:'Wax-coated cardboard (produce boxes, frozen food cartons) cannot be recycled — the wax cannot be separated from the paper fibers during pulping.' },
+
+  { id:77, cat:'paper', q:'What happens to paper fibers during the recycling pulping stage?',
+    opts:['They are sorted by color','They are shredded and compressed into new paper instantly','They are broken apart in water to form a wet slurry for cleaning and reforming','They are burned to generate energy for the facility'],
+    ans:2, exp:'Pulping uses water and mechanical action to break paper into a wet fiber slurry. The slurry is then cleaned, de-inked, and reformed into new paper products.' },
+
+  { id:78, cat:'paper', q:'Why are paper plates usually not recyclable?',
+    opts:['They are made with wax','They are too large for sorting machinery','They absorb food grease that bonds to paper fibers and ruins recycled batches','They have a plastic coating'],
+    ans:2, exp:'Used paper plates are almost always contaminated with food grease. Grease bonds with paper fibers and cannot be separated during recycling, ruining the whole batch.' },
+
+  { id:79, cat:'paper', q:'Corrugated cardboard (the fluted wave-layer type) is especially valuable in recycling because:',
+    opts:['It has very long, strong fibers ideal for making new packaging','It is always clean and uncontaminated','It is the most common item recycled','It does not require de-inking'],
+    ans:0, exp:'Corrugated cardboard has long, strong fibers prized for making new kraft paper, shipping boxes, and packaging — and it is recycled at one of the highest rates of any material.' },
+
+  { id:80, cat:'paper', q:'Can you recycle paper that got wet and then dried out?',
+    opts:['Yes, it recycles perfectly','No — water damages the fiber structure and reduces quality or usability','Only if dried within 24 hours','Yes, but only if it has not turned moldy'],
+    ans:1, exp:'Water breaks down paper fibers. Soaked and dried paper has weaker, shorter fibers that reduce recycled pulp quality. Always keep recyclables dry.' },
+
+  { id:81, cat:'paper', q:'What does "virgin fiber" mean in paper production?',
+    opts:['Paper from sustainably harvested forests','Paper made from freshly cut trees, not recycled content','Paper that has never been printed on','Unbleached, natural-color paper'],
+    ans:1, exp:'Virgin fiber comes from freshly harvested wood pulp. Recycled paper uses recovered fiber instead, saving trees, energy, and water.' },
+
+  { id:82, cat:'paper', q:'Which of these paper products IS widely recyclable in curbside programs?',
+    opts:['Paper coffee cup','Wax paper','Toilet paper roll (cardboard tube)','Thermal receipt'],
+    ans:2, exp:'Cardboard toilet paper and paper towel rolls are among the most easily recycled items — clean cardboard with no problematic coatings.' },
+
+  /* Food & Composting — extra pool */
+  { id:83, cat:'food', q:'What is the primary greenhouse gas produced when food waste decomposes in a landfill?',
+    opts:['Carbon dioxide (CO₂)','Methane (CH₄)','Nitrous oxide (N₂O)','Hydrogen sulfide (H₂S)'],
+    ans:1, exp:'Food decomposing without oxygen in landfills produces methane — a greenhouse gas roughly 80× more potent than CO₂ over 20 years.' },
+
+  { id:84, cat:'food', q:'What are "greens" and "browns" in a compost pile?',
+    opts:['Green = plant-based, brown = animal-based','Green = nitrogen-rich fresh materials, brown = carbon-rich dry materials','Green = wet, brown = dry','Green = recyclable, brown = compostable'],
+    ans:1, exp:'A healthy compost pile balances greens (food scraps, fresh grass — nitrogen) with browns (dried leaves, cardboard, straw — carbon) at roughly 1:2 by volume.' },
+
+  { id:85, cat:'food', q:'What does "industrial composting" mean compared to backyard composting?',
+    opts:['Industrial composting uses plastic bags','Industrial composting uses sustained high heat (140–160°F) to break down meat, dairy, and certified compostable plastics','Industrial composting occurs in regular recycling plants','They are the same process at a larger scale'],
+    ans:1, exp:'Industrial composting reaches temperatures that kill pathogens and break down compostable plastics and food packaging — conditions impossible to achieve in a home bin.' },
+
+  { id:86, cat:'food', q:'What fraction of all food produced globally is wasted or lost?',
+    opts:['About 5%','About 15%','About one-third','About half'],
+    ans:2, exp:'About one-third of all food produced globally — 1.3 billion tonnes per year — is lost or wasted. If it were a country, food waste would be the third-largest emitter of greenhouse gases.' },
+
+  { id:87, cat:'food', q:'What is a bokashi system?',
+    opts:['A Japanese word for leaf composting','A fermentation system that can process all food waste including meat and dairy','A type of outdoor garden bin','A machine that liquefies food waste'],
+    ans:1, exp:'Bokashi uses beneficial microbes to ferment all food scraps — including meat, dairy, and cooked food — in an airtight container. The fermented matter then goes in compost or soil.' },
+
+  { id:88, cat:'food', q:'What is anaerobic digestion of food waste?',
+    opts:['Composting without any water','Breaking down organic matter without oxygen, producing biogas and a soil amendment','Burning food waste at very high temperatures','Freezing food waste to prevent decomposition'],
+    ans:1, exp:'Anaerobic digestion breaks organic matter down without oxygen, producing biogas (used for energy) and digestate (used as fertilizer) — a carbon-neutral process.' },
+
+  { id:89, cat:'food', q:'Why should meat and dairy be avoided in a standard backyard compost bin?',
+    opts:['They decompose too quickly and kill beneficial bacteria','They attract pests and create odors — use a city compost cart or bokashi system instead','They make the compost too acidic','They are not allowed by law in home composting bins'],
+    ans:1, exp:'Meat and dairy attract rodents, flies, and other pests, and create strong odors in backyard bins. Industrial composting or bokashi systems handle them safely.' },
+
+  { id:90, cat:'food', q:'What is "food rescue" or "food recovery"?',
+    opts:['A government program to test food safety','Collecting surplus food from restaurants, farms, and stores to donate before it becomes waste','A composting technique for expired food','A process of extracting nutrients from food waste'],
+    ans:1, exp:'Food rescue redirects surplus edible food to people in need, sitting at the very top of the waste hierarchy — the best outcome for food is always for it to be eaten.' },
+
+  { id:91, cat:'food', q:'What does "compost maturity" mean?',
+    opts:['Compost that smells very strong','Fully broken-down compost that is safe to add to soil without harming plant roots','Compost that has been aged for at least 2 years','Compost produced by the oldest traditional technique'],
+    ans:1, exp:'Mature compost looks like dark crumbly soil, has an earthy smell, and will not burn plant roots with excess nitrogen. Immature compost can harm seedlings.' },
+
+  { id:92, cat:'food', q:'Can you compost citrus peels and onions in a worm bin?',
+    opts:['Yes, worms love them','Avoid them — worms dislike the acidity and natural compounds; use sparingly','Yes, but only if finely chopped','No — all fruits and vegetables harm worms'],
+    ans:1, exp:'Citrus peels and onions contain compounds that irritate worms and can make a worm bin too acidic. Use them very sparingly or stick to milder food scraps.' },
+
+  { id:93, cat:'food', q:'What should be your first priority when dealing with excess food?',
+    opts:['Send it to a composting facility','Compost it at home','Reduce food waste by buying only what you need and planning meals','Feed it to pets'],
+    ans:2, exp:'The waste hierarchy puts prevention first. Reducing food waste at the source (meal planning, proper storage) beats even the best composting or energy recovery.' },
+
+  { id:94, cat:'food', q:'Why does adding too many kitchen scraps too quickly kill a compost pile?',
+    opts:['The scraps use up all the oxygen','The pile becomes too heavy','The nitrogen-rich scraps overwhelm beneficial bacteria and create a slimy, anaerobic, smelly mess','Kitchen scraps are incompatible with outdoor composting'],
+    ans:2, exp:'A compost pile needs a carbon-to-nitrogen balance. Overloading with wet nitrogen-rich scraps without enough browns causes anaerobic conditions — smelly and ineffective.' },
+
+  { id:95, cat:'food', q:'What percentage of municipal solid waste in the US is made up of food scraps?',
+    opts:['About 5%','About 14%','About 22%','About 35%'],
+    ans:2, exp:'Food waste makes up about 22% of municipal solid waste sent to landfills in the US — more than any other single material — making composting programs critically important.' },
+
+  /* E-Waste — extra pool */
+  { id:96, cat:'ewaste', q:'What is an "e-Stewards" certification for electronics recyclers?',
+    opts:['A government program for free e-waste pickup','The highest-standard certification ensuring responsible recycling without exporting hazardous waste to developing countries','A consumer guarantee that electronics are refurbished','A rating system for eco-friendly manufacturers'],
+    ans:1, exp:'e-Stewards is the most rigorous certification for electronics recyclers, prohibiting export of hazardous waste and requiring strict environmental standards throughout.' },
+
+  { id:97, cat:'ewaste', q:'Why is informal e-waste recycling in developing countries a serious health problem?',
+    opts:['Workers recycle too slowly','Workers use acid baths and open burning of circuit boards to recover metals, releasing toxic chemicals','E-waste can only be processed in high-tech facilities','Informal recyclers never recover valuable materials'],
+    ans:1, exp:'Informal e-waste workers in countries like Ghana and India use primitive methods that expose communities to lead, mercury, cadmium, and brominated flame retardants.' },
+
+  { id:98, cat:'ewaste', q:'What does refurbishing an electronic device accomplish?',
+    opts:['The same environmental benefit as recycling it','It extends the device\'s useful life, delaying the energy cost of manufacturing a replacement','It makes the device lighter and faster','It removes all stored personal data'],
+    ans:1, exp:'Refurbishing repairs and restores devices for resale or donation, keeping them in use longer. This is better than recycling because it avoids the energy cost of making entirely new devices.' },
+
+  { id:99, cat:'ewaste', q:'Which electronics typically contain mercury?',
+    opts:['Smartphone screens','Fluorescent backlights (CCFL) in older LCD monitors and CFL bulbs','Modern LED displays','Laptop keyboards'],
+    ans:1, exp:'Older LCD screens used cold cathode fluorescent lamps (CCFL) for backlighting, which contain mercury. CFL bulbs do too. These must be handled as hazardous e-waste.' },
+
+  { id:100, cat:'ewaste', q:'Approximately how much e-waste is generated globally each year?',
+    opts:['About 5 million tonnes','About 25 million tonnes','About 50 million tonnes','About 100 million tonnes'],
+    ans:2, exp:'The UN reports approximately 50 million tonnes of e-waste generated annually, with only about 17–20% formally collected and properly recycled.' },
+
+  { id:101, cat:'ewaste', q:'What is the best approach for a smartphone that still works but has been replaced?',
+    opts:['Throw it away immediately','Keep it in a drawer indefinitely','Donate, sell, or give it to someone who can use it','Recycle it at an e-waste facility right away'],
+    ans:2, exp:'A working device has the most value when it continues to be used. Donate it to a school or nonprofit, or sell it. Recycling is best reserved for non-functional devices.' },
+
+  { id:102, cat:'ewaste', q:'What should you do before recycling or selling a smartphone?',
+    opts:['Remove only the SIM card','Do nothing — the recycler handles data wiping','Factory reset it to erase personal data, and remove the SIM and SD cards','Smash the screen to make disassembly easier'],
+    ans:2, exp:'Always factory reset your device to protect personal data. Remove your SIM and SD cards. Back up any data you want to keep beforehand.' },
+
+  { id:103, cat:'ewaste', q:'What does "right to repair" legislation aim to achieve?',
+    opts:['Give consumers the right to return electronics for a refund','Require manufacturers to make spare parts and repair tools available to consumers and independent shops','Give companies the right to repair public infrastructure','Allow consumers to modify electronics for resale'],
+    ans:1, exp:'Right to Repair laws aim to extend product lifespans by making independent repair viable, reducing e-waste by countering planned obsolescence.' },
+
+  { id:104, cat:'ewaste', q:'Why are CRT (cathode-ray tube) TVs particularly hazardous e-waste?',
+    opts:['They contain radioactive materials','Each CRT contains 4–8 lbs of lead that leaches into groundwater when landfilled','They contain more plastic than modern screens','They are too heavy for recycling machinery to handle'],
+    ans:1, exp:'CRT screens use several pounds of lead to block X-ray emissions. When landfilled, this lead leaches into groundwater, causing severe neurological and health damage.' },
+
+  { id:105, cat:'ewaste', q:'What should you do with a swollen (puffed-up) lithium-ion battery?',
+    opts:['Keep using it until it dies','Stop using it immediately, do not puncture it, and take it to a battery recycling facility','Carefully pop it to release the gas','Put it in the freezer to shrink it back'],
+    ans:1, exp:'A swollen battery has undergone dangerous internal chemical reactions and is a serious fire/explosion risk. Never puncture or compress it. Take it to an e-waste facility immediately.' },
+
+  { id:106, cat:'ewaste', q:'What valuable metals are commonly recovered from recycled smartphones?',
+    opts:['Iron and copper only','Gold, silver, and palladium','Aluminum only','Steel and zinc'],
+    ans:1, exp:'A ton of circuit boards contains up to 800× more gold than a ton of ore. Smartphones contain gold, silver, palladium, platinum, and rare earth elements worth recovering.' },
+
+  { id:107, cat:'ewaste', q:'Which retailer chain is well known for accepting old electronics for recycling in its stores?',
+    opts:['Walmart','Target','Best Buy','Costco'],
+    ans:2, exp:'Best Buy operates one of the largest in-store electronics take-back programs in the US, accepting TVs, computers, phones, cables, and more for certified recycling.' },
 ];
 
 /* ---------- Achievements ---------- */
 const ACHIEVEMENTS = [
-  { id:'first_quiz',    name:'First Step',        desc:'Complete your very first quiz',                   icon:'🌱', req: q => q.quizzes >= 1 },
-  { id:'perfect',       name:'Perfect Score',      desc:'Answer all 10 questions correctly in one quiz',   icon:'🏆', req: q => q.lastPerfect },
-  { id:'streak5',       name:'On Fire',            desc:'Get a 5-answer streak in a single quiz',          icon:'🔥', req: q => q.bestStreak >= 5 },
-  { id:'quizzes5',      name:'Knowledge Seeker',   desc:'Complete 5 quizzes',                              icon:'📚', req: q => q.quizzes >= 5 },
-  { id:'quizzes10',     name:'Dedicated Learner',  desc:'Complete 10 quizzes',                             icon:'🎓', req: q => q.quizzes >= 10 },
-  { id:'pts500',        name:'500 Club',           desc:'Earn 500 total points',                           icon:'⭐', req: q => q.totalPoints >= 500 },
-  { id:'pts1000',       name:'Point Millionaire',  desc:'Earn 1,000 total points',                         icon:'💎', req: q => q.totalPoints >= 1000 },
-  { id:'all_cats',      name:'All-Rounder',        desc:'Complete every quiz category at least once',      icon:'🌍', req: q => q.catsPlayed && q.catsPlayed.size >= 5 },
-  { id:'friend_added',  name:'Social Recycler',    desc:'Add your first friend',                           icon:'🤝', req: q => q.friendsAdded >= 1 },
-  { id:'streak10',      name:'Unstoppable',        desc:'Get a 10-answer streak across your quiz history', icon:'⚡', req: q => q.bestStreak >= 10 },
+  /* Quiz milestones */
+  { id:'first_quiz',        name:'First Step',        desc:'Complete your very first quiz',                        icon:'🌱', req: q => q.quizzes >= 1 },
+  { id:'quizzes5',          name:'Knowledge Seeker',  desc:'Complete 5 quizzes',                                   icon:'📚', req: q => q.quizzes >= 5 },
+  { id:'quizzes10',         name:'Dedicated Learner', desc:'Complete 10 quizzes',                                  icon:'🎓', req: q => q.quizzes >= 10 },
+  { id:'quizzes25',         name:'Quiz Veteran',      desc:'Complete 25 quizzes',                                  icon:'📜', req: q => q.quizzes >= 25 },
+  /* Score & streak */
+  { id:'streak3',           name:'Heating Up',        desc:'Get a 3-answer streak in a single quiz',               icon:'🔥', req: q => q.bestStreak >= 3 },
+  { id:'streak5',           name:'On Fire',           desc:'Get a 5-answer streak in a single quiz',               icon:'🔥', req: q => q.bestStreak >= 5 },
+  { id:'streak10',          name:'Unstoppable',       desc:'Get a 10-answer streak across your quiz history',      icon:'⚡', req: q => q.bestStreak >= 10 },
+  { id:'perfect',           name:'Perfect Score',     desc:'Answer all 10 questions correctly in one quiz',        icon:'🏆', req: q => q.lastPerfect },
+  { id:'cat_perfect',       name:'Category Ace',      desc:'Get a perfect score in 3 different quiz categories',   icon:'🎯', req: q => (q.catPerfects?.size || 0) >= 3 },
+  /* Points milestones */
+  { id:'pts500',            name:'500 Club',          desc:'Earn 500 total points',                                icon:'⭐', req: q => q.totalPoints >= 500 },
+  { id:'pts1000',           name:'Point Millionaire', desc:'Earn 1,000 total points',                              icon:'💎', req: q => q.totalPoints >= 1000 },
+  { id:'pts2000',           name:'Rising Star',       desc:'Earn 2,000 total points',                              icon:'🌟', req: q => q.totalPoints >= 2000 },
+  { id:'pts5000',           name:'Eco Champion',      desc:'Reach 5,000 total points',                             icon:'🚀', req: q => q.totalPoints >= 5000 },
+  /* Categories */
+  { id:'all_cats',          name:'All-Rounder',       desc:'Complete every quiz category at least once',           icon:'🌍', req: q => q.catsPlayed && q.catsPlayed.size >= 5 },
+  /* Social */
+  { id:'friend_added',      name:'Social Recycler',   desc:'Add your first friend',                                icon:'🤝', req: q => q.friendsAdded >= 1 },
+  /* Scanner */
+  { id:'first_scan',        name:'Sharp Eye',         desc:'Earn points from your first product scan',             icon:'🔍', req: q => (q.scanCount || 0) >= 1 },
+  { id:'scanner_5',         name:'Barcode Hunter',    desc:'Earn scan points 5 times',                             icon:'📱', req: q => (q.scanCount || 0) >= 5 },
+  { id:'scanner_25',        name:'Scanner Pro',       desc:'Earn scan points 25 times',                            icon:'🏅', req: q => (q.scanCount || 0) >= 25 },
+  { id:'daily_reset_used',  name:'Fresh Start',       desc:'Use a Daily Reset power-up in the Scanner',            icon:'🔄', req: () => false },
+  /* Shop & power-ups */
+  { id:'first_purchase',    name:'First Haul',        desc:'Buy your first item from the Shop',                    icon:'🛍️', req: () => false },
+  { id:'power_user',        name:'Power Player',      desc:'Use a power-up during a quiz',                         icon:'⚡', req: q => (q.powerupsUsed || 0) >= 1 },
 ];
 
 /* ---------- Avatars ---------- */
-// Indices 0-9: free. Indices 10-17: unlocked with points (see AVATAR_UNLOCKS).
+// Indices 0-2: free. Everything else requires points or a shop purchase.
 const AVATARS = [
-  '🌱','🌿','♻️','🌍','🌊','🦋','🌻','🍃','🌳','💚',  // free
-  '🦝','🐸','🌵','🦉','🐬','🌈','⭐','🏆',             // unlocked
+  '🌱','🌿','♻️',                                       // free (0-2)
+  '🌍','🌊','🦋','🌻','🍃','🌳','💚',                   // tier 1 (3-9)
+  '🦝','🐸','🌵','🦉','🐬','🌈','⭐','🏆',             // tier 2 (10-17)
+  '🦜','🐨','🦊','🦁','🐧','🌺','🍄','🌙',             // tier 3 (18-25)
 ];
 
-// Indices 0-2 are free. Everything else requires points OR a shop purchase.
+// Every index beyond 2 requires points OR a shop purchase.
 const AVATAR_UNLOCKS = {
-  3:75, 4:150, 5:250, 6:400, 7:600, 8:850, 9:1100,
+  3:75,   4:150,  5:250,  6:400,  7:600,  8:850,  9:1100,
   10:1400, 11:1800, 12:2200, 13:2700, 14:3200, 15:3800, 16:4500, 17:5500,
+  18:7000, 19:9000, 20:11000, 21:14000, 22:17000, 23:20000, 24:25000, 25:30000,
 };
 
 /* ---------- Power-ups ---------- */
@@ -351,30 +645,54 @@ const SHOP_PERMANENT = [
 ];
 
 const SHOP_ROTATING = [
-  { id:'sh_r_av7',       type:'avatar', idx:7,          name:'Leaf 🍃',          cost:700  },
-  { id:'sh_r_av8',       type:'avatar', idx:8,          name:'Tree 🌳',          cost:950  },
-  { id:'sh_r_av9',       type:'avatar', idx:9,          name:'Green Heart 💚',   cost:1200 },
-  { id:'sh_r_av10',      type:'avatar', idx:10,         name:'Raccoon 🦝',       cost:1500 },
-  { id:'sh_r_av11',      type:'avatar', idx:11,         name:'Frog 🐸',          cost:2000 },
-  { id:'sh_r_av12',      type:'avatar', idx:12,         name:'Cactus 🌵',        cost:2400 },
-  { id:'sh_r_av13',      type:'avatar', idx:13,         name:'Owl 🦉',           cost:2900 },
-  { id:'sh_r_av14',      type:'avatar', idx:14,         name:'Dolphin 🐬',       cost:3400 },
-  { id:'sh_r_av15',      type:'avatar', idx:15,         name:'Rainbow 🌈',       cost:4000 },
-  { id:'sh_r_av16',      type:'avatar', idx:16,         name:'Star ⭐',          cost:4800 },
-  { id:'sh_r_av17',      type:'avatar', idx:17,         name:'Trophy 🏆',        cost:5800 },
-  { id:'sh_r_t_warrior', type:'title',  titleId:'warrior',  name:'Eco Warrior',     cost:800  },
-  { id:'sh_r_t_guardian',type:'title',  titleId:'guardian', name:'Planet Guardian', cost:1600 },
-  { id:'sh_r_t_legend',  type:'title',  titleId:'legend',   name:'Recycling Legend',cost:2800 },
+  /* Tier 1 avatars */
+  { id:'sh_r_av7',         type:'avatar', idx:7,          name:'Leaf 🍃',           cost:700  },
+  { id:'sh_r_av8',         type:'avatar', idx:8,          name:'Tree 🌳',           cost:950  },
+  { id:'sh_r_av9',         type:'avatar', idx:9,          name:'Green Heart 💚',    cost:1200 },
+  /* Tier 2 avatars */
+  { id:'sh_r_av10',        type:'avatar', idx:10,         name:'Raccoon 🦝',        cost:1500 },
+  { id:'sh_r_av11',        type:'avatar', idx:11,         name:'Frog 🐸',           cost:2000 },
+  { id:'sh_r_av12',        type:'avatar', idx:12,         name:'Cactus 🌵',         cost:2400 },
+  { id:'sh_r_av13',        type:'avatar', idx:13,         name:'Owl 🦉',            cost:2900 },
+  { id:'sh_r_av14',        type:'avatar', idx:14,         name:'Dolphin 🐬',        cost:3400 },
+  { id:'sh_r_av15',        type:'avatar', idx:15,         name:'Rainbow 🌈',        cost:4000 },
+  { id:'sh_r_av16',        type:'avatar', idx:16,         name:'Star ⭐',           cost:4800 },
+  { id:'sh_r_av17',        type:'avatar', idx:17,         name:'Trophy 🏆',         cost:5800 },
+  /* Tier 3 avatars */
+  { id:'sh_r_av18',        type:'avatar', idx:18,         name:'Parrot 🦜',         cost:7200 },
+  { id:'sh_r_av19',        type:'avatar', idx:19,         name:'Koala 🐨',          cost:9200 },
+  { id:'sh_r_av20',        type:'avatar', idx:20,         name:'Fox 🦊',            cost:11200 },
+  { id:'sh_r_av21',        type:'avatar', idx:21,         name:'Lion 🦁',           cost:14200 },
+  { id:'sh_r_av22',        type:'avatar', idx:22,         name:'Penguin 🐧',        cost:17200 },
+  { id:'sh_r_av23',        type:'avatar', idx:23,         name:'Hibiscus 🌺',       cost:20500 },
+  { id:'sh_r_av24',        type:'avatar', idx:24,         name:'Mushroom 🍄',       cost:25500 },
+  { id:'sh_r_av25',        type:'avatar', idx:25,         name:'Moon 🌙',           cost:30500 },
+  /* Titles */
+  { id:'sh_r_t_trailblz',  type:'title',  titleId:'trailblazer', name:'Trail Blazer',    cost:250  },
+  { id:'sh_r_t_advocate',  type:'title',  titleId:'advocate',    name:'Eco Advocate',    cost:550  },
+  { id:'sh_r_t_warrior',   type:'title',  titleId:'warrior',     name:'Eco Warrior',     cost:800  },
+  { id:'sh_r_t_champion',  type:'title',  titleId:'champion',    name:'Eco Champion',    cost:1100 },
+  { id:'sh_r_t_guardian',  type:'title',  titleId:'guardian',    name:'Planet Guardian', cost:1600 },
+  { id:'sh_r_t_master',    type:'title',  titleId:'master',      name:'Recycle Master',  cost:2100 },
+  { id:'sh_r_t_legend',    type:'title',  titleId:'legend',      name:'Recycling Legend',cost:3100 },
+  { id:'sh_r_t_sage',      type:'title',  titleId:'sage',        name:'Green Sage',      cost:4200 },
+  { id:'sh_r_t_mythic',    type:'title',  titleId:'mythic',      name:'Recycling Mythic',cost:6200 },
 ];
 
 /* ---------- Titles (unlocked by points) ---------- */
 const TITLES = [
-  { id:'newcomer',   label:'Newcomer',          pts:0    },
-  { id:'recycler',   label:'Recycler',           pts:100  },
-  { id:'greenthumb', label:'Green Thumb',        pts:300  },
-  { id:'warrior',    label:'Eco Warrior',        pts:700  },
-  { id:'guardian',   label:'Planet Guardian',    pts:1500 },
-  { id:'legend',     label:'Recycling Legend',   pts:3000 },
+  { id:'newcomer',    label:'Newcomer',           pts:0     },
+  { id:'recycler',    label:'Recycler',            pts:100   },
+  { id:'trailblazer', label:'Trail Blazer',        pts:200   },
+  { id:'greenthumb',  label:'Green Thumb',         pts:300   },
+  { id:'advocate',    label:'Eco Advocate',        pts:500   },
+  { id:'warrior',     label:'Eco Warrior',         pts:700   },
+  { id:'champion',    label:'Eco Champion',        pts:1000  },
+  { id:'guardian',    label:'Planet Guardian',     pts:1500  },
+  { id:'master',      label:'Recycle Master',      pts:2000  },
+  { id:'legend',      label:'Recycling Legend',    pts:3000  },
+  { id:'sage',        label:'Green Sage',          pts:4000  },
+  { id:'mythic',      label:'Recycling Mythic',    pts:6000  },
 ];
 
 /* ---------- Packaging → Recyclability Map (for Scanner) ---------- */

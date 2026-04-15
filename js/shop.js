@@ -200,6 +200,10 @@ const ShopModule = (function () {
       profile.purchasedItems.push(itemId);
     }
 
+    // Award First Haul badge on any first purchase
+    if (!profile.badges) profile.badges = [];
+    if (!profile.badges.includes('first_purchase')) profile.badges.push('first_purchase');
+
     profiles[idx] = profile;
     localStorage.setItem(KEY_PROFILES, JSON.stringify(profiles));
     window.AuthModule?.syncProfileFlat?.(profile);

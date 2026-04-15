@@ -220,7 +220,12 @@ const Scanner = (function () {
     const profiles = JSON.parse(localStorage.getItem('rr_profiles') || '[]');
     const idx = profiles.findIndex(p => p.username === username);
     if (idx === -1) return 0;
-    profiles[idx].points = (profiles[idx].points || 0) + pts;
+    profiles[idx].points   = (profiles[idx].points   || 0) + pts;
+    profiles[idx].scanCount = (profiles[idx].scanCount || 0) + 1;
+
+    // Award scan-related badges
+    _checkScanBadges(profiles[idx]);
+
     localStorage.setItem('rr_profiles', JSON.stringify(profiles));
 
     // Sync to cloud
@@ -325,6 +330,15 @@ const Scanner = (function () {
     errorEl().classList.remove('hidden');
   }
 
+  /* ---- Scan badge helper ---- */
+  function _checkScanBadges(profile) {
+    if (!profile.badges) profile.badges = [];
+    const sc = profile.scanCount || 0;
+    if (sc >= 1  && !profile.badges.includes('first_scan'))  profile.badges.push('first_scan');
+    if (sc >= 5  && !profile.badges.includes('scanner_5'))   profile.badges.push('scanner_5');
+    if (sc >= 25 && !profile.badges.includes('scanner_25'))  profile.badges.push('scanner_25');
+  }
+
   /* ---- Daily Reset powerup ---- */
   function useDailyReset() {
     const username = localStorage.getItem('rr_current');
@@ -339,6 +353,11 @@ const Scanner = (function () {
 
     // Consume one Daily Reset
     profiles[idx].powerups.daily_reset = resetCount - 1;
+
+    // Award Daily Reset badge
+    if (!profiles[idx].badges) profiles[idx].badges = [];
+    if (!profiles[idx].badges.includes('daily_reset_used')) profiles[idx].badges.push('daily_reset_used');
+
     localStorage.setItem('rr_profiles', JSON.stringify(profiles));
     window.AuthModule?.syncProfileFlat?.(profiles[idx]);
 

@@ -240,8 +240,8 @@ const ProfileModule = (function () {
               <div class="profile-google-linked"><i class="fab fa-google"></i> ${esc(user.email||'')}</div>
               <div class="profile-level-badge">Level ${level}</div>
             </div>
-            <button class="btn btn-sm btn-outline" id="profile-edit-btn">
-              <i class="fas fa-pencil"></i> Edit
+            <button class="btn btn-sm btn-primary" id="profile-edit-btn">
+              <i class="fas fa-pencil"></i> Edit Profile
             </button>
           </div>
           <div class="profile-stats-band">
