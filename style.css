@@ -1326,20 +1326,22 @@ input[type="text"]:focus {
 
 /* Dark mode toggle button */
 .dark-mode-toggle {
-  background: none;
-  border: 1.5px solid rgba(255,255,255,.35);
+  background: rgba(255,255,255,.18);
+  border: 2px solid rgba(255,255,255,.55);
   border-radius: 50%;
-  width: 34px; height: 34px;
+  width: 36px; height: 36px;
+  min-width: 36px;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  color: rgba(255,255,255,.85);
-  font-size: .95rem;
-  transition: background .15s, border-color .15s;
+  color: #fff;
+  font-size: 1rem;
+  transition: background .15s, border-color .15s, transform .15s;
   flex-shrink: 0;
 }
 .dark-mode-toggle:hover {
-  background: rgba(255,255,255,.15);
-  border-color: rgba(255,255,255,.6);
+  background: rgba(255,255,255,.32);
+  border-color: #fff;
+  transform: scale(1.1);
 }
 
 /* ============================================================
