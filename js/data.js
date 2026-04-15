@@ -328,6 +328,14 @@ const AVATAR_UNLOCKS = {
   10:1400, 11:1800, 12:2200, 13:2700, 14:3200, 15:3800, 16:4500, 17:5500,
 };
 
+/* ---------- Power-ups ---------- */
+const POWERUPS = [
+  { id:'fifty_fifty',   icon:'⚡', name:'50/50',         desc:'Remove 2 wrong answers from the current question.'             },
+  { id:'streak_freeze', icon:'🧊', name:'Streak Freeze',  desc:'Protect your streak from breaking once if you answer wrong.'   },
+  { id:'point_booster', icon:'🚀', name:'Point Booster',  desc:'Double all points earned during the quiz session.'             },
+  { id:'daily_reset',   icon:'🔄', name:'Daily Reset',    desc:'Reset your 5-scan daily cap to earn scan points again today.'  },
+];
+
 /* ---------- Shop ---------- */
 const SHOP_PERMANENT = [
   { id:'sh_av3',          type:'avatar', idx:3,          name:'Earth 🌍',         cost:120  },
@@ -336,6 +344,10 @@ const SHOP_PERMANENT = [
   { id:'sh_av6',          type:'avatar', idx:6,          name:'Sunflower 🌻',     cost:500  },
   { id:'sh_t_recycler',   type:'title',  titleId:'recycler',   name:'Recycler',    cost:150  },
   { id:'sh_t_greenthumb', type:'title',  titleId:'greenthumb', name:'Green Thumb', cost:450  },
+  { id:'sh_pu_5050',      type:'powerup', puId:'fifty_fifty',   name:'50/50',         cost:200 },
+  { id:'sh_pu_freeze',    type:'powerup', puId:'streak_freeze', name:'Streak Freeze', cost:175 },
+  { id:'sh_pu_boost',     type:'powerup', puId:'point_booster', name:'Point Booster', cost:400 },
+  { id:'sh_pu_reset',     type:'powerup', puId:'daily_reset',   name:'Daily Reset',   cost:125 },
 ];
 
 const SHOP_ROTATING = [

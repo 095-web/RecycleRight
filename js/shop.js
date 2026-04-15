@@ -123,12 +123,13 @@ const ShopModule = (function () {
   }
 
   function renderItem(item, profile) {
+    if (item.type === 'powerup') return renderPowerupItem(item, profile);
+
     const owned  = isItemOwned(item, profile);
     const afford = (profile.points || 0) >= item.cost;
     const preview = item.type === 'avatar'
       ? `<div class="shop-item-emoji">${AVATARS[item.idx]}</div>`
       : `<div class="shop-item-title-preview">${item.name}</div>`;
-
     const typeLabel = item.type === 'avatar' ? '🎭 Avatar' : '🏷️ Title';
 
     return `
@@ -142,9 +143,29 @@ const ShopModule = (function () {
                onclick="ShopModule.purchase('${item.id}')"
                ${afford ? '' : 'disabled'}>
                <i class="fas fa-star"></i> ${item.cost.toLocaleString()} pts
-             </button>`
-        }
-        ${!owned && !afford ? `<div class="shop-item-badge need-badge">Need ${(item.cost - (profile.points||0)).toLocaleString()} more</div>` : ''}
+             </button>`}
+        ${!owned && !afford ? `<div class="shop-item-badge need-badge">Need ${(item.cost-(profile.points||0)).toLocaleString()} more</div>` : ''}
+      </div>`;
+  }
+
+  function renderPowerupItem(item, profile) {
+    const pu     = POWERUPS.find(p => p.id === item.puId) || {};
+    const afford = (profile.points || 0) >= item.cost;
+    const owned  = (profile.powerups?.[item.puId] || 0);
+
+    return `
+      <div class="shop-item powerup-shop-item${!afford ? ' cant-afford' : ''}">
+        <div class="shop-item-emoji">${pu.icon || '⚡'}</div>
+        <div class="shop-item-name">${item.name}</div>
+        <div class="shop-item-type">⚡ Power-up</div>
+        <div class="shop-pu-desc">${pu.desc || ''}</div>
+        ${owned > 0 ? `<div class="shop-item-badge pu-owned-badge">Owned: ${owned}</div>` : ''}
+        <button class="btn btn-sm shop-buy-btn${afford ? '' : ' cant-afford'}"
+          onclick="ShopModule.purchase('${item.id}')"
+          ${afford ? '' : 'disabled'}>
+          <i class="fas fa-star"></i> ${item.cost.toLocaleString()} pts
+        </button>
+        ${!afford ? `<div class="shop-item-badge need-badge">Need ${(item.cost-(profile.points||0)).toLocaleString()} more</div>` : ''}
       </div>`;
   }
 
@@ -164,14 +185,20 @@ const ShopModule = (function () {
 
     const profile = profiles[idx];
 
-    if (isItemOwned(item, profile)) { alert('You already own this!'); return; }
+    if (item.type !== 'powerup' && isItemOwned(item, profile)) { alert('You already own this!'); return; }
     if ((profile.points || 0) < item.cost) {
       alert(`Not enough points! You need ${item.cost.toLocaleString()} pts.`); return;
     }
 
     profile.points -= item.cost;
-    if (!profile.purchasedItems) profile.purchasedItems = [];
-    profile.purchasedItems.push(itemId);
+
+    if (item.type === 'powerup') {
+      if (!profile.powerups) profile.powerups = {};
+      profile.powerups[item.puId] = (profile.powerups[item.puId] || 0) + 1;
+    } else {
+      if (!profile.purchasedItems) profile.purchasedItems = [];
+      profile.purchasedItems.push(itemId);
+    }
 
     profiles[idx] = profile;
     localStorage.setItem(KEY_PROFILES, JSON.stringify(profiles));

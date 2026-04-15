@@ -2063,6 +2063,142 @@ input[type="text"]:focus {
 [data-theme="dark"] .shop-item.owned { background: #14532d40; border-color: var(--green-700); }
 [data-theme="dark"] .shop-item-title-preview { background: #14532d40; border-color: var(--green-700); color: var(--green-300); }
 
+/* ---- Power-up Bar ---- */
+.powerup-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.pu-label {
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-right: 4px;
+}
+.pu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  background: var(--white);
+  cursor: pointer;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--gray-700);
+  transition: all .15s;
+  position: relative;
+}
+.pu-btn:hover:not(:disabled) {
+  border-color: var(--green-500);
+  background: var(--green-50);
+  color: var(--green-700);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+.pu-btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+.pu-count {
+  background: var(--gray-200);
+  color: var(--gray-700);
+  border-radius: 10px;
+  padding: 1px 6px;
+  font-size: .72rem;
+  font-weight: 700;
+}
+/* Empty — no uses left */
+.pu-btn.pu-empty .pu-count {
+  background: var(--red-100);
+  color: var(--red-600);
+}
+/* Streak Freeze armed */
+.pu-btn.pu-armed {
+  border-color: #38bdf8;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+.pu-btn.pu-armed .pu-count {
+  background: #bae6fd;
+  color: #0369a1;
+}
+/* Point Booster active */
+.pu-btn.pu-active {
+  border-color: var(--amber-500);
+  background: var(--amber-100);
+  color: var(--amber-700);
+  animation: pulseBoost 1.4s infinite;
+}
+.pu-btn.pu-active .pu-count {
+  background: var(--amber-500);
+  color: #fff;
+}
+@keyframes pulseBoost {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,193,7,.4); }
+  50%       { box-shadow: 0 0 0 5px rgba(255,193,7,0); }
+}
+/* 50/50 already used this question */
+.pu-btn.pu-used {
+  opacity: .4;
+  cursor: not-allowed;
+}
+/* Score shows 2× when booster active */
+.live-score.score-boosted {
+  color: var(--amber-700) !important;
+}
+.live-score.score-boosted::after {
+  content: ' 2×';
+  font-size: .75rem;
+  font-weight: 800;
+  color: var(--amber-500);
+}
+/* Eliminated option (50/50) */
+.option-btn.pu-eliminated {
+  opacity: 0 !important;
+  pointer-events: none;
+  transform: scale(.9);
+  transition: opacity .25s, transform .25s;
+}
+/* Dark mode powerup bar */
+[data-theme="dark"] .powerup-bar { background: var(--gray-100); border-color: var(--border); }
+[data-theme="dark"] .pu-btn { background: var(--white); border-color: var(--border); color: var(--gray-700); }
+[data-theme="dark"] .pu-count { background: var(--gray-200); color: var(--gray-700); }
+
+/* ---- Daily cap banner with reset button ---- */
+.scan-daily-cap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--amber-100);
+  border: 1px solid var(--amber-500);
+  color: var(--amber-700);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  font-size: .88rem;
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+.scan-reset-btn {
+  background: var(--amber-500) !important;
+  color: #fff !important;
+  border: none !important;
+  margin-left: auto;
+}
+.scan-reset-btn:hover {
+  background: var(--amber-700) !important;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .profile-stats-band { grid-template-columns: repeat(2, 1fr); }

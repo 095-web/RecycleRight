@@ -257,6 +257,19 @@
 
           <div id="streak-alert" class="streak-alert hidden"></div>
 
+          <div class="powerup-bar" id="powerup-bar">
+            <span class="pu-label">Power-ups:</span>
+            <button class="pu-btn" id="pu-btn-5050" onclick="Quiz.usePowerup('fifty_fifty')" title="50/50 — Remove 2 wrong answers" disabled>
+              ⚡ <span class="pu-name">50/50</span><span class="pu-count">0</span>
+            </button>
+            <button class="pu-btn" id="pu-btn-freeze" onclick="Quiz.usePowerup('streak_freeze')" title="Streak Freeze — Protect your streak once" disabled>
+              🧊 <span class="pu-name">Freeze</span><span class="pu-count">0</span>
+            </button>
+            <button class="pu-btn" id="pu-btn-boost" onclick="Quiz.usePowerup('point_booster')" title="Point Booster — 2× points this session" disabled>
+              🚀 <span class="pu-name">Boost</span><span class="pu-count">0</span>
+            </button>
+          </div>
+
           <div class="question-card" id="question-card">
             <div class="q-cat-label" id="q-cat-label"></div>
             <p class="question-text" id="question-text"></p>

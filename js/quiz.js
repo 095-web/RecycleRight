@@ -308,10 +308,15 @@ const Quiz = (function () {
     if (pool.length === 0) { alert('No questions available for this category yet.'); return; }
 
     const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
-    state = { questions: shuffled, current: 0, score: 0, streak: 0, bestStreak: 0, correct: 0, answered: false, category: categoryId };
+    state = {
+      questions: shuffled, current: 0, score: 0, streak: 0,
+      bestStreak: 0, correct: 0, answered: false, category: categoryId,
+      pointBooster: false, freezeArmed: false, fiftyFiftyUsed: false,
+    };
 
     _hideAll();
     document.getElementById('quiz-active').classList.remove('hidden');
+    updatePowerupBar();
     renderQuestion();
   }
 
@@ -325,6 +330,8 @@ const Quiz = (function () {
     document.getElementById('live-score').textContent = state.score;
     document.getElementById('streak-alert').classList.add('hidden');
     document.getElementById('answer-feedback').classList.add('hidden');
+    state.fiftyFiftyUsed = false;
+    updatePowerupBar();
 
     const catInfo = QUIZ_CATEGORIES.find(c => c.id === q.cat) || { name: q.cat };
     document.getElementById('q-cat-label').textContent = catInfo.name;
@@ -367,10 +374,19 @@ const Quiz = (function () {
         alertEl.innerHTML = `<i class="fas fa-fire"></i> ${state.streak}x Streak! +${bonus} bonus pts!`;
         alertEl.classList.remove('hidden');
       }
+      if (state.pointBooster) pts = pts * 2;
       state.score += pts;
       document.getElementById('live-score').textContent = state.score;
     } else {
-      state.streak = 0;
+      if (state.freezeArmed) {
+        state.freezeArmed = false;
+        const alertEl = document.getElementById('streak-alert');
+        alertEl.innerHTML = `<i class="fas fa-snowflake"></i> Streak Freeze activated! Streak protected!`;
+        alertEl.classList.remove('hidden');
+        updatePowerupBar();
+      } else {
+        state.streak = 0;
+      }
     }
 
     const feedbackEl = document.getElementById('answer-feedback');
@@ -510,6 +526,75 @@ const Quiz = (function () {
       // Badges panel (always rendered, not dependent on sign-in state)
       _renderLbBadges();
     });
+  }
+
+  /* ====================================================
+     POWER-UPS
+     ==================================================== */
+  function updatePowerupBar() {
+    const user    = currentUser();
+    const profile = getProfile(user);
+    const pu      = profile?.powerups || {};
+
+    const defs = [
+      { id:'fifty_fifty',   el:'pu-btn-5050',   label:'50/50', icon:'⚡' },
+      { id:'streak_freeze', el:'pu-btn-freeze',  label:'Freeze', icon:'🧊' },
+      { id:'point_booster', el:'pu-btn-boost',   label:'Boost',  icon:'🚀' },
+    ];
+
+    defs.forEach(({ id, el, label, icon }) => {
+      const btn   = document.getElementById(el);
+      const count = pu[id] || 0;
+      if (!btn) return;
+      btn.disabled = count <= 0 || (id === 'fifty_fifty' && state.fiftyFiftyUsed) || (id === 'streak_freeze' && state.freezeArmed) || (id === 'point_booster' && state.pointBooster);
+      btn.querySelector('.pu-count').textContent = count;
+      btn.classList.toggle('pu-empty',  count <= 0);
+      btn.classList.toggle('pu-armed',  id === 'streak_freeze' && state.freezeArmed);
+      btn.classList.toggle('pu-active', id === 'point_booster' && state.pointBooster);
+      btn.classList.toggle('pu-used',   id === 'fifty_fifty'   && state.fiftyFiftyUsed);
+    });
+  }
+
+  function usePowerup(puId) {
+    if (state.answered && puId === 'fifty_fifty') return; // too late
+    const user    = currentUser();
+    const profile = getProfile(user);
+    if (!profile) return;
+    const count = profile.powerups?.[puId] || 0;
+    if (count <= 0) return;
+
+    switch (puId) {
+      case 'fifty_fifty': {
+        if (state.fiftyFiftyUsed) return;
+        const q = state.questions[state.current];
+        const wrongs = [...document.querySelectorAll('.option-btn')]
+          .filter(b => parseInt(b.dataset.orig) !== q.ans);
+        wrongs.sort(() => Math.random() - 0.5).slice(0, 2).forEach(b => {
+          b.disabled = true;
+          b.classList.add('pu-eliminated');
+        });
+        state.fiftyFiftyUsed = true;
+        break;
+      }
+      case 'streak_freeze':
+        if (state.freezeArmed) return;
+        state.freezeArmed = true;
+        break;
+      case 'point_booster':
+        if (state.pointBooster) return;
+        state.pointBooster = true;
+        // Flash 2x indicator in score
+        const scoreEl = document.getElementById('live-score');
+        if (scoreEl) scoreEl.parentElement.classList.add('score-boosted');
+        break;
+      default: return;
+    }
+
+    // Consume one use
+    if (!profile.powerups) profile.powerups = {};
+    profile.powerups[puId] = Math.max(0, (profile.powerups[puId] || 0) - 1);
+    saveProfile(profile);
+    updatePowerupBar();
   }
 
   /* ====================================================
@@ -670,6 +755,7 @@ const Quiz = (function () {
     init, startQuiz, playAgain, goHome, exit,
     _answer, _selectAvatar,
     _addFriendByUsername,
+    usePowerup,
     reload: _decideScreen,
   };
   window.QuizModule = publicAPI;

@@ -200,7 +200,17 @@ const Scanner = (function () {
     if ((daily.barcodes || []).includes(barcode)) return 0;
 
     // Daily cap: 5 unique barcodes
-    if ((daily.barcodes || []).length >= 5) return 0;
+    if ((daily.barcodes || []).length >= 5) {
+      // Check if user has a Daily Reset powerup and show a hint
+      const profiles = JSON.parse(localStorage.getItem('rr_profiles') || '[]');
+      const idx = profiles.findIndex(p => p.username === username);
+      if (idx !== -1 && (profiles[idx].powerups?.daily_reset || 0) > 0) {
+        // Show reset button in the DOM — renderResult handles the ptsHTML slot
+        // We return a special sentinel so the caller can surface the button
+        return -1; // -1 = cap hit but reset available
+      }
+      return 0;
+    }
 
     const pts = 5;
     daily.barcodes = [...(daily.barcodes || []), barcode];
@@ -254,7 +264,14 @@ const Scanner = (function () {
 
     const ptsHTML = earnedPts > 0
       ? `<div class="scan-pts-earned"><i class="fas fa-star"></i> +${earnedPts} pts earned!</div>`
-      : '';
+      : earnedPts === -1
+        ? `<div class="scan-daily-cap">
+             <i class="fas fa-moon"></i> Daily scan limit reached (5/5)
+             <button class="btn btn-sm scan-reset-btn" onclick="Scanner.useDailyReset()">
+               🔄 Use Daily Reset
+             </button>
+           </div>`
+        : '';
 
     resultEl().innerHTML = `
       <div class="result-card">
@@ -308,6 +325,37 @@ const Scanner = (function () {
     errorEl().classList.remove('hidden');
   }
 
+  /* ---- Daily Reset powerup ---- */
+  function useDailyReset() {
+    const username = localStorage.getItem('rr_current');
+    if (!username) return;
+
+    const profiles = JSON.parse(localStorage.getItem('rr_profiles') || '[]');
+    const idx = profiles.findIndex(p => p.username === username);
+    if (idx === -1) return;
+
+    const resetCount = profiles[idx].powerups?.daily_reset || 0;
+    if (resetCount <= 0) return;
+
+    // Consume one Daily Reset
+    profiles[idx].powerups.daily_reset = resetCount - 1;
+    localStorage.setItem('rr_profiles', JSON.stringify(profiles));
+    window.AuthModule?.syncProfileFlat?.(profiles[idx]);
+
+    // Clear today's scan log
+    const today = new Date().toISOString().slice(0, 10);
+    localStorage.setItem('rr_scan_daily', JSON.stringify({ date: today, barcodes: [] }));
+
+    // Re-run the last barcode lookup so the user gets credit
+    const lastBarcode = document.getElementById('barcode-input')?.value?.trim();
+    if (lastBarcode) {
+      lookupBarcode(lastBarcode);
+    } else {
+      // Just refresh the scan cap message away
+      clearResults();
+    }
+  }
+
   function clearResults() {
     resultEl().innerHTML = '';
     resultEl().classList.add('hidden');
@@ -319,5 +367,5 @@ const Scanner = (function () {
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  return { init, startScanner, stopScanner, clear: clearResults };
+  return { init, startScanner, stopScanner, clear: clearResults, useDailyReset };
 })();

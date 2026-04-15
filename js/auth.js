@@ -164,6 +164,7 @@ const AuthModule = (function () {
         badges:         profile.badges         || [],
         selectedTitle:  profile.selectedTitle  || 'newcomer',
         purchasedItems: profile.purchasedItems || [],
+        powerups:       profile.powerups       || {},
         profile,   // keep nested copy for backwards compat
         updatedAt:  firebase.firestore.FieldValue.serverTimestamp(),
       }, { merge: true });
