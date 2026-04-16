@@ -296,6 +296,9 @@
             <!-- Daily Missions (rendered by quiz.js) -->
             <div id="daily-missions-slot"></div>
 
+            <!-- Did You Know? Fact Strip (rendered by quiz.js) -->
+            <div id="fact-strip-slot"></div>
+
             <!-- Hard Mode Toggle -->
             <div class="hard-mode-toggle-wrap">
               <span class="hard-mode-label" id="hard-mode-label">Hard Mode (15s timer)</span>
@@ -307,6 +310,13 @@
 
             <h3 class="section-title">Choose a Category</h3>
             <div class="quiz-cat-grid" id="quiz-cat-grid"></div>
+
+            <div class="sort-game-cta">
+              <button class="btn btn-outline sort-game-launch-btn" onclick="Quiz.startSortGame()">
+                <span style="font-size:1.2rem">♻️🗑️📦</span> Sorting Mini-Game
+                <small style="display:block;font-size:.72rem;opacity:.7;margin-top:2px">Sort 10 items into the right bins!</small>
+              </button>
+            </div>
           </div>
 
           <!-- Leaderboard -->
@@ -318,6 +328,9 @@
               </button>
               <button class="lb-type-btn" data-lb="total">
                 <i class="fas fa-chart-line"></i> Total Points
+              </button>
+              <button class="lb-type-btn" data-lb="friends">
+                <i class="fas fa-users"></i> Friends
               </button>
             </div>
             <div class="leaderboard-list" id="leaderboard-list"></div>
@@ -385,6 +398,36 @@
           </div>
         </div>
 
+        <!-- Sorting Mini-Game Screen -->
+        <div id="quiz-sort-game" class="quiz-screen hidden">
+          <div class="sort-game-screen">
+            <div class="quiz-top-bar">
+              <button class="btn btn-sm btn-outline" onclick="Quiz.exitSortGame()">
+                <i class="fas fa-arrow-left"></i> Exit
+              </button>
+              <div class="quiz-q-label" id="sort-q-label">Item 1 / 10</div>
+              <div class="live-score">
+                <i class="fas fa-star"></i> <span id="sort-live-score">0</span>
+              </div>
+            </div>
+            <div class="sort-item-card" id="sort-item-card">
+              <div class="sort-item-name" id="sort-item-name"></div>
+              <div class="sort-item-tip" id="sort-item-tip"></div>
+            </div>
+            <p class="sort-instruction">Tap the correct bin:</p>
+            <div class="sort-bins" id="sort-bins">
+              <button class="sort-bin-btn" data-bin="yes"     onclick="Quiz._sortAnswer('yes')">     ♻️<span>Recycle</span></button>
+              <button class="sort-bin-btn" data-bin="no"      onclick="Quiz._sortAnswer('no')">      🗑️<span>Trash</span></button>
+              <button class="sort-bin-btn" data-bin="special" onclick="Quiz._sortAnswer('special')"> 📦<span>Special</span></button>
+              <button class="sort-bin-btn" data-bin="check"   onclick="Quiz._sortAnswer('check')">   ❓<span>Check Local</span></button>
+            </div>
+            <div id="sort-feedback" class="sort-feedback hidden">
+              <div id="sort-feedback-text"></div>
+              <button class="btn btn-primary" id="sort-next-btn">Next <i class="fas fa-arrow-right"></i></button>
+            </div>
+          </div>
+        </div>
+
         <!-- Results Screen -->
         <div id="quiz-results" class="quiz-screen hidden">
           <div class="results-card">
@@ -407,6 +450,9 @@
               </button>
               <button class="btn btn-outline btn-lg" onclick="Quiz.goHome()">
                 <i class="fas fa-home"></i> Menu
+              </button>
+              <button class="btn share-btn" id="share-score-btn" onclick="Quiz.shareScore()">
+                <i class="fas fa-share-nodes"></i> Share
               </button>
             </div>
           </div>
@@ -454,6 +500,7 @@
 
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <script src="js/toast.js"></script>
   <script src="js/data.js"></script>
   <script src="js/location.js"></script>
   <script src="js/scanner.js"></script>

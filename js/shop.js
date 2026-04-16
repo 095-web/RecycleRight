@@ -92,6 +92,8 @@ const ShopModule = (function () {
           <span class="shop-balance-lbl">points available</span>
         </div>
 
+        ${_renderSpinSection(profile)}
+
         <div class="shop-section">
           <div class="shop-section-hdr">
             <div>
@@ -118,6 +120,131 @@ const ShopModule = (function () {
         </div>
 
       </div>`;
+  }
+
+  /* ====================================================
+     DAILY SPIN
+     ==================================================== */
+  function _renderSpinSection(profile) {
+    if (typeof SPIN_PRIZES === 'undefined') return '';
+    const todayStr  = new Date().toISOString().slice(0, 10);
+    const spunToday = profile.lastSpinDate === todayStr;
+    const totalW    = SPIN_PRIZES.reduce((s, p) => s + p.weight, 0);
+
+    const oddsRows = SPIN_PRIZES.map(p => {
+      const pct = Math.round((p.weight / totalW) * 100);
+      return `<div class="spin-odds-row">
+        <span class="spin-odds-label" style="color:${p.color}">${p.label}</span>
+        <span class="spin-odds-pct">${pct}%</span>
+      </div>`;
+    }).join('');
+
+    const drumLabel = spunToday
+      ? (SPIN_PRIZES.find(p => p.pts === profile.lastSpinResult)?.label || '—')
+      : '?';
+    const drumColor = spunToday
+      ? (SPIN_PRIZES.find(p => p.pts === profile.lastSpinResult)?.color || 'var(--gray-400)')
+      : 'var(--gray-400)';
+
+    return `
+      <div class="shop-section spin-section">
+        <div class="shop-section-hdr">
+          <div>
+            <h3><i class="fas fa-star"></i> Daily Spin</h3>
+            <p>One free spin per day — up to <strong>1000 pts!</strong></p>
+          </div>
+          ${spunToday ? '' : '<div class="spin-available-badge"><i class="fas fa-gift"></i> Ready!</div>'}
+        </div>
+        <div class="spin-drum-wrap">
+          <div class="spin-drum-val" id="spin-drum-val" style="color:${drumColor}">${drumLabel}</div>
+        </div>
+        <button class="spin-btn" id="spin-btn" onclick="ShopModule.doSpin()"
+          ${spunToday ? 'disabled' : ''}>
+          ${spunToday
+            ? `<i class="fas fa-check"></i> Spun Today — come back tomorrow!`
+            : `<i class="fas fa-star"></i> Spin for Points!`}
+        </button>
+        <details class="spin-odds-details">
+          <summary>Prize odds</summary>
+          <div class="spin-odds-grid">${oddsRows}</div>
+        </details>
+      </div>`;
+  }
+
+  function doSpin() {
+    const username = localStorage.getItem(KEY_CURRENT);
+    if (!username) return;
+    const profiles = JSON.parse(localStorage.getItem(KEY_PROFILES) || '[]');
+    const idx      = profiles.findIndex(p => p.username === username);
+    if (idx === -1) return;
+
+    const profile  = profiles[idx];
+    const todayStr = new Date().toISOString().slice(0, 10);
+    if (profile.lastSpinDate === todayStr) return;
+    if (typeof spinPrize !== 'function' || typeof SPIN_PRIZES === 'undefined') return;
+
+    const drumEl  = document.getElementById('spin-drum-val');
+    const spinBtn = document.getElementById('spin-btn');
+    if (!drumEl || !spinBtn) return;
+
+    spinBtn.disabled = true;
+    spinBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Spinning…';
+    drumEl.classList.remove('spin-drum-pop');
+
+    const prize = spinPrize();
+
+    // Slot-machine animation — rapid cycling then reveal
+    let tick = 0;
+    const TOTAL_TICKS = 22;
+
+    function nextTick() {
+      tick++;
+      const fake = SPIN_PRIZES[Math.floor(Math.random() * SPIN_PRIZES.length)];
+      drumEl.textContent  = fake.label;
+      drumEl.style.color  = fake.color;
+
+      if (tick < TOTAL_TICKS) {
+        // Start fast, slow down toward the end
+        const delay = tick < 12 ? 80 : tick < 18 ? 140 : 240;
+        setTimeout(nextTick, delay);
+      } else {
+        // Land on the real prize
+        drumEl.textContent = prize.label;
+        drumEl.style.color = prize.color;
+        void drumEl.offsetWidth; // reflow to restart animation
+        drumEl.classList.add('spin-drum-pop');
+
+        // Credit points
+        profile.lastSpinDate   = todayStr;
+        profile.lastSpinResult = prize.pts;
+        profile.points         = (profile.points || 0) + prize.pts;
+        profile.totalPoints    = (profile.totalPoints || 0) + prize.pts;
+
+        // Lucky spin badge (≥500 pts)
+        if (prize.pts >= 500) {
+          if (!profile.badges) profile.badges = [];
+          if (!profile.badges.includes('lucky_spin')) {
+            profile.badges.push('lucky_spin');
+            window.Toast?.show?.('🏆 New badge: Lucky Spin!', 'badge', 4500);
+          }
+        }
+
+        profiles[idx] = profile;
+        localStorage.setItem(KEY_PROFILES, JSON.stringify(profiles));
+        window.AuthModule?.syncProfileFlat?.(profile);
+
+        const toastType = prize.pts >= 500 ? 'spin' : 'success';
+        window.Toast?.show?.(`🎉 You won ${prize.label}! +${prize.pts} points`, toastType, 4000);
+
+        spinBtn.innerHTML = '<i class="fas fa-check"></i> Spun Today — come back tomorrow!';
+
+        // Update balance bar without full re-render
+        const balEl = document.querySelector('.shop-balance-val');
+        if (balEl) balEl.textContent = profile.points.toLocaleString();
+      }
+    }
+
+    setTimeout(nextTick, 80);
   }
 
   function isFrameUnlocked(frameId, profile) {
@@ -259,7 +386,7 @@ const ShopModule = (function () {
   /* ====================================================
      PUBLIC API
      ==================================================== */
-  return { init, render, purchase, isAvatarUnlocked, isTitleUnlocked, isFrameUnlocked };
+  return { init, render, purchase, doSpin, isAvatarUnlocked, isTitleUnlocked, isFrameUnlocked };
 })();
 
 window.ShopModule = ShopModule;

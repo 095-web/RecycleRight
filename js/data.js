@@ -129,6 +129,7 @@ const QUIZ_CATEGORIES = [
   { id:'paper',      name:'Paper & Cardboard',   desc:'From newspapers to greasy pizza boxes', icon:'fa-newspaper' },
   { id:'food',       name:'Food & Composting',   desc:'Organic waste, composting basics, and contamination', icon:'fa-apple-whole' },
   { id:'ewaste',     name:'E-Waste',             desc:'Electronics, batteries, and hazardous tech waste', icon:'fa-laptop' },
+  { id:'myths',      name:'Myth Busters',        desc:'True or false? Bust common recycling myths', icon:'fa-circle-question' },
   { id:'mixed',      name:'Mixed Challenge',     desc:'Random questions from all categories', icon:'fa-shuffle' },
 ];
 
@@ -524,6 +525,55 @@ const QUIZ_QUESTIONS = [
     opts:['About 5%','About 14%','About 22%','About 35%'],
     ans:2, exp:'Food waste makes up about 22% of municipal solid waste sent to landfills in the US — more than any other single material — making composting programs critically important.' },
 
+  /* Myth Busters */
+  { id:108, cat:'myths', q:'MYTH: All plastic with a recycling symbol on it can be recycled curbside.',
+    opts:['True — the symbol means it\'s accepted everywhere','False — the number identifies the resin type, not whether your local program accepts it','True — all numbered plastics are recyclable','False — only plastics with a green symbol can be recycled'],
+    ans:1, exp:'The resin ID code (1–7) only tells you what type of plastic it is. Whether your local program accepts it depends entirely on local markets and facility capabilities.' },
+
+  { id:109, cat:'myths', q:'MYTH: Rinsing recyclables before putting them in the bin is a waste of water.',
+    opts:['True — it uses too much water to be worth it','False — a quick rinse prevents contamination that ruins entire loads and saves more resources overall','True — recycling facilities wash everything anyway','False — you need to run the dishwasher for all recyclables'],
+    ans:1, exp:'A quick rinse (not a deep scrub) prevents grease and food residue from contaminating other recyclables. One greasy pizza box can ruin an entire bale of paper recycling.' },
+
+  { id:110, cat:'myths', q:'MYTH: Glass recycling is not worth it because it\'s too heavy and expensive to transport.',
+    opts:['True — most glass just goes to landfill anyway','False — recycling glass saves significant energy and raw materials compared to making it from scratch','True — glass is better off reused than recycled','False — glass is the cheapest material to recycle'],
+    ans:1, exp:'While transport costs are real, recycling glass still saves around 30% of the energy needed to make it from raw silica sand, limestone, and soda ash.' },
+
+  { id:111, cat:'myths', q:'MYTH: Biodegradable plastic bags are better for the environment than regular plastic bags.',
+    opts:['True — they break down harmlessly in any environment','False — most biodegradable plastics require specific industrial conditions and can persist for years in landfills or oceans','True — they decompose in months in a landfill','False — biodegradable plastics are identical to regular plastics'],
+    ans:1, exp:'"Biodegradable" plastics typically need sustained heat (above 140°F) found only in industrial composting facilities. In a landfill or ocean, they persist just like conventional plastic.' },
+
+  { id:112, cat:'myths', q:'MYTH: It\'s fine to put your recyclables in a plastic bag before putting them in the recycling bin.',
+    opts:['True — it keeps recyclables clean and organized','False — plastic bags jam sorting machinery and cause millions in damage at recycling facilities annually','True — bags help workers sort materials faster','False — but only if the bag is labeled "recyclable"'],
+    ans:1, exp:'Loose plastic bags wrap around conveyor belts and rollers at sorting facilities, causing equipment jams that halt operations. Always put recyclables loose in the bin.' },
+
+  { id:113, cat:'myths', q:'MYTH: Recycling paper wastes more energy than just making new paper.',
+    opts:['True — the de-inking process uses enormous energy','False — recycling paper uses 40–64% less energy than making it from virgin wood pulp','True — only if the recycling facility is far away','False — recycled paper uses 90% less energy'],
+    ans:1, exp:'Recycling paper uses approximately 40–64% less energy than virgin paper production. It also saves 7,000 gallons of water per ton and reduces greenhouse gas emissions significantly.' },
+
+  { id:114, cat:'myths', q:'MYTH: Recycling has no real impact — companies just ship it overseas anyway.',
+    opts:['True — most US recycling goes to China and is landfilled','False — while export markets exist, many materials are recycled domestically and global recycling still reduces raw material extraction','True — it\'s all greenwashing','False — nothing is ever exported'],
+    ans:1, exp:'While exports are real (especially after China\'s 2018 National Sword policy changed trade), domestic recycling industries have grown significantly. Even imperfect recycling reduces mining, deforestation, and emissions.' },
+
+  { id:115, cat:'myths', q:'MYTH: Pizza boxes are always recyclable as long as you remove the food.',
+    opts:['True — cardboard is cardboard','False — grease soaks into the cardboard fibers and cannot be removed during pulping, making grease-soaked portions non-recyclable','True — just scrape off any cheese','False — pizza boxes can never be recycled under any circumstances'],
+    ans:1, exp:'Grease bonds chemically with paper fibers and cannot be separated during the water-based pulping process. Best practice: tear off and recycle the clean lid; trash the greasy base.' },
+
+  { id:116, cat:'myths', q:'MYTH: Buying products made from recycled content doesn\'t make a real difference.',
+    opts:['True — the product is the same either way','False — buying recycled content creates market demand that makes recycling economically viable and funds collection programs','True — companies just claim "recycled" for marketing','False — only if the item is 100% recycled content'],
+    ans:1, exp:'Recycling only works as a system when there are buyers for recycled materials. Purchasing recycled-content products "closes the loop" and makes the economics work for recycling programs.' },
+
+  { id:117, cat:'myths', q:'MYTH: Composting is complicated and smelly — it\'s not practical at home.',
+    opts:['True — home composting always produces bad odors','False — a properly maintained compost bin with balanced greens and browns produces little odor and is straightforward to manage','True — only city-run programs work well','False — but only if you have a large yard'],
+    ans:1, exp:'Odor comes from imbalanced piles (too many food scraps, not enough carbon-rich browns). A properly balanced pile with a 2:1 brown-to-green ratio and occasional turning is nearly odor-free.' },
+
+  { id:118, cat:'myths', q:'MYTH: Recycling aluminum is not important because bauxite ore is abundant.',
+    opts:['True — aluminum ore reserves will last thousands of years','False — recycling aluminum uses 95% less energy than mining and smelting new aluminum, making it one of the most valuable recyclables','True — the energy savings are minimal','False — but only in countries that lack bauxite deposits'],
+    ans:1, exp:'Even though bauxite deposits exist, the smelting process is extraordinarily energy-intensive. Recycling uses 95% less energy — a recycled can can be back on shelves in just 60 days.' },
+
+  { id:119, cat:'myths', q:'MYTH: Throwing one wrong item in a recycling bin doesn\'t affect the rest of the load.',
+    opts:['True — one item is insignificant in a large load','False — a single contaminating item (especially food waste or plastic bags) can cause an entire truckload to be rejected and sent to landfill','True — facilities sort out contaminants','False — but only liquids cause problems'],
+    ans:1, exp:'Contamination rates above 10–15% often cause facilities to reject entire loads. One greasy food container, a bag of paint, or a full liquid bottle can contaminate hundreds of pounds of otherwise recyclable material.' },
+
   /* E-Waste — extra pool */
   { id:96, cat:'ewaste', q:'What is an "e-Stewards" certification for electronics recyclers?',
     opts:['A government program for free e-waste pickup','The highest-standard certification ensuring responsible recycling without exporting hazardous waste to developing countries','A consumer guarantee that electronics are refurbished','A rating system for eco-friendly manufacturers'],
@@ -604,6 +654,13 @@ const ACHIEVEMENTS = [
   /* Shop & power-ups */
   { id:'first_purchase',    name:'First Haul',        desc:'Buy your first item from the Shop',                    icon:'🛍️', req: () => false },
   { id:'power_user',        name:'Power Player',      desc:'Use a power-up during a quiz',                         icon:'⚡', req: q => (q.powerupsUsed || 0) >= 1 },
+  /* Sorting mini-game */
+  { id:'sorter_perfect',    name:'Master Sorter',     desc:'Get a perfect score in the Sorting Game',              icon:'🗑️', req: () => false },
+  { id:'sorter_played',     name:'Bin Basics',        desc:'Play the Sorting Game for the first time',             icon:'♻️', req: () => false },
+  /* Myth busters */
+  { id:'myth_buster',       name:'Myth Buster',       desc:'Complete the Myth Busters quiz',                       icon:'🔮', req: q => (q.catsPlayed instanceof Set ? q.catsPlayed.has('myths') : (q.catsPlayed||[]).includes('myths')) },
+  /* Daily spin */
+  { id:'lucky_spin',        name:'Lucky Spin',        desc:'Win 500+ pts in a single Daily Spin',                  icon:'🎰', req: () => false },
 ];
 
 /* ---------- Avatars ---------- */
@@ -815,4 +872,56 @@ const FRAMES = [
   { id:'frame_gold',    label:'Gold',    css:'frame-gold',    desc:'Shining gold ring'   },
   { id:'frame_rainbow', label:'Rainbow', css:'frame-rainbow', desc:'All the colors!'     },
   { id:'frame_fire',    label:'Fire',    css:'frame-fire',    desc:'Blazing hot ring'    },
+];
+
+/* ============================================================
+   DAILY SPIN PRIZES  (weighted — total weight = 100)
+   ============================================================ */
+const SPIN_PRIZES = [
+  { pts:25,   weight:34, color:'#86efac', label:'25 pts'    },
+  { pts:50,   weight:25, color:'#4ade80', label:'50 pts'    },
+  { pts:75,   weight:16, color:'#22c55e', label:'75 pts'    },
+  { pts:100,  weight:12, color:'#16a34a', label:'100 pts'   },
+  { pts:150,  weight:7,  color:'#fbbf24', label:'150 pts'   },
+  { pts:200,  weight:4,  color:'#f59e0b', label:'200 pts'   },
+  { pts:500,  weight:1.5,color:'#ef4444', label:'500 pts!'  },
+  { pts:1000, weight:0.5,color:'#8b5cf6', label:'1000 pts!!'},
+];
+
+function spinPrize() {
+  const total = SPIN_PRIZES.reduce((s, p) => s + p.weight, 0);
+  let r = Math.random() * total;
+  for (const p of SPIN_PRIZES) { r -= p.weight; if (r <= 0) return p; }
+  return SPIN_PRIZES[0];
+}
+
+/* ============================================================
+   RECYCLING FACTS  (shown as daily "Did you know?" on quiz home)
+   ============================================================ */
+const RECYCLING_FACTS = [
+  'Recycling one aluminum can saves enough energy to power a TV for 3 hours.',
+  'Americans throw away enough aluminum every three months to rebuild the entire US commercial aircraft fleet.',
+  'Glass can be recycled endlessly without any loss in quality or purity.',
+  'Recycling one ton of paper saves 17 trees, 7,000 gallons of water, and 380 gallons of oil.',
+  'A plastic bottle takes up to 450 years to decompose in a landfill.',
+  'The US recycles only about 9% of all plastic it generates.',
+  'Recycling aluminum uses 95% less energy than producing it from raw ore.',
+  'Food waste is the single largest category of material sent to US landfills, making up about 22% of the total.',
+  'Making one glass bottle from recycled glass cuts air pollution by 20% and water pollution by 50%.',
+  'The average American generates about 4.9 lbs of trash per day.',
+  'Recycling 1 ton of cardboard saves 46 gallons of oil.',
+  'E-waste makes up only 2% of trash in landfills, but represents 70% of overall toxic waste.',
+  'Styrofoam (EPS) takes over 500 years to decompose — and it never fully biodegrades.',
+  'A recycled aluminum can could be back on the shelf as a new product in as little as 60 days.',
+  'Globally, only about 20% of e-waste is formally recycled each year.',
+  'Plastic bags kill over 100,000 marine animals per year and never fully decompose.',
+  'Germany has one of the world\'s highest recycling rates — over 65% of municipal waste.',
+  'The first Earth Day, on April 22, 1970, launched the modern environmental movement in the US.',
+  'Lithium-ion battery fires at recycling facilities have caused billions in damage — never put them in a bin.',
+  'Composting food waste instead of landfilling it cuts methane emissions by up to 50% for that waste.',
+  'TerraCycle recycles items that traditional programs can\'t — from chip bags to cigarette butts.',
+  'Recycling paper produces 73% less air pollution than making it from scratch.',
+  'A single quart of motor oil can contaminate up to 250,000 gallons of drinking water if dumped improperly.',
+  'Over 80 billion aluminum cans are sold in the US annually — each one infinitely recyclable.',
+  'The world generates over 50 million tonnes of e-waste per year — more than the weight of all commercial aircraft ever built.',
 ];

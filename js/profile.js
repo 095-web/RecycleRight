@@ -302,6 +302,16 @@ const ProfileModule = (function () {
           <div id="prof-quiz-history"></div>
         </div>
 
+        <div class="profile-section-card">
+          <h3 class="profile-section-title"><i class="fas fa-calendar-check"></i> Activity Calendar</h3>
+          <div id="prof-streak-calendar"></div>
+        </div>
+
+        <div class="profile-section-card">
+          <h3 class="profile-section-title"><i class="fas fa-chart-bar"></i> Stats Dashboard</h3>
+          <div id="prof-stats-dashboard"></div>
+        </div>
+
         <div class="profile-section-card danger-zone-card">
           <h3 class="profile-section-title danger-zone-title">
             <i class="fas fa-triangle-exclamation"></i> Danger Zone
@@ -324,6 +334,8 @@ const ProfileModule = (function () {
     renderFriendsList();
     renderAchievementsList(profile);
     renderQuizHistory(profile);
+    renderStreakCalendar(profile);
+    renderStatsDashboard(profile);
     renderChallengeFriendSection();
   }
 
@@ -599,6 +611,134 @@ const ProfileModule = (function () {
             <div class="qh-score">+${h.score} pts</div>
           </div>`;
       }).join('') + `</div>`;
+  }
+
+  /* ====================================================
+     STREAK CALENDAR (12-week GitHub-style heatmap)
+     ==================================================== */
+  function renderStreakCalendar(profile) {
+    const container = document.getElementById('prof-streak-calendar');
+    if (!container) return;
+
+    const playDates = new Set(profile.playDates || []);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayStr = today.toISOString().slice(0, 10);
+
+    // Build 12 weeks × 7 days going back from today
+    const WEEKS = 12;
+    const DAYS  = WEEKS * 7;
+
+    // Compute current streak
+    let currentStreak = 0;
+    let checkDay = new Date(today);
+    while (true) {
+      const ds = checkDay.toISOString().slice(0, 10);
+      if (playDates.has(ds)) {
+        currentStreak++;
+        checkDay.setDate(checkDay.getDate() - 1);
+      } else if (ds === todayStr) {
+        // Today not played yet, still check yesterday
+        checkDay.setDate(checkDay.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+
+    // Find the start of 12 weeks ago (start of that Sunday)
+    const startDay = new Date(today);
+    startDay.setDate(today.getDate() - (DAYS - 1));
+    // Pad so the grid starts on Sunday (day 0)
+    const startDow = startDay.getDay(); // 0=Sun
+    const paddingCells = Array(startDow).fill('<div class="streak-cal-day" style="visibility:hidden"></div>').join('');
+
+    // Build cells from oldest to newest
+    const cells = [];
+    for (let i = DAYS - 1; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const ds = d.toISOString().slice(0, 10);
+      const played  = playDates.has(ds);
+      const isToday = ds === todayStr;
+      cells.push(`<div class="streak-cal-day${played ? ' played' : ''}${isToday ? ' today' : ''}" title="${ds}"></div>`);
+    }
+
+    container.innerHTML = `
+      <div class="streak-cal-meta">
+        <span><i class="fas fa-fire"></i> Current streak: <strong>${currentStreak} day${currentStreak !== 1 ? 's' : ''}</strong></span>
+        <span><i class="fas fa-calendar-check"></i> ${playDates.size} total days played</span>
+      </div>
+      <div class="streak-cal-wrap">
+        <div class="streak-cal-day-labels">
+          ${['Su','Mo','Tu','We','Th','Fr','Sa'].map(d => `<span>${d}</span>`).join('')}
+        </div>
+        <div class="streak-calendar-grid">${paddingCells}${cells.join('')}</div>
+      </div>
+      <div class="streak-cal-legend">
+        <span>Less</span>
+        <div class="streak-cal-day"></div>
+        <div class="streak-cal-day played" style="opacity:.4"></div>
+        <div class="streak-cal-day played"></div>
+        <span>More</span>
+      </div>`;
+  }
+
+  /* ====================================================
+     STATS DASHBOARD
+     ==================================================== */
+  function renderStatsDashboard(profile) {
+    const container = document.getElementById('prof-stats-dashboard');
+    if (!container) return;
+
+    const history = profile.quizHistory || [];
+    const totalQuizzes  = profile.quizzes || 0;
+    const totalCorrect  = history.reduce((s, h) => s + (h.correct || 0), 0);
+    const totalQs       = history.reduce((s, h) => s + (h.total || 0), 0);
+    const avgAccuracy   = totalQs > 0 ? Math.round((totalCorrect / totalQs) * 100) : 0;
+
+    // Favorite category (most played from history)
+    const catCounts = {};
+    history.forEach(h => { catCounts[h.category] = (catCounts[h.category] || 0) + 1; });
+    const topCatId  = Object.entries(catCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+    const topCat    = QUIZ_CATEGORIES?.find(c => c.id === topCatId) || null;
+
+    // Category bar chart (catBests)
+    const catBests = profile.catBests || {};
+    const maxBest  = Math.max(...Object.values(catBests), 1);
+    const catBars  = QUIZ_CATEGORIES?.map(cat => {
+      const best = catBests[cat.id] || 0;
+      const pct  = Math.round((best / maxBest) * 100);
+      return `
+        <div class="cat-bar-wrap">
+          <div class="cat-bar-label">${cat.name.split(' ')[0]}</div>
+          <div class="cat-bar-track">
+            <div class="cat-bar-fill" style="width:${pct}%"></div>
+          </div>
+          <div class="cat-bar-val">${best || '—'}</div>
+        </div>`;
+    }).join('') || '';
+
+    container.innerHTML = `
+      <div class="stats-dashboard">
+        <div class="stat-tile">
+          <div class="stat-tile-val">${totalQuizzes}</div>
+          <div class="stat-tile-lbl">Quizzes Played</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-tile-val">${totalCorrect}</div>
+          <div class="stat-tile-lbl">Correct Answers</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-tile-val">${avgAccuracy}%</div>
+          <div class="stat-tile-lbl">Avg Accuracy</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-tile-val">${profile.bestStreak || 0}</div>
+          <div class="stat-tile-lbl">Best Streak</div>
+        </div>
+      </div>
+      ${topCat ? `<p class="stat-fave-cat"><i class="fas ${topCat.icon}"></i> Favorite category: <strong>${esc(topCat.name)}</strong></p>` : ''}
+      ${catBars ? `<div class="cat-bars-section"><div class="cat-bars-title">Best Score per Category</div>${catBars}</div>` : ''}`;
   }
 
   /* ====================================================

@@ -26,7 +26,10 @@ const Quiz = (function () {
 
   /* ---- Leaderboard live listener handle ---- */
   let _lbUnsubscribe = null;
-  let _lbMode = 'current'; // 'current' | 'total'
+  let _lbMode = 'current'; // 'current' | 'total' | 'friends'
+
+  /* ---- Sort game state ---- */
+  let _sortState = { items: [], current: 0, score: 0, correct: 0, answered: false };
 
   /* ---- Keyboard listener cleanup ---- */
   let _keyHandler = null;
@@ -181,7 +184,7 @@ const Quiz = (function () {
      SCREEN MANAGEMENT
      ==================================================== */
   function _hideAll() {
-    ['quiz-profile-setup','quiz-google-setup','quiz-home','quiz-active','quiz-results']
+    ['quiz-profile-setup','quiz-google-setup','quiz-home','quiz-active','quiz-sort-game','quiz-results']
       .forEach(id => document.getElementById(id)?.classList.add('hidden'));
   }
 
@@ -246,9 +249,10 @@ const Quiz = (function () {
     document.querySelector('.qnav-btn[data-qsection="play"]')?.classList.add('active');
     document.getElementById('qsection-play')?.classList.add('active');
 
-    updateCatBests();
+    buildQuizCategories(); // rebuild so cat-stars update
     _renderDailyChallenge(profile);
     _renderDailyMissions(profile);
+    _renderFactStrip();
   }
 
   /* Wrap an avatar element with a frame div if needed */
@@ -467,16 +471,34 @@ const Quiz = (function () {
   function buildQuizCategories() {
     const grid = document.getElementById('quiz-cat-grid');
     if (!grid) return;
-    grid.innerHTML = QUIZ_CATEGORIES.map(cat => `
-      <div class="quiz-cat-card" onclick="Quiz.startQuiz('${cat.id}')">
-        <div class="cat-icon"><i class="fas ${cat.icon}"></i></div>
-        <div class="cat-name">${cat.name}</div>
-        <div class="cat-desc">${cat.desc}</div>
-        <div class="cat-meta">
-          <span><i class="fas fa-question-circle"></i> 10 questions</span>
-          <span class="cat-best" id="best-${cat.id}"></span>
-        </div>
-      </div>`).join('');
+    const user    = currentUser();
+    const profile = getProfile(user);
+    const catBests = profile?.catBests || {};
+    const catPerfects = profile?.catPerfects || [];
+
+    grid.innerHTML = QUIZ_CATEGORIES.map(cat => {
+      const best   = catBests[cat.id] || 0;
+      const played = best > 0;
+      const star2  = best >= 70;
+      const star3  = catPerfects.includes(cat.id);
+      const stars  = `
+        <div class="cat-stars">
+          <span class="cat-star${played ? ' earned' : ''}">★</span>
+          <span class="cat-star${star2  ? ' earned' : ''}">★</span>
+          <span class="cat-star${star3  ? ' earned' : ''}">★</span>
+        </div>`;
+      return `
+        <div class="quiz-cat-card" onclick="Quiz.startQuiz('${cat.id}')">
+          <div class="cat-icon"><i class="fas ${cat.icon}"></i></div>
+          <div class="cat-name">${cat.name}</div>
+          <div class="cat-desc">${cat.desc}</div>
+          ${stars}
+          <div class="cat-meta">
+            <span><i class="fas fa-question-circle"></i> 10 questions</span>
+            <span class="cat-best" id="best-${cat.id}">${best ? 'Best: ' + best + ' pts' : ''}</span>
+          </div>
+        </div>`;
+    }).join('');
   }
 
   function updateCatBests() {
@@ -485,8 +507,19 @@ const Quiz = (function () {
     if (!profile?.catBests) return;
     for (const [catId, pts] of Object.entries(profile.catBests)) {
       const el = document.getElementById('best-' + catId);
-      if (el) el.textContent = `Best: ${pts} pts`;
+      if (el) el.textContent = pts ? `Best: ${pts} pts` : '';
     }
+  }
+
+  function _renderFactStrip() {
+    const slot = document.getElementById('fact-strip-slot');
+    if (!slot || typeof RECYCLING_FACTS === 'undefined' || RECYCLING_FACTS.length === 0) return;
+    const fact = RECYCLING_FACTS[Math.floor(Math.random() * RECYCLING_FACTS.length)];
+    slot.innerHTML = `
+      <div class="fact-strip">
+        <span class="fact-strip-icon"><i class="fas fa-lightbulb"></i></span>
+        <span class="fact-strip-label"><strong>Did you know?</strong> ${escapeHtml(fact)}</span>
+      </div>`;
   }
 
   /* ====================================================
@@ -758,6 +791,10 @@ const Quiz = (function () {
     });
     if (profile.quizHistory.length > 20) profile.quizHistory = profile.quizHistory.slice(0, 20);
 
+    // Track play dates for streak calendar (deduplicated by date)
+    if (!profile.playDates) profile.playDates = [];
+    if (!profile.playDates.includes(today())) profile.playDates.push(today());
+
     // Daily missions update
     const accuracy = Math.round((state.correct / state.questions.length) * 100);
     const missionBonus = _updateMissions(profile, {
@@ -832,11 +869,23 @@ const Quiz = (function () {
       if (missionBonus > 0) html += `<span class="badge-pill">🎯 Mission Bonus: +${missionBonus} pts!</span>`;
       badgesList.innerHTML = html;
       badgesSec.classList.remove('hidden');
+      // Toast each new badge
+      newBadges.forEach(b => {
+        window.Toast?.show?.(`${b.icon} Badge unlocked: ${b.name}!`, 'badge', 4000);
+      });
     } else if (missionBonus > 0) {
       badgesList.innerHTML = `<span class="badge-pill">🎯 Mission Bonus: +${missionBonus} pts!</span>`;
       badgesSec.classList.remove('hidden');
+      window.Toast?.show?.(`🎯 Mission complete! +${missionBonus} pts`, 'success', 3500);
     } else {
       badgesSec.classList.add('hidden');
+    }
+
+    // Toast for quiz result
+    if (pct === 100) {
+      window.Toast?.show?.('🏆 Perfect score! Incredible!', 'success', 4000);
+    } else if (pct >= 70) {
+      window.Toast?.show?.(`⭐ Great job! You scored ${finalScore} pts`, 'success', 3000);
     }
 
     // Confetti on perfect score
@@ -853,6 +902,154 @@ const Quiz = (function () {
     if (confirm('Exit quiz? Your progress will not be saved.')) showHome();
   }
 
+  function shareScore() {
+    const user    = currentUser();
+    const profile = getProfile(user);
+    const catInfo = QUIZ_CATEGORIES.find(c => c.id === state.category) || { name: state.category };
+    const pct     = Math.round((state.correct / state.questions.length) * 100);
+    const emoji   = pct === 100 ? '🏆' : pct >= 70 ? '⭐' : '🌱';
+    const text    = `${emoji} I scored ${pct}% on the "${catInfo.name}" quiz in RecycleRight! Can you beat me? 🌍♻️`;
+
+    if (navigator.share) {
+      navigator.share({ title: 'RecycleRight Quiz Score', text }).catch(() => {});
+    } else {
+      navigator.clipboard?.writeText(text).then(() => {
+        window.Toast?.show?.('Score copied to clipboard!', 'info', 3000);
+      }).catch(() => {
+        window.Toast?.show?.(text, 'info', 5000);
+      });
+    }
+  }
+
+  /* ====================================================
+     SORTING MINI-GAME
+     ==================================================== */
+  function startSortGame() {
+    const user    = currentUser();
+    const profile = getProfile(user);
+    if (!profile) { alert('Create a profile first!'); return; }
+
+    // Pick 10 random items from RECYCLING_ITEMS
+    const pool = [...RECYCLING_ITEMS].sort(() => Math.random() - 0.5).slice(0, 10);
+
+    _sortState = { items: pool, current: 0, score: 0, correct: 0, answered: false };
+
+    _hideAll();
+    document.getElementById('quiz-sort-game').classList.remove('hidden');
+    _renderSortItem();
+    // Use onclick to avoid stacking listeners on repeated plays
+    document.getElementById('sort-next-btn').onclick = _sortNext;
+  }
+
+  function _renderSortItem() {
+    const item = _sortState.items[_sortState.current];
+    const num  = _sortState.current + 1;
+    const tot  = _sortState.items.length;
+
+    document.getElementById('sort-q-label').textContent     = `Item ${num} / ${tot}`;
+    document.getElementById('sort-live-score').textContent  = _sortState.score;
+    document.getElementById('sort-item-name').textContent   = item.name;
+    document.getElementById('sort-item-tip').textContent    = '';
+    document.getElementById('sort-feedback').classList.add('hidden');
+
+    // Reset bin button states
+    document.querySelectorAll('.sort-bin-btn').forEach(b => {
+      b.disabled = false;
+      b.classList.remove('correct', 'wrong');
+    });
+    _sortState.answered = false;
+  }
+
+  function _sortAnswer(binId) {
+    if (_sortState.answered) return;
+    _sortState.answered = true;
+
+    const item    = _sortState.items[_sortState.current];
+    const correct = binId === item.status;
+
+    // Flash button state
+    document.querySelectorAll('.sort-bin-btn').forEach(b => {
+      b.disabled = true;
+      if (b.dataset.bin === item.status) b.classList.add('correct');
+      if (b.dataset.bin === binId && !correct) b.classList.add('wrong');
+    });
+
+    if (correct) {
+      _sortState.score   += 10;
+      _sortState.correct += 1;
+    }
+
+    const binLabels = { yes: '♻️ Recycle', no: '🗑️ Trash', special: '📦 Special Drop-Off', check: '❓ Check Locally' };
+    const feedbackEl = document.getElementById('sort-feedback');
+    document.getElementById('sort-feedback-text').innerHTML = `
+      <div class="fb-result ${correct ? 'correct' : 'wrong'}">
+        <i class="fas fa-${correct ? 'check-circle' : 'circle-xmark'}"></i>
+        ${correct ? 'Correct!' : `Not quite — this goes in <strong>${binLabels[item.status]}</strong>`}
+      </div>
+      <div class="fb-explanation" style="font-size:.85rem;color:var(--gray-600);margin-top:4px">${escapeHtml(item.tip)}</div>`;
+    feedbackEl.classList.remove('hidden');
+  }
+
+  function _sortNext() {
+    _sortState.current++;
+    if (_sortState.current >= _sortState.items.length) {
+      _endSortGame();
+    } else {
+      _renderSortItem();
+    }
+  }
+
+  function _endSortGame() {
+    const total   = _sortState.items.length;
+    const correct = _sortState.correct;
+    const pct     = Math.round((correct / total) * 100);
+    const perfect = correct === total;
+
+    // Award points and achievements
+    const user    = currentUser();
+    const profile = getProfile(user);
+    if (profile) {
+      const earned = _sortState.score;
+      profile.points      = (profile.points || 0) + earned;
+      profile.totalPoints = (profile.totalPoints || 0) + earned;
+      if (!profile.badges) profile.badges = [];
+      if (!profile.badges.includes('sorter_played')) {
+        profile.badges.push('sorter_played');
+        window.Toast?.show?.('🎮 Badge unlocked: Bin Basics!', 'badge', 4000);
+      }
+      if (perfect && !profile.badges.includes('sorter_perfect')) {
+        profile.badges.push('sorter_perfect');
+        window.Toast?.show?.('🏆 Badge unlocked: Master Sorter!', 'badge', 4000);
+      }
+      saveProfile(profile);
+    }
+
+    if (perfect && typeof confetti !== 'undefined') {
+      confetti({ particleCount: 120, spread: 70, origin: { y: 0.55 } });
+    }
+
+    // Show results inline
+    const screen = document.getElementById('quiz-sort-game');
+    screen.querySelector('.sort-game-screen').innerHTML = `
+      <div class="sort-results-card">
+        <div class="results-emoji">${perfect ? '🏆' : pct >= 70 ? '⭐' : '🌱'}</div>
+        <h2>${perfect ? 'Perfect Sort!' : pct >= 70 ? 'Nice Work!' : 'Keep Practicing!'}</h2>
+        <p>${correct} / ${total} items sorted correctly · +${_sortState.score} pts</p>
+        <div class="results-actions" style="margin-top:1.5rem">
+          <button class="btn btn-primary btn-lg" onclick="Quiz.startSortGame()">
+            <i class="fas fa-redo"></i> Play Again
+          </button>
+          <button class="btn btn-outline btn-lg" onclick="Quiz.goHome()">
+            <i class="fas fa-home"></i> Menu
+          </button>
+        </div>
+      </div>`;
+  }
+
+  function exitSortGame() {
+    if (confirm('Exit the sorting game?')) showHome();
+  }
+
   /* ====================================================
      LEADERBOARD
      ==================================================== */
@@ -865,7 +1062,12 @@ const Quiz = (function () {
         document.querySelectorAll('.lb-type-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         _lbMode = btn.dataset.lb;
-        _subscribeLeaderboardData();
+        if (_lbMode === 'friends') {
+          if (_lbUnsubscribe) { _lbUnsubscribe(); _lbUnsubscribe = null; }
+          _renderFriendsLeaderboard();
+        } else {
+          _subscribeLeaderboardData();
+        }
       };
       btn.classList.toggle('active', btn.dataset.lb === _lbMode);
     });
@@ -883,8 +1085,64 @@ const Quiz = (function () {
       return;
     }
 
-    _subscribeLeaderboardData();
+    if (_lbMode === 'friends') {
+      _renderFriendsLeaderboard();
+    } else {
+      _subscribeLeaderboardData();
+    }
     _renderLbBadges();
+  }
+
+  function _renderFriendsLeaderboard() {
+    const container = document.getElementById('leaderboard-list');
+    if (!container) return;
+
+    const friends = loadFriends();
+    const user    = currentUser();
+    const profile = getProfile(user);
+
+    if (friends.length === 0) {
+      container.innerHTML = `
+        <div class="lb-signin-prompt">
+          <i class="fas fa-users fa-2x"></i>
+          <p>You have no friends added yet! Add friends from the <strong>Profile</strong> tab.</p>
+        </div>`;
+      return;
+    }
+
+    // Include self in the comparison
+    const selfEntry = profile ? {
+      username: profile.username, avatarIdx: profile.avatarIdx,
+      points: profile.points || 0, totalPoints: profile.totalPoints || 0,
+      quizzes: profile.quizzes || 0, selectedTitle: profile.selectedTitle,
+      equippedFrame: profile.equippedFrame, isMe: true,
+    } : null;
+
+    const allEntries = [...friends.map(f => ({ ...f, isMe: false })), ...(selfEntry ? [selfEntry] : [])];
+    allEntries.sort((a, b) => (b.points || 0) - (a.points || 0));
+
+    container.innerHTML = allEntries.map((entry, i) => {
+      const rankClass  = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+      const rankLabel  = i < 3 ? ['🥇','🥈','🥉'][i] : `#${i + 1}`;
+      const titleLabel = TITLES ? (TITLES.find(t => t.id === entry.selectedTitle) || TITLES[0]).label : '';
+      const frameCss   = FRAMES?.find(f => f.id === entry.equippedFrame)?.css || '';
+      const avatarHtml = frameCss
+        ? `<div class="avatar-frame-wrap ${frameCss}" style="width:36px;height:36px;font-size:1.5rem">${AVATARS[entry.avatarIdx || 0]}</div>`
+        : `<div class="lb-avatar">${AVATARS[entry.avatarIdx || 0]}</div>`;
+      return `
+        <div class="lb-entry ${entry.isMe ? 'is-me' : ''}">
+          <div class="lb-rank ${rankClass}">${rankLabel}</div>
+          ${avatarHtml}
+          <div class="lb-info">
+            <div class="lb-name">
+              ${escapeHtml(entry.displayName || entry.username)}
+              <span class="lb-title-badge">${escapeHtml(titleLabel)}</span>
+            </div>
+            <div class="lb-sub">@${escapeHtml(entry.username)} · ${entry.quizzes || 0} quizzes${entry.isMe ? ' · <strong>You</strong>' : ''}</div>
+          </div>
+          <div class="lb-score">${(entry.points || 0).toLocaleString()}<small>pts</small></div>
+        </div>`;
+    }).join('');
   }
 
   function _subscribeLeaderboardData() {
@@ -1106,6 +1364,8 @@ const Quiz = (function () {
   const publicAPI = {
     init, startQuiz, startDailyChallenge, startChallengeQuiz,
     playAgain, goHome, exit,
+    shareScore,
+    startSortGame, exitSortGame, _sortAnswer,
     _answer, _selectAvatar,
     _addFriendByUsername,
     usePowerup,
