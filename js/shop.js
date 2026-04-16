@@ -120,8 +120,17 @@ const ShopModule = (function () {
       </div>`;
   }
 
+  function isFrameUnlocked(frameId, profile) {
+    if (frameId === 'frame_none') return true;
+    return (profile?.purchasedItems || []).some(id => {
+      const item = allShopItems().find(s => s.id === id);
+      return item?.type === 'frame' && item.frameId === frameId;
+    });
+  }
+
   function renderItem(item, profile) {
     if (item.type === 'powerup') return renderPowerupItem(item, profile);
+    if (item.type === 'frame')   return renderFrameItem(item, profile);
 
     const owned  = isItemOwned(item, profile);
     const afford = (profile.points || 0) >= item.cost;
@@ -135,6 +144,31 @@ const ShopModule = (function () {
         ${preview}
         <div class="shop-item-name">${item.name}</div>
         <div class="shop-item-type">${typeLabel}</div>
+        ${owned
+          ? `<div class="shop-item-badge owned-badge"><i class="fas fa-check-circle"></i> Owned</div>`
+          : `<button class="btn btn-sm shop-buy-btn${afford ? '' : ' cant-afford'}"
+               onclick="ShopModule.purchase('${item.id}')"
+               ${afford ? '' : 'disabled'}>
+               <i class="fas fa-star"></i> ${item.cost.toLocaleString()} pts
+             </button>`}
+        ${!owned && !afford ? `<div class="shop-item-badge need-badge">Need ${(item.cost-(profile.points||0)).toLocaleString()} more</div>` : ''}
+      </div>`;
+  }
+
+  function renderFrameItem(item, profile) {
+    const owned  = (profile?.purchasedItems || []).includes(item.id);
+    const afford = (profile.points || 0) >= item.cost;
+    const frame  = FRAMES?.find(f => f.id === item.frameId) || {};
+    const avatarCss = frame.css ? `avatar-frame-wrap ${frame.css}` : '';
+    const preview = `
+      <div style="display:flex;justify-content:center;padding:6px 0">
+        <div class="${avatarCss}" style="font-size:1.8rem;${avatarCss ? 'width:42px;height:42px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center' : ''}">♻️</div>
+      </div>`;
+    return `
+      <div class="shop-item${owned ? ' owned' : ''}${!owned && !afford ? ' cant-afford' : ''}">
+        ${preview}
+        <div class="shop-item-name">${item.name}</div>
+        <div class="shop-item-type">🖼️ Frame</div>
         ${owned
           ? `<div class="shop-item-badge owned-badge"><i class="fas fa-check-circle"></i> Owned</div>`
           : `<button class="btn btn-sm shop-buy-btn${afford ? '' : ' cant-afford'}"
@@ -218,13 +252,14 @@ const ShopModule = (function () {
     if ((profile?.purchasedItems || []).includes(item.id)) return true;
     if (item.type === 'avatar') return isAvatarUnlocked(item.idx, profile);
     if (item.type === 'title')  return isTitleUnlocked(item.titleId, profile);
+    if (item.type === 'frame')  return isFrameUnlocked(item.frameId, profile);
     return false;
   }
 
   /* ====================================================
      PUBLIC API
      ==================================================== */
-  return { init, render, purchase, isAvatarUnlocked, isTitleUnlocked };
+  return { init, render, purchase, isAvatarUnlocked, isTitleUnlocked, isFrameUnlocked };
 })();
 
 window.ShopModule = ShopModule;

@@ -87,14 +87,15 @@ const AuthModule = (function () {
         const data = snap.data();
         // Reconstruct a profile object from flat fields or nested profile
         const profile = data.profile || {
-          username:    data.username    || '',
-          avatarIdx:   data.avatarIdx   || 0,
-          points:      data.points      || 0,
-          quizzes:     data.quizzes     || 0,
-          bestStreak:  data.bestStreak  || 0,
-          catsPlayed:  data.catsPlayed  || [],
-          catBests:    data.catBests    || {},
-          badges:      data.badges      || [],
+          username:      data.username      || '',
+          avatarIdx:     data.avatarIdx     || 0,
+          points:        data.points        || 0,
+          quizzes:       data.quizzes       || 0,
+          bestStreak:    data.bestStreak    || 0,
+          catsPlayed:    data.catsPlayed    || [],
+          catBests:      data.catBests      || {},
+          badges:        data.badges        || [],
+          equippedFrame: data.equippedFrame || 'frame_none',
         };
 
         if (profile.username) {
@@ -164,6 +165,7 @@ const AuthModule = (function () {
         catBests:        profile.catBests       || {},
         badges:          profile.badges         || [],
         selectedTitle:   profile.selectedTitle  || 'newcomer',
+        equippedFrame:   profile.equippedFrame  || 'frame_none',
         purchasedItems:  profile.purchasedItems || [],
         powerups:        profile.powerups       || {},
         scanCount:       profile.scanCount      || 0,
@@ -273,6 +275,7 @@ const AuthModule = (function () {
             quizzes:       doc.data().quizzes        || 0,
             bestStreak:    doc.data().bestStreak     || 0,
             selectedTitle: doc.data().selectedTitle  || 'newcomer',
+            equippedFrame: doc.data().equippedFrame  || 'frame_none',
             isMe:          doc.id === uid,
           }));
           callback(entries);
@@ -347,6 +350,76 @@ const AuthModule = (function () {
   }
 
   /* ====================================================
+     CHALLENGE A FRIEND
+     ==================================================== */
+  async function sendChallenge(toUid, toUsername, category, seed) {
+    if (!db || !_currentUser) return { error: 'not_signed_in' };
+    const myProfile = JSON.parse(localStorage.getItem('rr_profiles') || '[]')
+      .find(p => p.username === localStorage.getItem('rr_current'));
+    if (!myProfile) return { error: 'no_profile' };
+
+    // Check for duplicate pending challenge
+    try {
+      const dup = await db.collection('challenges')
+        .where('fromUid', '==', _currentUser.uid)
+        .where('toUid',   '==', toUid)
+        .where('status',  '==', 'pending')
+        .limit(1).get();
+      if (!dup.empty) return { error: 'already_pending' };
+
+      await db.collection('challenges').add({
+        fromUid:       _currentUser.uid,
+        fromUsername:  myProfile.username,
+        fromAvatarIdx: myProfile.avatarIdx || 0,
+        toUid,
+        toUsername,
+        category,
+        seed,
+        status:    'pending',
+        fromScore: 0,
+        toScore:   0,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      return { success: true };
+    } catch(e) { console.error('sendChallenge error:', e); return { error: 'unknown' }; }
+  }
+
+  async function getIncomingChallenges() {
+    if (!db || !_currentUser) return [];
+    try {
+      const snap = await db.collection('challenges')
+        .where('toUid', '==', _currentUser.uid)
+        .orderBy('createdAt', 'desc')
+        .limit(10).get();
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch(e) { return []; }
+  }
+
+  async function getOutgoingChallenges() {
+    if (!db || !_currentUser) return [];
+    try {
+      const snap = await db.collection('challenges')
+        .where('fromUid', '==', _currentUser.uid)
+        .orderBy('createdAt', 'desc')
+        .limit(10).get();
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch(e) { return []; }
+  }
+
+  async function markChallengeComplete(challengeId, score) {
+    if (!db || !_currentUser) return;
+    try {
+      const docRef = db.collection('challenges').doc(challengeId);
+      const snap   = await docRef.get();
+      if (!snap.exists) return;
+      const isFrom = snap.data().fromUid === _currentUser.uid;
+      const update = { status: 'completed', respondedAt: firebase.firestore.FieldValue.serverTimestamp() };
+      if (isFrom) update.fromScore = score; else update.toScore = score;
+      await docRef.update(update);
+    } catch(e) { console.error('markChallengeComplete error:', e); }
+  }
+
+  /* ====================================================
      HEADER UI
      ==================================================== */
   function updateHeaderUI(user) {
@@ -397,6 +470,10 @@ const AuthModule = (function () {
     subscribeIncomingRequests,
     respondToFriendRequest,
     getAcceptedSentRequests,
+    sendChallenge,
+    getIncomingChallenges,
+    getOutgoingChallenges,
+    markChallengeComplete,
     get currentUser() { return _currentUser; },
     get isAvailable()  { return isConfigured(); },
   };

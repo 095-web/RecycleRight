@@ -83,6 +83,17 @@ document.addEventListener('DOMContentLoaded', () => {
      ==================================================== */
   let currentCategory = 'all';
   let searchTerm      = '';
+  const KEY_BOOKMARKS = 'rr_bookmarks';
+
+  function getBookmarks()    { return JSON.parse(localStorage.getItem(KEY_BOOKMARKS) || '[]'); }
+  function isBookmarked(id)  { return getBookmarks().includes(id); }
+  function toggleBookmark(id) {
+    let bms = getBookmarks();
+    if (bms.includes(id)) bms = bms.filter(b => b !== id);
+    else bms.push(id);
+    localStorage.setItem(KEY_BOOKMARKS, JSON.stringify(bms));
+    renderItems(); // re-render so star icons update
+  }
 
   function buildIndex() {
     buildCategoryFilters();
@@ -92,23 +103,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function buildCategoryFilters() {
     const container = document.getElementById('category-filters');
+    const bms   = getBookmarks();
     const allBtn = `<button class="filter-chip active" data-category="all" onclick="App.setCategory('all')">All <span style="opacity:.6">(${RECYCLING_ITEMS.length})</span></button>`;
+    const bmBtn  = `<button class="filter-chip" data-category="bookmarks" onclick="App.setCategory('bookmarks')">
+      <i class="fas fa-star" style="font-size:.8rem;color:var(--amber-500)"></i> Saved <span style="opacity:.6">(${bms.length})</span>
+    </button>`;
     const catBtns = CATEGORIES.map(cat => {
       const count = RECYCLING_ITEMS.filter(item => item.category === cat.id).length;
       return `<button class="filter-chip" data-category="${cat.id}" onclick="App.setCategory('${cat.id}')">
         <i class="fas ${cat.icon}" style="font-size:.8rem"></i> ${cat.label} <span style="opacity:.6">(${count})</span>
       </button>`;
     }).join('');
-    container.innerHTML = allBtn + catBtns;
+    container.innerHTML = allBtn + bmBtn + catBtns;
   }
 
   function renderItems() {
-    const grid   = document.getElementById('items-grid');
-    const noRes  = document.getElementById('no-results');
+    const grid    = document.getElementById('items-grid');
+    const noRes   = document.getElementById('no-results');
     const summary = document.getElementById('index-summary');
+    const bms     = getBookmarks();
 
     let filtered = RECYCLING_ITEMS;
-    if (currentCategory !== 'all') filtered = filtered.filter(i => i.category === currentCategory);
+    if (currentCategory === 'bookmarks') {
+      filtered = filtered.filter(i => bms.includes(i.id));
+    } else if (currentCategory !== 'all') {
+      filtered = filtered.filter(i => i.category === currentCategory);
+    }
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(i =>
@@ -119,28 +139,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (filtered.length === 0) {
-      grid.innerHTML = '';
-      noRes.classList.remove('hidden');
+      grid.innerHTML = currentCategory === 'bookmarks'
+        ? `<div class="bookmarks-empty"><i class="fas fa-star fa-2x" style="color:var(--amber-300)"></i><p>No bookmarks yet — click the ⭐ on any item to save it!</p></div>`
+        : '';
+      noRes.classList.toggle('hidden', currentCategory === 'bookmarks');
       summary.textContent = '';
     } else {
       noRes.classList.add('hidden');
       summary.textContent = `Showing ${filtered.length} item${filtered.length !== 1 ? 's' : ''}`;
-      grid.innerHTML = filtered.map(item => buildItemCard(item)).join('');
+      grid.innerHTML = filtered.map(item => buildItemCard(item, bms)).join('');
     }
   }
 
-  function buildItemCard(item) {
+  function buildItemCard(item, bms) {
+    bms = bms || getBookmarks();
     const statusConfig = {
       yes:     { label: 'Recyclable',      icon: 'fa-check-circle',    cls: 'yes'     },
       check:   { label: 'Check Locally',   icon: 'fa-circle-question', cls: 'check'   },
       no:      { label: 'Not Recyclable',  icon: 'fa-circle-xmark',    cls: 'no'      },
       special: { label: 'Special Drop-Off',icon: 'fa-location-dot',    cls: 'special' },
     };
-    const sc  = statusConfig[item.status] || statusConfig.no;
-    const cat = CATEGORIES.find(c => c.id === item.category);
+    const sc       = statusConfig[item.status] || statusConfig.no;
+    const cat      = CATEGORIES.find(c => c.id === item.category);
+    const saved    = bms.includes(item.id);
 
     return `
       <div class="item-card">
+        <button class="bookmark-btn${saved ? ' bookmarked' : ''}"
+          onclick="App.toggleBookmark(${item.id})" title="${saved ? 'Remove bookmark' : 'Bookmark this item'}">
+          <i class="fas fa-star"></i>
+        </button>
         <div class="item-card-top">
           <div class="item-name">${escapeHtml(item.name)}</div>
           <span class="item-cat-badge">${cat ? cat.label : item.category}</span>
@@ -154,6 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function setCategory(catId) {
     currentCategory = catId;
+    // Rebuild filters so the bookmarks count updates
+    buildCategoryFilters();
     document.querySelectorAll('.filter-chip').forEach(chip => {
       chip.classList.toggle('active', chip.dataset.category === catId);
     });
@@ -186,5 +216,5 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ---- Expose needed globals ---- */
-  window.App = { setCategory };
+  window.App = { setCategory, toggleBookmark };
 });

@@ -222,18 +222,26 @@ const ProfileModule = (function () {
   function renderProfile(user, profile) {
     if (!profile) { renderSetupScreen(user, null); return; }
 
-    const avatar = AVATARS[profile.avatarIdx] || AVATARS[0];
-    const level  = calcLevel(profile.points || 0);
-    const titleText = getTitle(profile);
-    const photoHTML = user.photoURL
+    const avatar     = AVATARS[profile.avatarIdx] || AVATARS[0];
+    const level      = calcLevel(profile.points || 0);
+    const titleText  = getTitle(profile);
+    const photoHTML  = user.photoURL
       ? `<img src="${esc(user.photoURL)}" alt="" class="profile-google-photo-sm">` : '';
+    const frameCss   = FRAMES?.find(f => f.id === profile.equippedFrame)?.css || '';
+    const avatarHtml = frameCss
+      ? `<div class="profile-big-avatar avatar-frame-wrap ${frameCss}">${avatar}</div>`
+      : `<div class="profile-big-avatar">${avatar}</div>`;
+
+    // Next title progress bar
+    const totalPts   = profile.totalPoints || profile.points || 0;
+    const nextTitleHtml = _buildNextTitleBar(totalPts, profile);
 
     getContainer().innerHTML = `
       <div class="profile-page">
 
         <div class="profile-card">
           <div class="profile-card-top">
-            <div class="profile-big-avatar">${avatar}</div>
+            ${avatarHtml}
             <div class="profile-card-info">
               <div class="profile-display-name">${esc(profile.username)} ${photoHTML}</div>
               <div class="profile-title-tag">${esc(titleText)}</div>
@@ -250,6 +258,7 @@ const ProfileModule = (function () {
             <div class="pstat-lg"><div class="pstat-val">${profile.bestStreak||0}</div><div class="pstat-lbl">Best Streak</div></div>
             <div class="pstat-lg"><div class="pstat-val">${(profile.badges||[]).length}</div><div class="pstat-lbl">Badges</div></div>
           </div>
+          ${nextTitleHtml}
         </div>
 
         <div class="profile-section-card">
@@ -286,6 +295,13 @@ const ProfileModule = (function () {
           <div class="profile-achievements-list" id="prof-achievements-list"></div>
         </div>
 
+        <div class="profile-section-card">
+          <h3 class="profile-section-title">
+            <i class="fas fa-clock-rotate-left"></i> Quiz History
+          </h3>
+          <div id="prof-quiz-history"></div>
+        </div>
+
         <div class="profile-section-card danger-zone-card">
           <h3 class="profile-section-title danger-zone-title">
             <i class="fas fa-triangle-exclamation"></i> Danger Zone
@@ -307,6 +323,8 @@ const ProfileModule = (function () {
 
     renderFriendsList();
     renderAchievementsList(profile);
+    renderQuizHistory(profile);
+    renderChallengeFriendSection();
   }
 
   /* ====================================================
@@ -511,6 +529,233 @@ const ProfileModule = (function () {
   }
 
   /* ====================================================
+     NEXT TITLE PROGRESS BAR
+     ==================================================== */
+  function _buildNextTitleBar(totalPts, profile) {
+    if (!TITLES || TITLES.length < 2) return '';
+    // Find highest title the user has purchased or is newcomer
+    const owned = profile.purchasedItems || [];
+    const allShop = [...(SHOP_PERMANENT || []), ...(SHOP_ROTATING || [])];
+    // Build sorted list of titles with pts thresholds from SHOP prices (use index as order)
+    const titlesOrdered = [...TITLES]; // already sorted by pts ascending
+    // Find the current highest title owned
+    let currentTitleIdx = 0;
+    for (let i = titlesOrdered.length - 1; i >= 0; i--) {
+      const t = titlesOrdered[i];
+      if (t.id === 'newcomer' || owned.some(id => { const s = allShop.find(s => s.id === id); return s?.type === 'title' && s.titleId === t.id; })) {
+        currentTitleIdx = i;
+        break;
+      }
+    }
+    const nextTitle = titlesOrdered[currentTitleIdx + 1];
+    if (!nextTitle) return `<div class="next-title-wrap"><div class="next-title-label"><span>Max title reached! 🎉</span></div></div>`;
+
+    // Find shop cost for next title
+    const shopItem = allShop.find(s => s.type === 'title' && s.titleId === nextTitle.id);
+    const cost = shopItem?.cost || nextTitle.pts || 100;
+    const spent = (profile.totalPoints || totalPts) - (profile.points || 0); // not reliable; use points directly
+    const current = profile.points || 0;
+    const pct = Math.min(100, Math.round((current / cost) * 100));
+
+    return `
+      <div class="next-title-wrap">
+        <div class="next-title-label">
+          <span>Next title: <strong>${esc(nextTitle.label)}</strong></span>
+          <span>${current.toLocaleString()} / ${cost.toLocaleString()} pts</span>
+        </div>
+        <div class="next-title-bar-wrap">
+          <div class="next-title-bar-fill" style="width:${pct}%"></div>
+        </div>
+      </div>`;
+  }
+
+  /* ====================================================
+     QUIZ HISTORY
+     ==================================================== */
+  function renderQuizHistory(profile) {
+    const container = document.getElementById('prof-quiz-history');
+    if (!container) return;
+
+    const history = profile.quizHistory || [];
+    if (history.length === 0) {
+      container.innerHTML = '<p class="qh-empty"><i class="fas fa-dumbbell"></i> No quizzes played yet — head to the Quiz tab to get started!</p>';
+      return;
+    }
+
+    const catIconMap = { general:'fa-recycle', plastics:'fa-bottle-water', paper:'fa-newspaper', food:'fa-apple-whole', ewaste:'fa-laptop', mixed:'fa-shuffle' };
+    container.innerHTML = `<div class="quiz-history-list">` +
+      history.map(h => {
+        const catInfo = QUIZ_CATEGORIES?.find(c => c.id === h.category) || { name: h.category, icon: 'fa-question' };
+        const pct     = Math.round((h.correct / h.total) * 100);
+        const emoji   = pct === 100 ? '🏆' : pct >= 70 ? '⭐' : pct >= 40 ? '👍' : '🌱';
+        const badges  = [h.isDaily ? '⚡ Daily' : '', h.hardMode ? '🔥 Hard' : ''].filter(Boolean).join(' · ');
+        return `
+          <div class="qh-entry">
+            <div class="qh-icon">${emoji}</div>
+            <div class="qh-info">
+              <div class="qh-cat"><i class="fas ${catInfo.icon || 'fa-question'}" style="font-size:.8rem;opacity:.7"></i> ${esc(catInfo.name)}</div>
+              <div class="qh-meta">${h.date}${badges ? ' · ' + badges : ''} · ${h.correct}/${h.total} correct</div>
+            </div>
+            <div class="qh-score">+${h.score} pts</div>
+          </div>`;
+      }).join('') + `</div>`;
+  }
+
+  /* ====================================================
+     CHALLENGE A FRIEND
+     ==================================================== */
+  function renderChallengeFriendSection() {
+    // Inject a challenge section after the friends list if signed in
+    const friendsCard = document.querySelector('.profile-section-card:has(#prof-friends-list)');
+    if (!friendsCard) return;
+    if (!AuthModule.isAvailable || !AuthModule.currentUser) return;
+
+    let challengeDiv = document.getElementById('prof-challenge-section');
+    if (!challengeDiv) {
+      challengeDiv = document.createElement('div');
+      challengeDiv.id = 'prof-challenge-section';
+      friendsCard.appendChild(challengeDiv);
+    }
+    _renderChallenges(challengeDiv);
+  }
+
+  async function _renderChallenges(container) {
+    const friends = loadFriends();
+    if (friends.length === 0) { container.innerHTML = ''; return; }
+
+    // Get incoming challenges
+    const [incoming, outgoing] = await Promise.all([
+      AuthModule.getIncomingChallenges?.() || Promise.resolve([]),
+      AuthModule.getOutgoingChallenges?.() || Promise.resolve([]),
+    ]);
+
+    const pendingIn  = incoming.filter(c => c.status === 'pending');
+    const pendingOut = outgoing.filter(c => c.status === 'pending');
+    const done       = [...incoming, ...outgoing].filter(c => c.status === 'completed').slice(0, 5);
+
+    let html = `<div class="challenge-section"><div class="challenge-section-title"><i class="fas fa-swords"></i> Friend Challenges</div>`;
+
+    if (pendingIn.length > 0) {
+      html += pendingIn.map(c => {
+        const catInfo = QUIZ_CATEGORIES?.find(q => q.id === c.category) || { name: c.category };
+        return `
+          <div class="challenge-card cc-incoming">
+            <div class="cc-avatar">⚔️</div>
+            <div class="cc-info">
+              <div class="cc-name">${esc(c.fromUsername)} challenged you!</div>
+              <div class="cc-meta">${esc(catInfo.name)}</div>
+            </div>
+            <div class="cc-actions">
+              <button class="btn btn-sm btn-primary" onclick="ProfileModule._acceptChallenge('${c.id}','${c.category}',${c.seed})">
+                <i class="fas fa-play"></i> Play
+              </button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    if (pendingOut.length > 0) {
+      html += pendingOut.map(c => {
+        const catInfo = QUIZ_CATEGORIES?.find(q => q.id === c.category) || { name: c.category };
+        return `
+          <div class="challenge-card cc-pending">
+            <div class="cc-avatar">⏳</div>
+            <div class="cc-info">
+              <div class="cc-name">Challenged ${esc(c.toUsername)}</div>
+              <div class="cc-meta">${esc(catInfo.name)} · waiting for response</div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    if (done.length > 0) {
+      html += done.map(c => {
+        const myScore   = c.fromUid === AuthModule.currentUser?.uid ? c.fromScore : c.toScore;
+        const theirScore= c.fromUid === AuthModule.currentUser?.uid ? c.toScore   : c.fromScore;
+        const theirName = c.fromUid === AuthModule.currentUser?.uid ? c.toUsername : c.fromUsername;
+        const won = myScore >= theirScore;
+        return `
+          <div class="challenge-card cc-done">
+            <div class="cc-avatar">${won ? '🏆' : '💪'}</div>
+            <div class="cc-info">
+              <div class="cc-name">vs ${esc(theirName)}</div>
+              <div class="cc-meta">${myScore} vs ${theirScore} pts · ${won ? 'You won!' : 'They won'}</div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    // Challenge buttons for each friend
+    html += `<div class="challenge-friend-list" style="margin-top:10px">`;
+    html += `<div style="font-size:.78rem;color:var(--gray-500);margin-bottom:8px">Challenge a friend:</div>`;
+    html += friends.slice(0, 6).map(f => `
+      <button class="btn btn-sm btn-outline" style="margin-right:6px;margin-bottom:6px"
+        onclick="ProfileModule._openChallengeModal('${f.uid}','${esc(f.username)}')">
+        ${AVATARS[f.avatarIdx||0]} ${esc(f.username)}
+      </button>`).join('');
+    html += `</div></div>`;
+
+    container.innerHTML = html;
+  }
+
+  function _openChallengeModal(toUid, toUsername) {
+    // Build category picker modal
+    const existing = document.getElementById('challenge-cat-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'challenge-cat-modal';
+    modal.className = 'challenge-cat-modal';
+    modal.innerHTML = `
+      <div class="challenge-cat-inner">
+        <div class="challenge-cat-title">⚔️ Challenge ${esc(toUsername)}</div>
+        <div class="challenge-cat-grid" id="cc-grid"></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary" id="cc-send-btn" disabled>
+            <i class="fas fa-paper-plane"></i> Send Challenge
+          </button>
+          <button class="btn btn-outline" onclick="document.getElementById('challenge-cat-modal').remove()">Cancel</button>
+        </div>
+        <p id="cc-msg" style="margin-top:8px;font-size:.82rem;color:var(--red-600)"></p>
+      </div>`;
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+    document.body.appendChild(modal);
+
+    let selectedCat = null;
+    const grid = document.getElementById('cc-grid');
+    grid.innerHTML = QUIZ_CATEGORIES.filter(c => c.id !== 'mixed').map(c => `
+      <button class="challenge-cat-btn" data-cat="${c.id}">${c.name}</button>`).join('');
+
+    grid.querySelectorAll('.challenge-cat-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        grid.querySelectorAll('.challenge-cat-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedCat = btn.dataset.cat;
+        document.getElementById('cc-send-btn').disabled = false;
+      });
+    });
+
+    document.getElementById('cc-send-btn').addEventListener('click', async () => {
+      if (!selectedCat) return;
+      const msgEl = document.getElementById('cc-msg');
+      msgEl.textContent = 'Sending...';
+      const seed = Math.floor(Math.random() * 2147483647);
+      const result = await AuthModule.sendChallenge?.(toUid, toUsername, selectedCat, seed);
+      if (result?.error) { msgEl.textContent = result.error === 'already_pending' ? 'You already have a pending challenge with this person!' : 'Something went wrong.'; return; }
+      modal.remove();
+    });
+  }
+
+  async function _acceptChallenge(challengeId, category, seed) {
+    if (typeof getChallengeQuestions !== 'function') return;
+    const questions = getChallengeQuestions(seed, category);
+    document.getElementById('challenge-cat-modal')?.remove();
+    // Switch to quiz tab and start challenge
+    document.querySelector('.nav-btn[data-tab="quiz"]')?.click();
+    setTimeout(() => window.QuizModule?.startChallengeQuiz?.(challengeId, questions, category), 200);
+  }
+
+  /* ====================================================
      ACHIEVEMENTS
      ==================================================== */
   function renderAchievementsList(profile) {
@@ -592,6 +837,10 @@ const ProfileModule = (function () {
           <label>Title <span class="unlock-hint">(shown on leaderboard)</span></label>
           <div class="title-picker" id="title-picker"></div>
         </div>
+        <div class="title-picker-section" style="margin-top:1.2rem">
+          <label>Profile Frame <span class="unlock-hint">Purchase frames in the Shop</span></label>
+          <div class="frame-picker" id="frame-picker"></div>
+        </div>
         <div class="setup-form" style="margin-top:1.5rem">
           <label style="font-size:.85rem;color:var(--gray-600);margin-bottom:4px;display:block">
             Username
@@ -614,13 +863,16 @@ const ProfileModule = (function () {
     let selTitle = profile.selectedTitle || 'newcomer';
     buildTitlePicker('title-picker', selTitle, profile, id => { selTitle = id; });
 
+    let selFrame = profile.equippedFrame || 'frame_none';
+    buildFramePicker('frame-picker', selFrame, profile, id => { selFrame = id; });
+
     document.getElementById('profile-edit-save').addEventListener('click', () =>
-      saveEditedProfile(user, profile, selAvatar, selTitle));
+      saveEditedProfile(user, profile, selAvatar, selTitle, selFrame));
     document.getElementById('profile-edit-cancel').addEventListener('click', () =>
       renderProfile(user, profile));
   }
 
-  async function saveEditedProfile(user, oldProfile, avatarIdx, selectedTitle) {
+  async function saveEditedProfile(user, oldProfile, avatarIdx, selectedTitle, equippedFrame = 'frame_none') {
     const input = document.getElementById('profile-edit-username');
     const errEl = document.getElementById('profile-edit-error');
     const newUsername = (input?.value || '').trim();
@@ -636,7 +888,7 @@ const ProfileModule = (function () {
     }
 
     const finalUsername = usernameChanged ? newUsername : oldProfile.username;
-    const updated = { ...oldProfile, username: finalUsername, avatarIdx, selectedTitle };
+    const updated = { ...oldProfile, username: finalUsername, avatarIdx, selectedTitle, equippedFrame };
     const profiles = loadProfiles().filter(p => p.username !== oldProfile.username && p.username !== finalUsername);
     profiles.push(updated);
     localStorage.setItem(KEY_PROFILES, JSON.stringify(profiles));
@@ -684,6 +936,33 @@ const ProfileModule = (function () {
   }
 
   /* ====================================================
+     FRAME PICKER (checks shop purchases)
+     ==================================================== */
+  function buildFramePicker(containerId, selectedId, profile, onSelect) {
+    const container = document.getElementById(containerId);
+    if (!container || !FRAMES) return;
+    container.innerHTML = FRAMES.map(f => {
+      const unlocked = f.id === 'frame_none' || (window.ShopModule ? ShopModule.isFrameUnlocked(f.id, profile) : false);
+      const sel = f.id === selectedId;
+      const previewCss = f.css ? `avatar-frame-wrap ${f.css}` : '';
+      return `
+        <div class="frame-opt${sel ? ' selected' : ''}${!unlocked ? ' locked' : ''}"
+          data-id="${f.id}" ${!unlocked ? `title="Buy in the Shop to unlock"` : ''}>
+          <div class="frame-preview-avatar ${previewCss}" style="${previewCss ? 'width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center' : ''}">♻️</div>
+          ${f.label}
+          ${!unlocked ? `<span class="title-req">🛒 Shop</span>` : ''}
+        </div>`;
+    }).join('');
+    container.querySelectorAll('.frame-opt:not(.locked)').forEach(el => {
+      el.addEventListener('click', () => {
+        container.querySelectorAll('.frame-opt').forEach(a => a.classList.remove('selected'));
+        el.classList.add('selected');
+        onSelect(el.dataset.id);
+      });
+    });
+  }
+
+  /* ====================================================
      TITLE PICKER (checks progression + shop purchases)
      ==================================================== */
   function buildTitlePicker(containerId, selectedId, profile, onSelect) {
@@ -718,7 +997,7 @@ const ProfileModule = (function () {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  return { init, reload, isProfane, _acceptReq, _declineReq, _viewFriend, _closeFriendModal, _unfriend };
+  return { init, reload, isProfane, _acceptReq, _declineReq, _viewFriend, _closeFriendModal, _unfriend, _openChallengeModal, _acceptChallenge };
 })();
 
 window.ProfileModule = ProfileModule;

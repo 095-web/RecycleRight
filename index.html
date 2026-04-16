@@ -100,6 +100,70 @@
 
         <div id="scan-result" class="scan-result hidden"></div>
         <div id="scan-error" class="scan-error hidden"></div>
+
+        <!-- Recently Scanned History -->
+        <div class="scan-history-section" id="scan-history-section">
+          <div class="scan-history-header">
+            <i class="fas fa-history"></i> Recently Scanned
+          </div>
+          <div class="scan-history-list" id="scan-history-list">
+            <p class="sh-empty">No scans yet — scan a product barcode above!</p>
+          </div>
+        </div>
+
+        <!-- Local Drop-Off Finder -->
+        <div class="dropoff-section">
+          <div class="dropoff-title">
+            <i class="fas fa-map-location-dot"></i> Local Drop-Off Finder
+          </div>
+          <p class="dropoff-sub" id="dropoff-sub">Find nearby recycling and drop-off programs for items that can't go in your curbside bin.</p>
+          <div class="dropoff-grid">
+            <a class="dropoff-link" id="earth911-link" href="https://search.earth911.com/" target="_blank" rel="noopener">
+              <span class="dropoff-link-icon">🌍</span>
+              <div class="dropoff-link-info">
+                <div class="dropoff-link-name">Earth911</div>
+                <div class="dropoff-link-desc">Search recycling locations near you</div>
+              </div>
+            </a>
+            <a class="dropoff-link" href="https://www.call2recycle.org/locator/" target="_blank" rel="noopener">
+              <span class="dropoff-link-icon">🔋</span>
+              <div class="dropoff-link-info">
+                <div class="dropoff-link-name">Call2Recycle</div>
+                <div class="dropoff-link-desc">Battery drop-off locator</div>
+              </div>
+            </a>
+            <a class="dropoff-link" href="https://www.epa.gov/recycle/electronics-donation-and-recycling" target="_blank" rel="noopener">
+              <span class="dropoff-link-icon">💻</span>
+              <div class="dropoff-link-info">
+                <div class="dropoff-link-name">EPA E-Waste Guide</div>
+                <div class="dropoff-link-desc">Electronics donation & recycling</div>
+              </div>
+            </a>
+            <a class="dropoff-link" href="https://www.plasticsforchange.org/plastic-recycling-near-me" target="_blank" rel="noopener">
+              <span class="dropoff-link-icon">♻️</span>
+              <div class="dropoff-link-info">
+                <div class="dropoff-link-name">Plastic Film Finder</div>
+                <div class="dropoff-link-desc">Store drop-offs for film plastics</div>
+              </div>
+            </a>
+            <a class="dropoff-link" href="https://www.goodwill.org/donate/donate-stuff/" target="_blank" rel="noopener">
+              <span class="dropoff-link-icon">👕</span>
+              <div class="dropoff-link-info">
+                <div class="dropoff-link-name">Goodwill Donate</div>
+                <div class="dropoff-link-desc">Textiles, clothes &amp; household</div>
+              </div>
+            </a>
+            <a class="dropoff-link" href="https://www.terracycle.com/en-US/brigades" target="_blank" rel="noopener">
+              <span class="dropoff-link-icon">🧪</span>
+              <div class="dropoff-link-info">
+                <div class="dropoff-link-name">TerraCycle</div>
+                <div class="dropoff-link-desc">Hard-to-recycle specialty items</div>
+              </div>
+            </a>
+          </div>
+          <p class="dropoff-zip-note" id="dropoff-zip-note"></p>
+        </div>
+
       </div>
     </section>
 
@@ -226,6 +290,21 @@
 
           <!-- Play -->
           <div id="qsection-play" class="qsection active">
+            <!-- Daily Challenge card (rendered by quiz.js) -->
+            <div id="daily-challenge-slot"></div>
+
+            <!-- Daily Missions (rendered by quiz.js) -->
+            <div id="daily-missions-slot"></div>
+
+            <!-- Hard Mode Toggle -->
+            <div class="hard-mode-toggle-wrap">
+              <span class="hard-mode-label" id="hard-mode-label">Hard Mode (15s timer)</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="hard-mode-toggle">
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
             <h3 class="section-title">Choose a Category</h3>
             <div class="quiz-cat-grid" id="quiz-cat-grid"></div>
           </div>
@@ -258,8 +337,22 @@
                 <div class="progress-fill" id="q-progress" style="width:10%"></div>
               </div>
             </div>
-            <div class="live-score">
-              <i class="fas fa-star"></i> <span id="live-score">0</span>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div class="live-streak-wrap" id="live-streak-wrap">
+                <i class="fas fa-fire"></i>
+                <span class="live-streak-num" id="live-streak-num">0</span>
+              </div>
+              <div class="live-score">
+                <i class="fas fa-star"></i> <span id="live-score">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hard mode timer (hidden when not in hard mode) -->
+          <div id="timer-wrap" style="display:none">
+            <div class="timer-countdown" id="timer-countdown">15</div>
+            <div class="timer-bar-wrap">
+              <div class="timer-bar-fill" id="timer-bar-fill" style="width:100%"></div>
             </div>
           </div>
 
@@ -360,6 +453,7 @@
   <script src="firebase-config.js"></script>
 
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
   <script src="js/data.js"></script>
   <script src="js/location.js"></script>
   <script src="js/scanner.js"></script>

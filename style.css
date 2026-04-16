@@ -2347,3 +2347,602 @@ input[type="text"]:focus {
   .shop-grid { grid-template-columns: repeat(2, 1fr); }
   .req-actions .btn span { display: none; }
 }
+
+/* ============================================================
+   HARD MODE TIMER
+   ============================================================ */
+.timer-bar-wrap {
+  width: 100%;
+  height: 6px;
+  background: var(--gray-200);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.timer-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--green-500);
+  transition: width .9s linear, background .3s;
+}
+.timer-bar-fill.timer-warn  { background: var(--amber-500); }
+.timer-bar-fill.timer-crit  { background: var(--red-600); }
+.timer-countdown {
+  text-align: center;
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--gray-500);
+  margin-bottom: 6px;
+  letter-spacing: .03em;
+}
+.timer-countdown.timer-warn { color: var(--amber-700); }
+.timer-countdown.timer-crit { color: var(--red-600); }
+.timer-bonus-flash {
+  text-align: center;
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--green-700);
+  animation: fadeUp .6s ease forwards;
+}
+@keyframes fadeUp {
+  from { opacity:1; transform:translateY(0); }
+  to   { opacity:0; transform:translateY(-12px); }
+}
+
+/* Hard mode toggle */
+.hard-mode-toggle-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.hard-mode-label {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--gray-600);
+}
+.hard-mode-label.active { color: var(--red-600); }
+.toggle-switch {
+  position: relative;
+  width: 42px;
+  height: 24px;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-track {
+  position: absolute;
+  inset: 0;
+  background: var(--gray-300);
+  border-radius: 99px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.toggle-track::before {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  left: 3px; top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform .2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+.toggle-switch input:checked + .toggle-track { background: var(--red-600); }
+.toggle-switch input:checked + .toggle-track::before { transform: translateX(18px); }
+[data-theme="dark"] .timer-bar-wrap { background: var(--gray-300); }
+
+/* ============================================================
+   DAILY CHALLENGE CARD
+   ============================================================ */
+.daily-challenge-card {
+  background: linear-gradient(135deg, var(--green-700) 0%, var(--green-600) 100%);
+  color: #fff;
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(22,163,74,.35);
+  transition: transform .2s, box-shadow .2s;
+}
+.daily-challenge-card:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(22,163,74,.4); }
+.daily-challenge-card.dc-completed {
+  background: linear-gradient(135deg, var(--gray-500) 0%, var(--gray-400) 100%);
+  box-shadow: none;
+  cursor: default;
+}
+.dc-icon { font-size: 2.2rem; flex-shrink: 0; }
+.dc-info { flex: 1; }
+.dc-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 2px; }
+.dc-sub   { font-size: .82rem; opacity: .88; }
+.dc-badge {
+  background: rgba(255,255,255,.22);
+  border: 1.5px solid rgba(255,255,255,.45);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: .78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.dc-badge.dc-done { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.3); }
+[data-theme="dark"] .daily-challenge-card { box-shadow: 0 6px 20px rgba(0,0,0,.5); }
+
+/* ============================================================
+   DAILY MISSIONS
+   ============================================================ */
+.missions-section {
+  margin-bottom: 24px;
+}
+.missions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.missions-title {
+  font-size: .88rem;
+  font-weight: 700;
+  color: var(--gray-700);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.missions-reset {
+  font-size: .75rem;
+  color: var(--gray-500);
+}
+.mission-card {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  transition: border-color .15s;
+}
+.mission-card.mc-done {
+  background: var(--green-50);
+  border-color: var(--green-300);
+}
+.mission-icon { font-size: 1.35rem; flex-shrink: 0; }
+.mission-info { flex: 1; min-width: 0; }
+.mission-label {
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--gray-800);
+  margin-bottom: 4px;
+}
+.mission-card.mc-done .mission-label { color: var(--green-700); text-decoration: line-through; opacity: .75; }
+.mission-bar-wrap {
+  height: 5px;
+  background: var(--gray-200);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.mission-bar-fill {
+  height: 100%;
+  background: var(--green-500);
+  border-radius: 99px;
+  transition: width .3s ease;
+}
+.mission-pts {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--green-600);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.mission-pts.mc-done-pts { color: var(--gray-400); text-decoration: line-through; }
+[data-theme="dark"] .mission-card { background: var(--gray-100); border-color: var(--border); }
+[data-theme="dark"] .mission-card.mc-done { background: rgba(22,163,74,.1); border-color: var(--green-600); }
+[data-theme="dark"] .mission-label { color: var(--gray-800); }
+
+/* ============================================================
+   LIVE STREAK INDICATOR (during quiz)
+   ============================================================ */
+.live-streak-wrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--gray-500);
+}
+.live-streak-wrap.streak-active { color: var(--amber-700); }
+.live-streak-num { font-size: .95rem; }
+
+/* ============================================================
+   QUIZ HISTORY (in profile)
+   ============================================================ */
+.quiz-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.qh-entry {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--gray-50);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .85rem;
+}
+.qh-icon { font-size: 1.2rem; flex-shrink: 0; }
+.qh-info { flex: 1; min-width: 0; }
+.qh-cat  { font-weight: 600; color: var(--gray-800); }
+.qh-meta { color: var(--gray-500); font-size: .78rem; }
+.qh-score {
+  font-weight: 700;
+  color: var(--green-700);
+  white-space: nowrap;
+}
+.qh-empty {
+  text-align: center;
+  color: var(--gray-400);
+  padding: 20px;
+  font-size: .88rem;
+}
+[data-theme="dark"] .qh-entry { background: var(--gray-100); border-color: var(--border); }
+[data-theme="dark"] .qh-cat   { color: var(--gray-800); }
+
+/* ============================================================
+   NEXT TITLE PROGRESS BAR (in profile)
+   ============================================================ */
+.next-title-wrap {
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: var(--green-50);
+  border: 1px solid var(--green-200);
+  border-radius: var(--radius);
+}
+.next-title-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--green-700);
+  margin-bottom: 6px;
+}
+.next-title-bar-wrap {
+  height: 7px;
+  background: var(--green-200);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.next-title-bar-fill {
+  height: 100%;
+  background: var(--green-500);
+  border-radius: 99px;
+  transition: width .4s ease;
+}
+[data-theme="dark"] .next-title-wrap { background: rgba(22,163,74,.12); border-color: var(--green-700); }
+[data-theme="dark"] .next-title-label { color: var(--green-400); }
+[data-theme="dark"] .next-title-bar-wrap { background: rgba(22,163,74,.25); }
+
+/* ============================================================
+   SCAN HISTORY
+   ============================================================ */
+.scan-history-section {
+  margin-top: 28px;
+}
+.scan-history-header {
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.scan-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sh-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .84rem;
+  cursor: pointer;
+  transition: border-color .15s;
+}
+.sh-entry:hover { border-color: var(--green-400); }
+.sh-verdict-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sh-verdict-dot.recyclable     { background: var(--green-500); }
+.sh-verdict-dot.check-local    { background: var(--amber-500); }
+.sh-verdict-dot.not-recyclable { background: var(--red-600); }
+.sh-verdict-dot.unknown        { background: var(--gray-400); }
+.sh-name  { flex: 1; font-weight: 600; color: var(--gray-800); }
+.sh-brand { color: var(--gray-500); font-size: .78rem; }
+.sh-empty {
+  text-align: center;
+  color: var(--gray-400);
+  padding: 16px;
+  font-size: .85rem;
+}
+[data-theme="dark"] .sh-entry { background: var(--gray-100); border-color: var(--border); }
+[data-theme="dark"] .sh-name  { color: var(--gray-800); }
+
+/* ============================================================
+   LOCAL DROP-OFF FINDER
+   ============================================================ */
+.dropoff-section {
+  margin-top: 28px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
+}
+.dropoff-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dropoff-sub {
+  font-size: .84rem;
+  color: var(--gray-500);
+  margin-bottom: 16px;
+}
+.dropoff-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 10px;
+}
+.dropoff-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--gray-800);
+  font-size: .85rem;
+  font-weight: 600;
+  transition: border-color .15s, background .15s;
+}
+.dropoff-link:hover {
+  border-color: var(--green-500);
+  background: var(--green-50);
+  color: var(--green-700);
+}
+.dropoff-link-icon { font-size: 1.3rem; flex-shrink: 0; }
+.dropoff-link-info { min-width: 0; }
+.dropoff-link-name { font-weight: 600; }
+.dropoff-link-desc { font-size: .73rem; color: var(--gray-500); font-weight: 400; }
+.dropoff-zip-note {
+  font-size: .8rem;
+  color: var(--gray-500);
+  margin-top: 12px;
+}
+[data-theme="dark"] .dropoff-section { background: var(--gray-100); border-color: var(--border); }
+[data-theme="dark"] .dropoff-link    { background: var(--white); color: var(--gray-800); }
+[data-theme="dark"] .dropoff-title   { color: var(--gray-800); }
+
+/* ============================================================
+   BOOKMARKS (in Recycling Index)
+   ============================================================ */
+.item-card { position: relative; }
+.bookmark-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.05rem;
+  color: var(--gray-400);
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color .15s, transform .15s;
+  line-height: 1;
+}
+.bookmark-btn:hover { color: var(--amber-500); transform: scale(1.15); }
+.bookmark-btn.bookmarked { color: var(--amber-500); }
+.bookmarks-empty {
+  text-align: center;
+  color: var(--gray-400);
+  padding: 24px;
+  font-size: .88rem;
+}
+
+/* ============================================================
+   CHALLENGE A FRIEND
+   ============================================================ */
+.challenge-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.challenge-section-title {
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: 10px;
+}
+.challenge-friend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.challenge-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .84rem;
+}
+.challenge-card.cc-pending  { border-color: var(--amber-500); background: var(--amber-100); }
+.challenge-card.cc-incoming { border-color: var(--green-400); background: var(--green-50);  }
+.challenge-card.cc-done     { border-color: var(--gray-300); opacity: .8; }
+.cc-avatar { font-size: 1.3rem; flex-shrink: 0; }
+.cc-info { flex: 1; min-width: 0; }
+.cc-name  { font-weight: 600; color: var(--gray-800); }
+.cc-meta  { color: var(--gray-500); font-size: .76rem; }
+.cc-actions { display: flex; gap: 6px; flex-shrink: 0; }
+/* Category picker modal for challenge */
+.challenge-cat-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.challenge-cat-inner {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: var(--shadow-xl);
+}
+.challenge-cat-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--gray-800);
+}
+.challenge-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.challenge-cat-btn {
+  padding: 10px 8px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--gray-50);
+  cursor: pointer;
+  font-size: .84rem;
+  font-weight: 600;
+  color: var(--gray-700);
+  text-align: center;
+  transition: all .15s;
+}
+.challenge-cat-btn:hover,
+.challenge-cat-btn.selected {
+  border-color: var(--green-500);
+  background: var(--green-50);
+  color: var(--green-700);
+}
+[data-theme="dark"] .challenge-card  { background: var(--gray-100); border-color: var(--border); }
+[data-theme="dark"] .cc-name         { color: var(--gray-800); }
+[data-theme="dark"] .challenge-cat-inner { background: var(--gray-100); }
+[data-theme="dark"] .challenge-cat-btn   { background: var(--white); color: var(--gray-700); }
+
+/* ============================================================
+   PROFILE FRAMES
+   ============================================================ */
+.avatar-frame-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+/* Base frame ring */
+.avatar-frame-wrap.frame-green   { box-shadow: 0 0 0 4px var(--green-500), 0 0 12px rgba(34,197,94,.5); }
+.avatar-frame-wrap.frame-blue    { box-shadow: 0 0 0 4px #38bdf8,          0 0 12px rgba(56,189,248,.5); }
+.avatar-frame-wrap.frame-gold    { box-shadow: 0 0 0 4px var(--amber-500), 0 0 14px rgba(255,193,7,.6); animation: goldPulse 2s infinite; }
+.avatar-frame-wrap.frame-rainbow { box-shadow: 0 0 0 4px transparent;  outline: 4px solid transparent; animation: rainbowSpin 3s linear infinite; background-clip: padding-box; border: 4px solid transparent; background-image: linear-gradient(var(--white), var(--white)), linear-gradient(90deg, #f00,#fa0,#ff0,#0f0,#0ff,#00f,#f0f,#f00); background-origin: border-box; background-clip: padding-box, border-box; border-radius: 50%; }
+.avatar-frame-wrap.frame-fire    { box-shadow: 0 0 0 4px #ff6b00, 0 0 18px rgba(255,107,0,.7), 0 0 30px rgba(255,40,0,.4); animation: firePulse 1.2s infinite alternate; }
+@keyframes goldPulse {
+  0%,100% { box-shadow: 0 0 0 4px var(--amber-500), 0 0 14px rgba(255,193,7,.6); }
+  50%      { box-shadow: 0 0 0 4px #ffd700,          0 0 22px rgba(255,215,0,.9); }
+}
+@keyframes firePulse {
+  from { box-shadow: 0 0 0 4px #ff6b00, 0 0 12px rgba(255,107,0,.7); }
+  to   { box-shadow: 0 0 0 4px #ff2200, 0 0 24px rgba(255,40,0,.9); }
+}
+@keyframes rainbowSpin {
+  0%   { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+/* Frame picker in edit screen */
+.frame-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+.frame-opt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--gray-600);
+  background: var(--white);
+  transition: all .15s;
+}
+.frame-opt:hover  { border-color: var(--green-400); background: var(--green-50); }
+.frame-opt.selected { border-color: var(--green-600); background: var(--green-100); color: var(--green-700); }
+.frame-opt.locked { opacity: .45; cursor: not-allowed; }
+.frame-preview-avatar {
+  font-size: 1.5rem;
+  border-radius: 50%;
+  padding: 4px;
+}
+
+/* ============================================================
+   SCAN POINTS EARNED BADGE
+   ============================================================ */
+.scan-pts-earned {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--green-100);
+  color: var(--green-700);
+  border-radius: var(--radius);
+  padding: 7px 12px;
+  font-size: .85rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  border: 1px solid var(--green-300);
+}
+
+/* ============================================================
+   CONFETTI (no extra CSS needed — canvas-confetti handles it)
+   ============================================================ */

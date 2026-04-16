@@ -28,6 +28,24 @@ const Scanner = (function () {
         if (val) lookupBarcode(val);
       }
     });
+
+    // Populate drop-off finder with ZIP if available
+    _initDropOffFinder();
+
+    // Render existing scan history on load
+    renderScanHistory();
+  }
+
+  function _initDropOffFinder() {
+    const loc = JSON.parse(localStorage.getItem('rr_location') || 'null');
+    const note     = document.getElementById('dropoff-zip-note');
+    const earth911 = document.getElementById('earth911-link');
+    if (loc?.zip) {
+      if (earth911) earth911.href = `https://search.earth911.com/?utm_source=recycleright&what=recyclables&where=${loc.zip}`;
+      if (note)     note.textContent = `📍 Links pre-filled for ${loc.city ? loc.city + ', ' : ''}${loc.zip}. Results open in a new tab.`;
+    } else {
+      if (note) note.textContent = '📍 Enter your ZIP in the Recycling Index tab to get location-specific search links.';
+    }
   }
 
   /* ---- Camera Scanner ---- */
@@ -118,6 +136,7 @@ const Scanner = (function () {
       const result = parseProduct(barcode, data.product);
       sessionStorage.setItem(cacheKey, JSON.stringify(result));
       const pts = awardScanPoints(barcode);
+      addToScanHistory(result);
       clearResults();
       renderResult(result, pts);
     } catch (err) {
@@ -231,6 +250,9 @@ const Scanner = (function () {
 
     // Sync to cloud
     window.AuthModule?.syncProfileFlat?.(profiles[idx]);
+
+    // Notify quiz module to update scan missions
+    window.QuizModule?.updateScanMissions?.(profiles[idx].scanCount || 0);
 
     return pts;
   }
@@ -387,5 +409,43 @@ const Scanner = (function () {
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  return { init, startScanner, stopScanner, clear: clearResults, useDailyReset };
+  /* ---- Scan History ---- */
+  function addToScanHistory(result) {
+    const KEY = 'rr_scan_history';
+    let history = JSON.parse(localStorage.getItem(KEY) || '[]');
+    // Avoid duplicates for the same barcode
+    history = history.filter(h => h.barcode !== result.barcode);
+    history.unshift({
+      barcode: result.barcode,
+      name:    result.name,
+      brand:   result.brand,
+      verdict: result.verdict,
+      ts:      Date.now(),
+    });
+    if (history.length > 10) history = history.slice(0, 10);
+    localStorage.setItem(KEY, JSON.stringify(history));
+    renderScanHistory();
+  }
+
+  function renderScanHistory() {
+    const container = document.getElementById('scan-history-list');
+    if (!container) return;
+    const history = JSON.parse(localStorage.getItem('rr_scan_history') || '[]');
+    if (history.length === 0) {
+      container.innerHTML = '<p class="sh-empty">No scans yet — scan a product barcode above!</p>';
+      return;
+    }
+    container.innerHTML = history.map(h => `
+      <div class="sh-entry" onclick="document.getElementById('barcode-input').value='${h.barcode}'; Scanner.lookupFromHistory('${h.barcode}')">
+        <div class="sh-verdict-dot ${h.verdict || 'unknown'}"></div>
+        <div class="sh-name">${escapeHtml(h.name || 'Unknown')}</div>
+        ${h.brand ? `<div class="sh-brand">${escapeHtml(h.brand)}</div>` : ''}
+      </div>`).join('');
+  }
+
+  function lookupFromHistory(barcode) {
+    lookupBarcode(barcode);
+  }
+
+  return { init, startScanner, stopScanner, clear: clearResults, useDailyReset, lookupFromHistory, renderScanHistory };
 })();

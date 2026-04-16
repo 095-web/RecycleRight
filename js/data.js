@@ -642,6 +642,12 @@ const SHOP_PERMANENT = [
   { id:'sh_pu_freeze',    type:'powerup', puId:'streak_freeze', name:'Streak Freeze', cost:175 },
   { id:'sh_pu_boost',     type:'powerup', puId:'point_booster', name:'Point Booster', cost:400 },
   { id:'sh_pu_reset',     type:'powerup', puId:'daily_reset',   name:'Daily Reset',   cost:125 },
+  /* Profile Frames */
+  { id:'sh_frame_green',   type:'frame', frameId:'frame_green',   name:'Forest Frame 🌿',   cost:350  },
+  { id:'sh_frame_blue',    type:'frame', frameId:'frame_blue',    name:'Ocean Frame 🌊',    cost:350  },
+  { id:'sh_frame_gold',    type:'frame', frameId:'frame_gold',    name:'Gold Frame ✨',      cost:900  },
+  { id:'sh_frame_rainbow', type:'frame', frameId:'frame_rainbow', name:'Rainbow Frame 🌈',  cost:1400 },
+  { id:'sh_frame_fire',    type:'frame', frameId:'frame_fire',    name:'Fire Frame 🔥',     cost:1400 },
 ];
 
 const SHOP_ROTATING = [
@@ -727,3 +733,86 @@ const PACKAGING_MAP = {
   'tetra':            { verdict:'not-recyclable', label:'Tetra Pak',         tips:['Requires special processing. Check if your city accepts them.'] },
   'wax':              { verdict:'not-recyclable', label:'Wax Coating',       tips:['Wax coating prevents paper recycling.'] },
 };
+
+/* ============================================================
+   SEEDED RNG UTILITIES
+   Used for deterministic daily challenge / missions / friend challenges
+   ============================================================ */
+function seededRNG(seed) {
+  let s = (Math.abs(seed) % 2147483647) || 1;
+  return function () {
+    s = (s * 16807) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+
+function dateSeed(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = Math.imul(31, h) + str.charCodeAt(i) | 0;
+  }
+  return Math.abs(h) || 1;
+}
+
+function shuffleSeeded(arr, rng) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* Returns { category, questions } for today's daily challenge */
+function getDailyChallengeInfo(dateStr) {
+  const rng = seededRNG(dateSeed(dateStr + '_dc'));
+  const cats = ['general', 'plastics', 'paper', 'food', 'ewaste'];
+  const cat  = cats[Math.floor(rng() * cats.length)];
+  const pool = QUIZ_QUESTIONS.filter(q => q.cat === cat);
+  return { category: cat, questions: shuffleSeeded(pool, seededRNG(dateSeed(dateStr + '_dcq'))).slice(0, 10) };
+}
+
+/* Returns 3 mission objects for today */
+function getDailyMissions(dateStr) {
+  const rng = seededRNG(dateSeed(dateStr + '_ms'));
+  return shuffleSeeded(MISSION_POOL, rng).slice(0, 3);
+}
+
+/* Returns 10 seeded questions for a friend challenge (same for both players) */
+function getChallengeQuestions(seed, category) {
+  const pool = (category === 'mixed') ? QUIZ_QUESTIONS : QUIZ_QUESTIONS.filter(q => q.cat === category);
+  return shuffleSeeded(pool, seededRNG(seed)).slice(0, 10);
+}
+
+/* ============================================================
+   DAILY MISSIONS POOL
+   ============================================================ */
+const MISSION_POOL = [
+  { id:'m_quiz1',      label:'Complete a quiz',              icon:'🎯', type:'quiz_count',   target:1,         pts:15 },
+  { id:'m_quiz3',      label:'Complete 3 quizzes',           icon:'📚', type:'quiz_count',   target:3,         pts:40 },
+  { id:'m_streak5',    label:'Get a 5-answer streak',        icon:'🔥', type:'streak',       target:5,         pts:25 },
+  { id:'m_streak8',    label:'Get an 8-answer streak',       icon:'⚡', type:'streak',       target:8,         pts:50 },
+  { id:'m_perfect',    label:'Get a perfect quiz score',     icon:'🏆', type:'perfect',      target:1,         pts:60 },
+  { id:'m_scan1',      label:'Scan a product barcode',       icon:'🔍', type:'scan_count',   target:1,         pts:10 },
+  { id:'m_scan3',      label:'Scan 3 product barcodes',      icon:'📱', type:'scan_count',   target:3,         pts:30 },
+  { id:'m_cat_gen',    label:'Play a General Recycling quiz',icon:'♻️', type:'play_category',target:'general', pts:20 },
+  { id:'m_cat_plas',   label:'Play a Plastics quiz',         icon:'🧴', type:'play_category',target:'plastics',pts:20 },
+  { id:'m_cat_paper',  label:'Play a Paper & Cardboard quiz',icon:'📰', type:'play_category',target:'paper',   pts:20 },
+  { id:'m_cat_food',   label:'Play a Food & Composting quiz',icon:'🍎', type:'play_category',target:'food',    pts:20 },
+  { id:'m_cat_ew',     label:'Play an E-Waste quiz',         icon:'💻', type:'play_category',target:'ewaste',  pts:20 },
+  { id:'m_acc80',      label:'Score 80%+ on a quiz',         icon:'🎓', type:'accuracy',     target:80,        pts:35 },
+  { id:'m_acc100',     label:'Score 100% on a quiz',         icon:'💎', type:'accuracy',     target:100,       pts:50 },
+  { id:'m_powerup',    label:'Use a power-up during a quiz', icon:'🚀', type:'powerup_use',  target:1,         pts:15 },
+];
+
+/* ============================================================
+   PROFILE FRAMES
+   ============================================================ */
+const FRAMES = [
+  { id:'frame_none',    label:'None',    css:'',              desc:'No frame'            },
+  { id:'frame_green',   label:'Forest',  css:'frame-green',   desc:'Lush green ring'     },
+  { id:'frame_blue',    label:'Ocean',   css:'frame-blue',    desc:'Calm blue glow'      },
+  { id:'frame_gold',    label:'Gold',    css:'frame-gold',    desc:'Shining gold ring'   },
+  { id:'frame_rainbow', label:'Rainbow', css:'frame-rainbow', desc:'All the colors!'     },
+  { id:'frame_fire',    label:'Fire',    css:'frame-fire',    desc:'Blazing hot ring'    },
+];
