@@ -3443,6 +3443,8 @@ input[type="text"]:focus {
 /* ---- Stats dashboard cat bars ---- */
 .cat-bars-section {
   margin-top: 16px;
+  overflow: visible;
+  padding-right: 4px;
 }
 .cat-bars-title {
   font-size: .82rem;
@@ -3454,11 +3456,12 @@ input[type="text"]:focus {
 }
 .cat-bar-wrap {
   display: grid;
-  grid-template-columns: 58px 1fr 72px;
+  grid-template-columns: 55px 1fr auto;
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
   font-size: .82rem;
+  min-width: 0;
 }
 .cat-bar-label {
   color: var(--gray-600);
@@ -3484,7 +3487,8 @@ input[type="text"]:focus {
   min-width: 2px;
 }
 .cat-bar-val {
-  text-align: left;
+  text-align: right;
+  white-space: nowrap;
   font-weight: 600;
   color: var(--gray-700);
   font-size: .76rem;
