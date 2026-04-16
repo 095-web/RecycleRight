@@ -3482,12 +3482,39 @@ input[type="text"]:focus {
   min-width: 2px;
 }
 .cat-bar-val {
-  width: 32px;
+  min-width: 52px;
   text-align: left;
   font-weight: 600;
   color: var(--gray-700);
   font-size: .76rem;
+  white-space: nowrap;
 }
+.cat-bar-val-unplayed {
+  font-weight: 400;
+  color: var(--gray-400);
+  font-style: italic;
+}
+.cat-bar-unplayed {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--gray-100) 0px,
+    var(--gray-100) 6px,
+    transparent 6px,
+    transparent 10px
+  );
+  border: 1px dashed var(--gray-300);
+}
+[data-theme="dark"] .cat-bar-unplayed {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--gray-200) 0px,
+    var(--gray-200) 6px,
+    transparent 6px,
+    transparent 10px
+  );
+  border-color: var(--gray-500);
+}
+[data-theme="dark"] .cat-bar-val-unplayed { color: var(--gray-500); }
 .stat-fave-cat {
   margin: 12px 0 4px;
   font-size: .85rem;

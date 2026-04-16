@@ -706,15 +706,16 @@ const ProfileModule = (function () {
     const catBests = profile.catBests || {};
     const maxBest  = Math.max(...Object.values(catBests), 1);
     const catBars  = QUIZ_CATEGORIES?.map(cat => {
-      const best = catBests[cat.id] || 0;
-      const pct  = Math.round((best / maxBest) * 100);
+      const best    = catBests[cat.id] || 0;
+      const pct     = best > 0 ? Math.max(4, Math.round((best / maxBest) * 100)) : 0;
+      const unplayed = best === 0;
       return `
         <div class="cat-bar-wrap">
           <div class="cat-bar-label">${cat.name.split(' ')[0]}</div>
-          <div class="cat-bar-track">
-            <div class="cat-bar-fill" style="width:${pct}%"></div>
+          <div class="cat-bar-track${unplayed ? ' cat-bar-unplayed' : ''}">
+            ${unplayed ? '' : `<div class="cat-bar-fill" style="width:${pct}%"></div>`}
           </div>
-          <div class="cat-bar-val">${best || '—'}</div>
+          <div class="cat-bar-val${unplayed ? ' cat-bar-val-unplayed' : ''}">${best || 'Not played'}</div>
         </div>`;
     }).join('') || '';
 
