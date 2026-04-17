@@ -40,7 +40,7 @@ const ShopModule = (function () {
     let seed = parseInt(today) % 2147483647 || 1;
     const rng = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
 
-    const pool = [...(window.SHOP_ROTATING || [])];
+    const pool = [...(SHOP_ROTATING || [])];
     const picks = [];
     while (picks.length < 4 && pool.length > 0) {
       const i = Math.floor(rng() * pool.length);

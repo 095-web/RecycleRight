@@ -250,6 +250,7 @@ const Quiz = (function () {
     document.getElementById('qsection-play')?.classList.add('active');
 
     buildQuizCategories(); // rebuild so cat-stars update
+    _updateSortGameStars(profile);
     _renderDailyChallenge(profile);
     _renderDailyMissions(profile);
     _renderFactStrip();
@@ -509,6 +510,19 @@ const Quiz = (function () {
       const el = document.getElementById('best-' + catId);
       if (el) el.textContent = pts ? `Best: ${pts} pts` : '';
     }
+  }
+
+  function _updateSortGameStars(profile) {
+    const badges = profile?.badges || [];
+    const played  = badges.includes('sorter_played');
+    const perfect = badges.includes('sorter_perfect');
+    // Star 1 = played, Star 2 = played (always same), Star 3 = perfect
+    const s1 = document.getElementById('sort-star-1');
+    const s2 = document.getElementById('sort-star-2');
+    const s3 = document.getElementById('sort-star-3');
+    if (s1) s1.classList.toggle('earned', played);
+    if (s2) s2.classList.toggle('earned', played);
+    if (s3) s3.classList.toggle('earned', perfect);
   }
 
   function _renderFactStrip() {

@@ -311,11 +311,18 @@
             <h3 class="section-title">Choose a Category</h3>
             <div class="quiz-cat-grid" id="quiz-cat-grid"></div>
 
-            <div class="sort-game-cta">
-              <button class="btn btn-outline sort-game-launch-btn" onclick="Quiz.startSortGame()">
-                <span style="font-size:1.2rem">♻️🗑️📦</span> Sorting Mini-Game
-                <small style="display:block;font-size:.72rem;opacity:.7;margin-top:2px">Sort 10 items into the right bins!</small>
-              </button>
+            <div class="quiz-cat-card" onclick="Quiz.startSortGame()" style="cursor:pointer">
+              <div class="cat-icon"><i class="fas fa-trash-arrow-up"></i></div>
+              <div class="cat-name">Sorting Mini-Game</div>
+              <div class="cat-desc">Sort 10 items into the right bins!</div>
+              <div class="cat-stars">
+                <span class="cat-star" id="sort-star-1">★</span>
+                <span class="cat-star" id="sort-star-2">★</span>
+                <span class="cat-star" id="sort-star-3">★</span>
+              </div>
+              <div class="cat-meta">
+                <span>♻️ 🗑️ 📦 ❓</span>
+              </div>
             </div>
           </div>
 
