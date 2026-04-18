@@ -9,6 +9,7 @@ const AuthModule = (function () {
   let db   = null;
   let auth = null;
   let _currentUser = null;
+  let _isAdmin     = false;
 
   /* ---- Is Firebase properly configured? ---- */
   function isConfigured() {
@@ -85,6 +86,10 @@ const AuthModule = (function () {
 
       if (snap.exists) {
         const data = snap.data();
+
+        // Read admin flag — only trusted from Firestore, never written by client
+        _isAdmin = data.isAdmin === true;
+
         // Reconstruct a profile object from flat fields or nested profile
         const profile = data.profile || {
           username:      data.username      || '',
@@ -476,6 +481,7 @@ const AuthModule = (function () {
     markChallengeComplete,
     get currentUser() { return _currentUser; },
     get isAvailable()  { return isConfigured(); },
+    get isAdmin()      { return _isAdmin; },
   };
 })();
 

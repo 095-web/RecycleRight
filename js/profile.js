@@ -243,7 +243,10 @@ const ProfileModule = (function () {
           <div class="profile-card-top">
             ${avatarHtml}
             <div class="profile-card-info">
-              <div class="profile-display-name">${esc(profile.username)} ${photoHTML}</div>
+              <div class="profile-display-name">
+                ${esc(profile.username)} ${photoHTML}
+                ${AuthModule.isAdmin ? '<span class="admin-crown-badge">👑 Admin</span>' : ''}
+              </div>
               <div class="profile-title-tag">${esc(titleText)}</div>
               <div class="profile-google-linked"><i class="fab fa-google"></i> ${esc(user.email||'')}</div>
               <div class="profile-level-badge">Level ${level}</div>

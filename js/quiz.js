@@ -1205,6 +1205,7 @@ const Quiz = (function () {
     const user    = currentUser();
     const profile = getProfile(user);
     const pu      = profile?.powerups || {};
+    const admin   = window.AuthModule?.isAdmin === true;
     const defs = [
       { id:'fifty_fifty',   el:'pu-btn-5050',  },
       { id:'streak_freeze', el:'pu-btn-freeze', },
@@ -1212,14 +1213,15 @@ const Quiz = (function () {
     ];
     defs.forEach(({ id, el }) => {
       const btn   = document.getElementById(el);
-      const count = pu[id] || 0;
+      const count = admin ? '∞' : (pu[id] || 0);
+      const hasAny = admin || (pu[id] || 0) > 0;
       if (!btn) return;
-      btn.disabled = count <= 0
+      btn.disabled = !hasAny
         || (id === 'fifty_fifty'   && state.fiftyFiftyUsed)
         || (id === 'streak_freeze' && state.freezeArmed)
         || (id === 'point_booster' && state.pointBooster);
       btn.querySelector('.pu-count').textContent = count;
-      btn.classList.toggle('pu-empty',  count <= 0);
+      btn.classList.toggle('pu-empty',  !hasAny);
       btn.classList.toggle('pu-armed',  id === 'streak_freeze' && state.freezeArmed);
       btn.classList.toggle('pu-active', id === 'point_booster' && state.pointBooster);
       btn.classList.toggle('pu-used',   id === 'fifty_fifty'   && state.fiftyFiftyUsed);
@@ -1260,8 +1262,9 @@ const Quiz = (function () {
       default: return;
     }
 
+    const admin = window.AuthModule?.isAdmin === true;
     if (!profile.powerups) profile.powerups = {};
-    profile.powerups[puId] = Math.max(0, (profile.powerups[puId] || 0) - 1);
+    if (!admin) profile.powerups[puId] = Math.max(0, (profile.powerups[puId] || 0) - 1);
     profile.powerupsUsed = (profile.powerupsUsed || 0) + 1;
     if (!profile.badges) profile.badges = [];
     if (!profile.badges.includes('power_user')) profile.badges.push('power_user');

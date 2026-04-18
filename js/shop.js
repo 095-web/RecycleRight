@@ -12,7 +12,10 @@ const ShopModule = (function () {
   /* ====================================================
      UNLOCK HELPERS (used by profile.js avatar/title pickers too)
      ==================================================== */
+  function _isAdmin() { return window.AuthModule?.isAdmin === true; }
+
   function isAvatarUnlocked(idx, profile) {
+    if (_isAdmin()) return true;
     if (!AVATAR_UNLOCKS?.[idx]) return true; // indices 0-2 are always free
     return (profile?.purchasedItems || []).some(id => {
       const item = allShopItems().find(s => s.id === id);
@@ -21,6 +24,7 @@ const ShopModule = (function () {
   }
 
   function isTitleUnlocked(titleId, profile) {
+    if (_isAdmin()) return true;
     if (titleId === 'newcomer') return true; // always free
     return (profile?.purchasedItems || []).some(id => {
       const item = allShopItems().find(s => s.id === id);
@@ -36,8 +40,10 @@ const ShopModule = (function () {
      DAILY ROTATION (seeded by date — same for every user)
      ==================================================== */
   function getDailyItems() {
-    const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    let seed = parseInt(today) % 2147483647 || 1;
+    // Admins can override the seed via localStorage to shuffle daily items
+    const override = localStorage.getItem('rr_admin_shop_seed');
+    const today    = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    let seed = override ? parseInt(override) : (parseInt(today) % 2147483647 || 1);
     const rng = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
 
     const pool = [...(SHOP_ROTATING || [])];
@@ -47,6 +53,42 @@ const ShopModule = (function () {
       picks.push(pool.splice(i, 1)[0]);
     }
     return picks;
+  }
+
+  function shuffleDailyShop() {
+    if (!_isAdmin()) return;
+    const newSeed = Math.floor(Math.random() * 2147483646) + 1;
+    localStorage.setItem('rr_admin_shop_seed', String(newSeed));
+    render();
+    window.Toast?.show?.('🔄 Daily shop shuffled!', 'success', 2500);
+  }
+
+  function resetDailyShopSeed() {
+    if (!_isAdmin()) return;
+    localStorage.removeItem('rr_admin_shop_seed');
+    render();
+    window.Toast?.show?.('↩️ Daily shop reset to today\'s rotation', 'info', 2500);
+  }
+
+  function _renderAdminPanel() {
+    return `
+      <div class="shop-section admin-panel">
+        <div class="shop-section-hdr">
+          <div>
+            <h3><i class="fas fa-crown"></i> Admin Panel</h3>
+            <p>All items unlocked · Infinite power-ups · Shop controls</p>
+          </div>
+          <div class="admin-crown-badge">👑 Admin</div>
+        </div>
+        <div class="admin-actions">
+          <button class="btn btn-sm admin-action-btn" onclick="ShopModule.shuffleDailyShop()">
+            <i class="fas fa-shuffle"></i> Shuffle Daily Items
+          </button>
+          <button class="btn btn-sm admin-action-btn" onclick="ShopModule.resetDailyShopSeed()">
+            <i class="fas fa-rotate-left"></i> Reset to Today's Rotation
+          </button>
+        </div>
+      </div>`;
   }
 
   function timeUntilReset() {
@@ -92,6 +134,7 @@ const ShopModule = (function () {
           <span class="shop-balance-lbl">points available</span>
         </div>
 
+        ${_isAdmin() ? _renderAdminPanel() : ''}
         ${_renderSpinSection(profile)}
 
         <div class="shop-section">
@@ -248,6 +291,7 @@ const ShopModule = (function () {
   }
 
   function isFrameUnlocked(frameId, profile) {
+    if (_isAdmin()) return true;
     if (frameId === 'frame_none') return true;
     return (profile?.purchasedItems || []).some(id => {
       const item = allShopItems().find(s => s.id === id);
@@ -309,22 +353,24 @@ const ShopModule = (function () {
 
   function renderPowerupItem(item, profile) {
     const pu     = POWERUPS.find(p => p.id === item.puId) || {};
-    const afford = (profile.points || 0) >= item.cost;
-    const owned  = (profile.powerups?.[item.puId] || 0);
+    const afford = _isAdmin() || (profile.points || 0) >= item.cost;
+    const owned  = _isAdmin() ? '∞' : (profile.powerups?.[item.puId] || 0);
 
     return `
-      <div class="shop-item powerup-shop-item${!afford ? ' cant-afford' : ''}">
+      <div class="shop-item powerup-shop-item">
         <div class="shop-item-emoji">${pu.icon || '⚡'}</div>
         <div class="shop-item-name">${item.name}</div>
         <div class="shop-item-type">⚡ Power-up</div>
         <div class="shop-pu-desc">${pu.desc || ''}</div>
-        ${owned > 0 ? `<div class="shop-item-badge pu-owned-badge">Owned: ${owned}</div>` : ''}
-        <button class="btn btn-sm shop-buy-btn${afford ? '' : ' cant-afford'}"
-          onclick="ShopModule.purchase('${item.id}')"
-          ${afford ? '' : 'disabled'}>
-          <i class="fas fa-star"></i> ${item.cost.toLocaleString()} pts
-        </button>
-        ${!afford ? `<div class="shop-item-badge need-badge">Need ${(item.cost-(profile.points||0)).toLocaleString()} more</div>` : ''}
+        ${owned ? `<div class="shop-item-badge pu-owned-badge">Owned: ${owned}</div>` : ''}
+        ${_isAdmin()
+          ? `<div class="shop-item-badge owned-badge"><i class="fas fa-crown"></i> Admin</div>`
+          : `<button class="btn btn-sm shop-buy-btn${afford ? '' : ' cant-afford'}"
+               onclick="ShopModule.purchase('${item.id}')"
+               ${afford ? '' : 'disabled'}>
+               <i class="fas fa-star"></i> ${item.cost.toLocaleString()} pts
+             </button>
+             ${!afford ? `<div class="shop-item-badge need-badge">Need ${(item.cost-(profile.points||0)).toLocaleString()} more</div>` : ''}`}
       </div>`;
   }
 
@@ -376,6 +422,7 @@ const ShopModule = (function () {
      UTILS
      ==================================================== */
   function isItemOwned(item, profile) {
+    if (_isAdmin()) return true;
     if ((profile?.purchasedItems || []).includes(item.id)) return true;
     if (item.type === 'avatar') return isAvatarUnlocked(item.idx, profile);
     if (item.type === 'title')  return isTitleUnlocked(item.titleId, profile);
@@ -386,7 +433,7 @@ const ShopModule = (function () {
   /* ====================================================
      PUBLIC API
      ==================================================== */
-  return { init, render, purchase, doSpin, isAvatarUnlocked, isTitleUnlocked, isFrameUnlocked };
+  return { init, render, purchase, doSpin, shuffleDailyShop, resetDailyShopSeed, isAvatarUnlocked, isTitleUnlocked, isFrameUnlocked };
 })();
 
 window.ShopModule = ShopModule;

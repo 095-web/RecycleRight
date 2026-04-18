@@ -3343,6 +3343,56 @@ input[type="text"]:focus {
 [data-theme="dark"] .sort-bin-btn      { background: var(--white); color: var(--gray-700); border-color: var(--border); }
 [data-theme="dark"] .sort-results-card { background: var(--gray-100); }
 
+/* ============================================================
+   ADMIN PANEL
+   ============================================================ */
+.admin-panel {
+  border: 2px solid #f59e0b !important;
+  background: linear-gradient(135deg, #fffbeb, #fef3c7) !important;
+}
+[data-theme="dark"] .admin-panel {
+  background: linear-gradient(135deg, rgba(245,158,11,.12), rgba(245,158,11,.06)) !important;
+  border-color: #d97706 !important;
+}
+.admin-crown-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  box-shadow: 0 2px 8px rgba(245,158,11,.35);
+  white-space: nowrap;
+}
+.admin-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.admin-action-btn {
+  background: #fff;
+  border: 1.5px solid #f59e0b;
+  color: #92400e;
+  font-weight: 600;
+  transition: background .15s;
+}
+.admin-action-btn:hover {
+  background: #fef3c7;
+}
+[data-theme="dark"] .admin-action-btn {
+  background: transparent;
+  border-color: #d97706;
+  color: #fbbf24;
+}
+[data-theme="dark"] .admin-action-btn:hover {
+  background: rgba(245,158,11,.12);
+}
+
 /* ---- Sort Game CTA button ---- */
 .sort-game-cta {
   margin-top: 18px;
