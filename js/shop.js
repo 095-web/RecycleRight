@@ -37,16 +37,14 @@ const ShopModule = (function () {
   }
 
   /* ====================================================
-     DAILY ROTATION (seeded by date — same for every user)
+     DAILY ROTATION (global seed from Firestore, falls back to date)
      ==================================================== */
-  function getDailyItems() {
-    // Admins can override the seed via localStorage to shuffle daily items
-    const override = localStorage.getItem('rr_admin_shop_seed');
-    const today    = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    let seed = override ? parseInt(override) : (parseInt(today) % 2147483647 || 1);
-    const rng = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+  function getDailyItems(overrideSeed = null) {
+    const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    let seed    = overrideSeed || (parseInt(today) % 2147483647 || 1);
+    const rng   = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
 
-    const pool = [...(SHOP_ROTATING || [])];
+    const pool  = [...(SHOP_ROTATING || [])];
     const picks = [];
     while (picks.length < 4 && pool.length > 0) {
       const i = Math.floor(rng() * pool.length);
@@ -55,19 +53,19 @@ const ShopModule = (function () {
     return picks;
   }
 
-  function shuffleDailyShop() {
+  async function shuffleDailyShop() {
     if (!_isAdmin()) return;
     const newSeed = Math.floor(Math.random() * 2147483646) + 1;
-    localStorage.setItem('rr_admin_shop_seed', String(newSeed));
+    await window.AuthModule?.setGlobalShopSeed?.(newSeed);
     render();
-    window.Toast?.show?.('🔄 Daily shop shuffled!', 'success', 2500);
+    window.Toast?.show?.('🔄 Daily shop shuffled for all users!', 'success', 2500);
   }
 
-  function resetDailyShopSeed() {
+  async function resetDailyShopSeed() {
     if (!_isAdmin()) return;
-    localStorage.removeItem('rr_admin_shop_seed');
+    await window.AuthModule?.clearGlobalShopSeed?.();
     render();
-    window.Toast?.show?.('↩️ Daily shop reset to today\'s rotation', 'info', 2500);
+    window.Toast?.show?.("↩️ Daily shop reset to today's date rotation", 'info', 2500);
   }
 
   function _renderAdminPanel() {
@@ -105,7 +103,7 @@ const ShopModule = (function () {
      ==================================================== */
   function init() { /* populated on tab click */ }
 
-  function render() {
+  async function render() {
     const container = document.getElementById('shop-content');
     if (!container) return;
 
@@ -123,7 +121,9 @@ const ShopModule = (function () {
       return;
     }
 
-    const daily = getDailyItems();
+    // Fetch global seed from Firestore (falls back to date seed if unavailable)
+    const globalSeed = await window.AuthModule?.getGlobalShopSeed?.() || null;
+    const daily = getDailyItems(globalSeed);
 
     container.innerHTML = `
       <div class="shop-page">

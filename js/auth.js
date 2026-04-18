@@ -425,6 +425,35 @@ const AuthModule = (function () {
   }
 
   /* ====================================================
+     GLOBAL SHOP SEED (admin-controlled, stored in config/shopSeed)
+     ==================================================== */
+  async function getGlobalShopSeed() {
+    if (!db) return null;
+    try {
+      const snap = await db.collection('config').doc('shopSeed').get();
+      return snap.exists ? (snap.data().seed || null) : null;
+    } catch (e) { return null; }
+  }
+
+  async function setGlobalShopSeed(seed) {
+    if (!db || !_currentUser || !_isAdmin) return;
+    try {
+      await db.collection('config').doc('shopSeed').set({
+        seed,
+        setBy:     _currentUser.uid,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    } catch (e) { console.error('setGlobalShopSeed error:', e); }
+  }
+
+  async function clearGlobalShopSeed() {
+    if (!db || !_currentUser || !_isAdmin) return;
+    try {
+      await db.collection('config').doc('shopSeed').delete();
+    } catch (e) { console.error('clearGlobalShopSeed error:', e); }
+  }
+
+  /* ====================================================
      HEADER UI
      ==================================================== */
   function updateHeaderUI(user) {
@@ -479,9 +508,12 @@ const AuthModule = (function () {
     getIncomingChallenges,
     getOutgoingChallenges,
     markChallengeComplete,
-    get currentUser() { return _currentUser; },
+    get currentUser()  { return _currentUser; },
     get isAvailable()  { return isConfigured(); },
     get isAdmin()      { return _isAdmin; },
+    getGlobalShopSeed,
+    setGlobalShopSeed,
+    clearGlobalShopSeed,
   };
 })();
 
