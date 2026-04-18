@@ -24,6 +24,9 @@ const Quiz = (function () {
   let _hardMode       = localStorage.getItem('rr_hard_mode') === 'true';
   let _questionStartTime = 0;
 
+  /* ---- Quiz length ---- */
+  let _quizLength = parseInt(localStorage.getItem('rr_quiz_length') || '10');
+
   /* ---- Leaderboard live listener handle ---- */
   let _lbUnsubscribe = null;
   let _lbMode = 'current'; // 'current' | 'total' | 'friends'
@@ -80,6 +83,17 @@ const Quiz = (function () {
 
     document.getElementById('switch-user-btn').addEventListener('click', switchUser);
     document.getElementById('next-btn').addEventListener('click', nextQuestion);
+
+    // Quiz length picker
+    document.querySelectorAll('.qlp-btn').forEach(btn => {
+      btn.classList.toggle('active', parseInt(btn.dataset.len) === _quizLength);
+      btn.addEventListener('click', () => {
+        _quizLength = parseInt(btn.dataset.len);
+        localStorage.setItem('rr_quiz_length', String(_quizLength));
+        document.querySelectorAll('.qlp-btn').forEach(b =>
+          b.classList.toggle('active', b === btn));
+      });
+    });
 
     // Hard mode toggle
     const hmToggle = document.getElementById('hard-mode-toggle');
@@ -342,6 +356,7 @@ const Quiz = (function () {
       bestStreak: 0, correct: 0, answered: false, category: info.category,
       pointBooster: false, freezeArmed: false, fiftyFiftyUsed: false,
       isDaily: true, isChallenge: false, challengeId: null,
+      wrongAnswers: [],
     };
 
     _hideAll();
@@ -545,12 +560,13 @@ const Quiz = (function () {
       : QUIZ_QUESTIONS.filter(q => q.cat === categoryId);
     if (pool.length === 0) { alert('No questions available for this category yet.'); return; }
 
-    const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
+    const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, _quizLength);
     state = {
       questions: shuffled, current: 0, score: 0, streak: 0,
       bestStreak: 0, correct: 0, answered: false, category: categoryId,
       pointBooster: false, freezeArmed: false, fiftyFiftyUsed: false,
       isDaily: false, isChallenge: false, challengeId: null,
+      wrongAnswers: [],
     };
 
     _hideAll();
@@ -566,6 +582,7 @@ const Quiz = (function () {
       bestStreak: 0, correct: 0, answered: false, category,
       pointBooster: false, freezeArmed: false, fiftyFiftyUsed: false,
       isDaily: false, isChallenge: true, challengeId,
+      wrongAnswers: [],
     };
     _hideAll();
     document.getElementById('quiz-active').classList.remove('hidden');
@@ -610,9 +627,17 @@ const Quiz = (function () {
       </button>`).join('');
 
     state.answered = false;
-    _questionStartTime = Date.now();
 
-    // Keyboard shortcuts
+    if (state.current === 0) {
+      // Show 3-2-1 countdown before the first question
+      _showCountdown(() => _activateQuestion());
+    } else {
+      _activateQuestion();
+    }
+  }
+
+  function _activateQuestion() {
+    _questionStartTime = Date.now();
     _keyHandler = (e) => {
       if (state.answered) return;
       const map = { '1': 0, '2': 1, '3': 2, '4': 3 };
@@ -622,9 +647,32 @@ const Quiz = (function () {
       }
     };
     document.addEventListener('keydown', _keyHandler);
-
-    // Hard mode timer
     if (_hardMode) _startTimer();
+  }
+
+  function _showCountdown(callback) {
+    const overlay = document.getElementById('quiz-countdown-overlay');
+    if (!overlay) { callback(); return; }
+    overlay.style.display = 'flex';
+    const steps = ['3', '2', '1', 'Go!'];
+    let i = 0;
+    function step() {
+      overlay.textContent = steps[i];
+      overlay.style.animation = 'none';
+      void overlay.offsetWidth;
+      overlay.style.animation = '';
+      if (i < 3) window.Sounds?.tick?.(); else window.Sounds?.go?.();
+      i++;
+      if (i < steps.length) {
+        setTimeout(step, 700);
+      } else {
+        setTimeout(() => {
+          overlay.style.display = 'none';
+          callback();
+        }, 500);
+      }
+    }
+    step();
   }
 
   /* ---- Hard Mode Timer ---- */
@@ -697,6 +745,7 @@ const Quiz = (function () {
     });
 
     if (correct) {
+      window.Sounds?.correct?.();
       state.streak++;
       state.correct++;
       if (state.streak > state.bestStreak) state.bestStreak = state.streak;
@@ -723,6 +772,9 @@ const Quiz = (function () {
       state.score += pts;
       document.getElementById('live-score').textContent = state.score;
     } else {
+      window.Sounds?.wrong?.();
+      if (!state.wrongAnswers) state.wrongAnswers = [];
+      state.wrongAnswers.push({ q: state.questions[state.current], chosen: chosenOrigIdx });
       if (state.freezeArmed) {
         state.freezeArmed = false;
         const alertEl = document.getElementById('streak-alert');
@@ -738,7 +790,10 @@ const Quiz = (function () {
     const streakNum  = document.getElementById('live-streak-num');
     const streakWrap = document.getElementById('live-streak-wrap');
     if (streakNum) streakNum.textContent = state.streak;
-    if (streakWrap) streakWrap.classList.toggle('streak-active', state.streak >= 2);
+    if (streakWrap) {
+      streakWrap.classList.toggle('streak-active', state.streak >= 2);
+      streakWrap.classList.toggle('streak-frozen', state.freezeArmed);
+    }
 
     const feedbackEl = document.getElementById('answer-feedback');
     document.getElementById('feedback-content').innerHTML = `
@@ -907,6 +962,39 @@ const Quiz = (function () {
       confetti({ particleCount: 160, spread: 80, origin: { y: 0.55 } });
       setTimeout(() => confetti({ particleCount: 80, angle: 60,  spread: 55, origin: { x: 0 } }), 400);
       setTimeout(() => confetti({ particleCount: 80, angle: 120, spread: 55, origin: { x: 1 } }), 600);
+    }
+
+    // Missed questions review
+    const missedSec = document.getElementById('missed-questions-section');
+    if (missedSec) {
+      const wrongs = state.wrongAnswers || [];
+      if (wrongs.length === 0) {
+        missedSec.classList.add('hidden');
+      } else {
+        missedSec.classList.remove('hidden');
+        const catName = id => (QUIZ_CATEGORIES.find(c => c.id === id) || { name: id }).name;
+        missedSec.innerHTML = `
+          <details class="missed-questions">
+            <summary>
+              <i class="fas fa-book-open"></i>
+              Review ${wrongs.length} Missed Question${wrongs.length !== 1 ? 's' : ''}
+            </summary>
+            <div>
+              ${wrongs.map((w, idx) => {
+                const q = w.q;
+                const chosenText  = q.opts[w.chosen] ?? '(no answer)';
+                const correctText = q.opts[q.ans];
+                return `
+                  <div class="missed-item">
+                    <div class="missed-q"><span class="missed-num">${idx + 1}.</span> ${escapeHtml(q.q)}</div>
+                    <div class="missed-your"><i class="fas fa-times-circle"></i> Your answer: <strong>${escapeHtml(chosenText)}</strong></div>
+                    <div class="missed-right"><i class="fas fa-check-circle"></i> Correct: <strong>${escapeHtml(correctText)}</strong></div>
+                    <div class="missed-exp">${escapeHtml(q.exp)}</div>
+                  </div>`;
+              }).join('')}
+            </div>
+          </details>`;
+      }
     }
   }
 

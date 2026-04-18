@@ -36,6 +36,11 @@
         </button>
       </nav>
 
+      <!-- Sounds Toggle -->
+      <button class="dark-mode-toggle" id="sounds-toggle" title="Sound on" aria-label="Toggle sounds" onclick="Sounds.toggle()">
+        <i class="fas fa-volume-high" id="sounds-icon"></i>
+      </button>
+
       <!-- Dark Mode Toggle -->
       <button class="dark-mode-toggle" id="dark-mode-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
         <i class="fas fa-moon" id="dark-mode-icon"></i>
@@ -100,6 +105,9 @@
 
         <div id="scan-result" class="scan-result hidden"></div>
         <div id="scan-error" class="scan-error hidden"></div>
+
+        <!-- Item of the Day -->
+        <div id="item-of-day"></div>
 
         <!-- Recently Scanned History -->
         <div class="scan-history-section" id="scan-history-section">
@@ -299,6 +307,14 @@
             <!-- Did You Know? Fact Strip (rendered by quiz.js) -->
             <div id="fact-strip-slot"></div>
 
+            <!-- Quiz Length Picker -->
+            <div class="quiz-length-wrap" id="quiz-length-wrap">
+              <span class="qlp-label"><i class="fas fa-list-ol"></i> Questions:</span>
+              <button class="qlp-btn" data-len="5">5</button>
+              <button class="qlp-btn active" data-len="10">10</button>
+              <button class="qlp-btn" data-len="20">20</button>
+            </div>
+
             <!-- Hard Mode Toggle -->
             <div class="hard-mode-toggle-wrap">
               <span class="hard-mode-label" id="hard-mode-label">Hard Mode (15s timer)</span>
@@ -376,6 +392,9 @@
             </div>
           </div>
 
+          <!-- Countdown overlay (shown before first question) -->
+          <div id="quiz-countdown-overlay" class="quiz-countdown-overlay" style="display:none"></div>
+
           <div id="streak-alert" class="streak-alert hidden"></div>
 
           <div class="powerup-bar" id="powerup-bar">
@@ -451,6 +470,9 @@
               <h3><i class="fas fa-award"></i> New Badges Unlocked!</h3>
               <div id="new-badges-list"></div>
             </div>
+            <!-- Missed questions review -->
+            <div id="missed-questions-section" class="hidden"></div>
+
             <div class="results-actions">
               <button class="btn btn-primary btn-lg" onclick="Quiz.playAgain()">
                 <i class="fas fa-redo"></i> Play Again
@@ -492,6 +514,11 @@
 
   </main>
 
+  <!-- Back to Top -->
+  <button id="back-to-top" class="back-to-top" title="Back to top" aria-label="Back to top">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
   <footer class="site-footer">
     <div class="footer-inner">
       <span><i class="fas fa-recycle"></i> RecycleRight — Helping the planet one scan at a time.</span>
@@ -508,6 +535,7 @@
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
   <script src="js/toast.js"></script>
+  <script src="js/sounds.js"></script>
   <script src="js/data.js"></script>
   <script src="js/location.js"></script>
   <script src="js/scanner.js"></script>

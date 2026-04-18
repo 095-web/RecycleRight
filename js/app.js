@@ -215,6 +215,75 @@ document.addEventListener('DOMContentLoaded', () => {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  /* ====================================================
+     KEYBOARD TAB SHORTCUTS  (S / I / Q / B / P)
+     ==================================================== */
+  document.addEventListener('keydown', e => {
+    // Skip if the user is typing in a text field
+    const tag = (e.target.tagName || '').toUpperCase();
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return;
+    // Skip modified keys (Ctrl+S for save, etc.)
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+    const tabMap = { s: 'scanner', i: 'index', q: 'quiz', b: 'shop', p: 'profile' };
+    const target = tabMap[e.key.toLowerCase()];
+    if (target) {
+      const btn = document.querySelector(`.nav-btn[data-tab="${target}"]`);
+      if (btn) { e.preventDefault(); btn.click(); }
+    }
+  });
+
+  /* ====================================================
+     BACK TO TOP BUTTON
+     ==================================================== */
+  const bttBtn = document.getElementById('back-to-top');
+  if (bttBtn) {
+    window.addEventListener('scroll', () => {
+      bttBtn.classList.toggle('btt-visible', window.scrollY > 400);
+    }, { passive: true });
+    bttBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  /* ====================================================
+     ITEM OF THE DAY  (Scanner tab)
+     ==================================================== */
+  function renderItemOfDay() {
+    const slot = document.getElementById('item-of-day');
+    if (!slot || typeof RECYCLING_ITEMS === 'undefined' || RECYCLING_ITEMS.length === 0) return;
+
+    // Deterministic daily pick — LCG seeded by today's date
+    const dateNum = parseInt(new Date().toISOString().slice(0, 10).replace(/-/g, ''), 10);
+    let s = (dateNum % 2147483647) || 1;
+    s = (s * 16807) % 2147483647;
+    const idx  = s % RECYCLING_ITEMS.length;
+    const item = RECYCLING_ITEMS[idx];
+
+    const statusLabels = {
+      yes:     { text: 'Recyclable',       cls: 'yes',     icon: 'fa-check-circle'    },
+      no:      { text: 'Not Recyclable',   cls: 'no',      icon: 'fa-circle-xmark'    },
+      check:   { text: 'Check Locally',    cls: 'check',   icon: 'fa-circle-question' },
+      special: { text: 'Special Drop-Off', cls: 'special', icon: 'fa-location-dot'    },
+    };
+    const sc = statusLabels[item.status] || statusLabels.no;
+
+    slot.innerHTML = `
+      <div class="iotd-card">
+        <div class="iotd-header">
+          <i class="fas fa-star iotd-star"></i>
+          <span class="iotd-label">Item of the Day</span>
+        </div>
+        <div class="iotd-name">${escapeHtml(item.name)}</div>
+        <span class="status-badge ${sc.cls}" style="margin:6px 0 8px">
+          <i class="fas ${sc.icon}"></i> ${sc.text}
+        </span>
+        <div class="iotd-tip">${escapeHtml(item.tip)}</div>
+      </div>`;
+  }
+
+  renderItemOfDay();
+
   /* ---- Expose needed globals ---- */
   window.App = { setCategory, toggleBookmark };
 });

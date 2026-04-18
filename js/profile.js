@@ -908,14 +908,31 @@ const ProfileModule = (function () {
     if (!container || !ACHIEVEMENTS) return;
     const earned = profile.badges || [];
     if (pill) pill.textContent = `${earned.length}/${ACHIEVEMENTS.length}`;
+
+    // Build stat object used by hint functions
+    const statObj = {
+      quizzes:      profile.quizzes      || 0,
+      totalPoints:  profile.totalPoints  || profile.points || 0,
+      bestStreak:   profile.bestStreak   || 0,
+      lastPerfect:  false,
+      catsPlayed:   new Set(profile.catsPlayed  || []),
+      catPerfects:  new Set(profile.catPerfects || []),
+      friendsAdded: loadFriends().length,
+      scanCount:    profile.scanCount    || 0,
+      powerupsUsed: profile.powerupsUsed || 0,
+    };
+
     container.innerHTML = ACHIEVEMENTS.map(ach => {
       const unlocked = earned.includes(ach.id);
+      const hintText = (!unlocked && typeof ach.hint === 'function')
+        ? ach.hint(statObj) : null;
       return `
         <div class="achievement-item ${unlocked ? 'unlocked' : 'locked'}">
           <div class="ach-icon">${ach.icon}</div>
           <div class="ach-info">
             <div class="ach-name">${ach.name}</div>
             <div class="ach-desc">${ach.desc}</div>
+            ${hintText ? `<div class="ach-hint"><i class="fas fa-chart-simple"></i> ${esc(hintText)}</div>` : ''}
           </div>
           ${unlocked ? '<i class="fas fa-check-circle ach-check"></i>' : '<i class="fas fa-lock ach-lock"></i>'}
         </div>`;

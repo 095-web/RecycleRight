@@ -627,40 +627,40 @@ const QUIZ_QUESTIONS = [
 /* ---------- Achievements ---------- */
 const ACHIEVEMENTS = [
   /* Quiz milestones */
-  { id:'first_quiz',        name:'First Step',        desc:'Complete your very first quiz',                        icon:'🌱', req: q => q.quizzes >= 1 },
-  { id:'quizzes5',          name:'Knowledge Seeker',  desc:'Complete 5 quizzes',                                   icon:'📚', req: q => q.quizzes >= 5 },
-  { id:'quizzes10',         name:'Dedicated Learner', desc:'Complete 10 quizzes',                                  icon:'🎓', req: q => q.quizzes >= 10 },
-  { id:'quizzes25',         name:'Quiz Veteran',      desc:'Complete 25 quizzes',                                  icon:'📜', req: q => q.quizzes >= 25 },
+  { id:'first_quiz',       name:'First Step',        desc:'Complete your very first quiz',                       icon:'🌱', req: q => q.quizzes >= 1,  hint: q => `${Math.min(q.quizzes,1)} / 1 quiz completed` },
+  { id:'quizzes5',         name:'Knowledge Seeker',  desc:'Complete 5 quizzes',                                  icon:'📚', req: q => q.quizzes >= 5,  hint: q => `${Math.min(q.quizzes,5)} / 5 quizzes` },
+  { id:'quizzes10',        name:'Dedicated Learner', desc:'Complete 10 quizzes',                                 icon:'🎓', req: q => q.quizzes >= 10, hint: q => `${Math.min(q.quizzes,10)} / 10 quizzes` },
+  { id:'quizzes25',        name:'Quiz Veteran',      desc:'Complete 25 quizzes',                                 icon:'📜', req: q => q.quizzes >= 25, hint: q => `${Math.min(q.quizzes,25)} / 25 quizzes` },
   /* Score & streak */
-  { id:'streak3',           name:'Heating Up',        desc:'Get a 3-answer streak in a single quiz',               icon:'🔥', req: q => q.bestStreak >= 3 },
-  { id:'streak5',           name:'On Fire',           desc:'Get a 5-answer streak in a single quiz',               icon:'🔥', req: q => q.bestStreak >= 5 },
-  { id:'streak10',          name:'Unstoppable',       desc:'Get a 10-answer streak across your quiz history',      icon:'⚡', req: q => q.bestStreak >= 10 },
-  { id:'perfect',           name:'Perfect Score',     desc:'Answer all 10 questions correctly in one quiz',        icon:'🏆', req: q => q.lastPerfect },
-  { id:'cat_perfect',       name:'Category Ace',      desc:'Get a perfect score in 3 different quiz categories',   icon:'🎯', req: q => (q.catPerfects?.size || 0) >= 3 },
+  { id:'streak3',          name:'Heating Up',        desc:'Get a 3-answer streak in a single quiz',              icon:'🔥', req: q => q.bestStreak >= 3,  hint: q => `${Math.min(q.bestStreak,3)} / 3 streak` },
+  { id:'streak5',          name:'On Fire',           desc:'Get a 5-answer streak in a single quiz',              icon:'🔥', req: q => q.bestStreak >= 5,  hint: q => `${Math.min(q.bestStreak,5)} / 5 streak` },
+  { id:'streak10',         name:'Unstoppable',       desc:'Get a 10-answer streak across your quiz history',     icon:'⚡', req: q => q.bestStreak >= 10, hint: q => `${Math.min(q.bestStreak,10)} / 10 streak` },
+  { id:'perfect',          name:'Perfect Score',     desc:'Answer all questions correctly in one quiz',          icon:'🏆', req: q => q.lastPerfect,       hint: () => 'Get 100% in a single quiz' },
+  { id:'cat_perfect',      name:'Category Ace',      desc:'Get a perfect score in 3 different categories',      icon:'🎯', req: q => (q.catPerfects?.size||0) >= 3, hint: q => `${Math.min(q.catPerfects?.size||0,3)} / 3 category perfect scores` },
   /* Points milestones */
-  { id:'pts500',            name:'500 Club',          desc:'Earn 500 total points',                                icon:'⭐', req: q => q.totalPoints >= 500 },
-  { id:'pts1000',           name:'Point Millionaire', desc:'Earn 1,000 total points',                              icon:'💎', req: q => q.totalPoints >= 1000 },
-  { id:'pts2000',           name:'Rising Star',       desc:'Earn 2,000 total points',                              icon:'🌟', req: q => q.totalPoints >= 2000 },
-  { id:'pts5000',           name:'Eco Champion',      desc:'Reach 5,000 total points',                             icon:'🚀', req: q => q.totalPoints >= 5000 },
+  { id:'pts500',           name:'500 Club',          desc:'Earn 500 total points',                               icon:'⭐', req: q => q.totalPoints >= 500,  hint: q => `${Math.min(q.totalPoints,500).toLocaleString()} / 500 pts` },
+  { id:'pts1000',          name:'Point Millionaire', desc:'Earn 1,000 total points',                             icon:'💎', req: q => q.totalPoints >= 1000, hint: q => `${Math.min(q.totalPoints,1000).toLocaleString()} / 1,000 pts` },
+  { id:'pts2000',          name:'Rising Star',       desc:'Earn 2,000 total points',                             icon:'🌟', req: q => q.totalPoints >= 2000, hint: q => `${Math.min(q.totalPoints,2000).toLocaleString()} / 2,000 pts` },
+  { id:'pts5000',          name:'Eco Champion',      desc:'Reach 5,000 total points',                            icon:'🚀', req: q => q.totalPoints >= 5000, hint: q => `${Math.min(q.totalPoints,5000).toLocaleString()} / 5,000 pts` },
   /* Categories */
-  { id:'all_cats',          name:'All-Rounder',       desc:'Complete every quiz category at least once',           icon:'🌍', req: q => q.catsPlayed && q.catsPlayed.size >= 5 },
+  { id:'all_cats',         name:'All-Rounder',       desc:'Complete every quiz category at least once',          icon:'🌍', req: q => q.catsPlayed && q.catsPlayed.size >= 5, hint: q => `${Math.min(q.catsPlayed?.size||0,5)} / 5 categories played` },
   /* Social */
-  { id:'friend_added',      name:'Social Recycler',   desc:'Add your first friend',                                icon:'🤝', req: q => q.friendsAdded >= 1 },
+  { id:'friend_added',     name:'Social Recycler',   desc:'Add your first friend',                               icon:'🤝', req: q => q.friendsAdded >= 1, hint: q => `${Math.min(q.friendsAdded,1)} / 1 friend added` },
   /* Scanner */
-  { id:'first_scan',        name:'Sharp Eye',         desc:'Earn points from your first product scan',             icon:'🔍', req: q => (q.scanCount || 0) >= 1 },
-  { id:'scanner_5',         name:'Barcode Hunter',    desc:'Earn scan points 5 times',                             icon:'📱', req: q => (q.scanCount || 0) >= 5 },
-  { id:'scanner_25',        name:'Scanner Pro',       desc:'Earn scan points 25 times',                            icon:'🏅', req: q => (q.scanCount || 0) >= 25 },
-  { id:'daily_reset_used',  name:'Fresh Start',       desc:'Use a Daily Reset power-up in the Scanner',            icon:'🔄', req: () => false },
+  { id:'first_scan',       name:'Sharp Eye',         desc:'Earn points from your first product scan',            icon:'🔍', req: q => (q.scanCount||0) >= 1,  hint: q => `${Math.min(q.scanCount||0,1)} / 1 scan` },
+  { id:'scanner_5',        name:'Barcode Hunter',    desc:'Earn scan points 5 times',                            icon:'📱', req: q => (q.scanCount||0) >= 5,  hint: q => `${Math.min(q.scanCount||0,5)} / 5 scans` },
+  { id:'scanner_25',       name:'Scanner Pro',       desc:'Earn scan points 25 times',                           icon:'🏅', req: q => (q.scanCount||0) >= 25, hint: q => `${Math.min(q.scanCount||0,25)} / 25 scans` },
+  { id:'daily_reset_used', name:'Fresh Start',       desc:'Use a Daily Reset power-up in the Scanner',           icon:'🔄', req: () => false, hint: () => 'Use a Daily Reset power-up in the Scanner tab' },
   /* Shop & power-ups */
-  { id:'first_purchase',    name:'First Haul',        desc:'Buy your first item from the Shop',                    icon:'🛍️', req: () => false },
-  { id:'power_user',        name:'Power Player',      desc:'Use a power-up during a quiz',                         icon:'⚡', req: q => (q.powerupsUsed || 0) >= 1 },
+  { id:'first_purchase',   name:'First Haul',        desc:'Buy your first item from the Shop',                   icon:'🛍️', req: () => false, hint: () => 'Purchase any item from the Shop' },
+  { id:'power_user',       name:'Power Player',      desc:'Use a power-up during a quiz',                        icon:'⚡', req: q => (q.powerupsUsed||0) >= 1, hint: q => `${Math.min(q.powerupsUsed||0,1)} / 1 power-up used` },
   /* Sorting mini-game */
-  { id:'sorter_perfect',    name:'Master Sorter',     desc:'Get a perfect score in the Sorting Game',              icon:'🗑️', req: () => false },
-  { id:'sorter_played',     name:'Bin Basics',        desc:'Play the Sorting Game for the first time',             icon:'♻️', req: () => false },
+  { id:'sorter_perfect',   name:'Master Sorter',     desc:'Get a perfect score in the Sorting Game',             icon:'🗑️', req: () => false, hint: () => 'Sort all 10 items correctly in the Sorting Game' },
+  { id:'sorter_played',    name:'Bin Basics',        desc:'Play the Sorting Game for the first time',            icon:'♻️', req: () => false, hint: () => 'Play the Sorting Mini-Game once' },
   /* Myth busters */
-  { id:'myth_buster',       name:'Myth Buster',       desc:'Complete the Myth Busters quiz',                       icon:'🔮', req: q => (q.catsPlayed instanceof Set ? q.catsPlayed.has('myths') : (q.catsPlayed||[]).includes('myths')) },
+  { id:'myth_buster',      name:'Myth Buster',       desc:'Complete the Myth Busters quiz',                      icon:'🔮', req: q => (q.catsPlayed instanceof Set ? q.catsPlayed.has('myths') : (q.catsPlayed||[]).includes('myths')), hint: () => 'Complete the Myth Busters quiz category' },
   /* Daily spin */
-  { id:'lucky_spin',        name:'Lucky Spin',        desc:'Win 500+ pts in a single Daily Spin',                  icon:'🎰', req: () => false },
+  { id:'lucky_spin',       name:'Lucky Spin',        desc:'Win 500+ pts in a single Daily Spin',                 icon:'🎰', req: () => false, hint: () => 'Win 500 or more pts in a single Daily Spin' },
 ];
 
 /* ---------- Avatars ---------- */
