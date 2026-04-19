@@ -268,6 +268,41 @@ const Quiz = (function () {
     _renderDailyChallenge(profile);
     _renderDailyMissions(profile);
     _renderFactStrip();
+    _checkLoginBonus(profile);
+  }
+
+  /* ====================================================
+     DAILY LOGIN BONUS
+     ==================================================== */
+  function _checkLoginBonus(profile) {
+    const todayStr = today();
+    if (profile.lastLoginDate === todayStr) return; // already claimed today
+
+    // Calculate consecutive day streak
+    const prev = new Date();
+    prev.setDate(prev.getDate() - 1);
+    const yesterdayStr = prev.toISOString().slice(0, 10);
+    const consecutive  = profile.lastLoginDate === yesterdayStr;
+    const newStreak    = consecutive ? (profile.loginStreak || 1) + 1 : 1;
+
+    // Bonus: 10 pts base, +5 per streak day, capped at 50 pts
+    const bonus = Math.min(10 + (newStreak - 1) * 5, 50);
+
+    profile.lastLoginDate = todayStr;
+    profile.loginStreak   = newStreak;
+    profile.points        = (profile.points || 0) + bonus;
+    profile.totalPoints   = (profile.totalPoints || 0) + bonus;
+    saveProfile(profile);
+
+    // Refresh the points counter on the home banner
+    const ptEl = document.getElementById('stat-points');
+    if (ptEl) ptEl.textContent = profile.points.toLocaleString();
+
+    // Show toast after the home screen settles
+    setTimeout(() => {
+      const streakMsg = newStreak > 1 ? ` · ${newStreak}-day streak! 🔥` : '';
+      window.Toast?.show?.(`🎁 Daily bonus: +${bonus} pts${streakMsg}`, 'success', 4000);
+    }, 700);
   }
 
   /* Wrap an avatar element with a frame div if needed */
@@ -962,11 +997,16 @@ const Quiz = (function () {
       window.Toast?.show?.(`⭐ Great job! You scored ${finalScore} pts`, 'success', 3000);
     }
 
-    // Confetti on perfect score
-    if (pct === 100 && typeof confetti !== 'undefined') {
-      confetti({ particleCount: 160, spread: 80, origin: { y: 0.55 } });
-      setTimeout(() => confetti({ particleCount: 80, angle: 60,  spread: 55, origin: { x: 0 } }), 400);
-      setTimeout(() => confetti({ particleCount: 80, angle: 120, spread: 55, origin: { x: 1 } }), 600);
+    // Confetti — big burst for perfect score, small pop for any new badge
+    if (typeof confetti !== 'undefined') {
+      if (pct === 100) {
+        confetti({ particleCount: 160, spread: 80, origin: { y: 0.55 } });
+        setTimeout(() => confetti({ particleCount: 80, angle: 60,  spread: 55, origin: { x: 0 } }), 400);
+        setTimeout(() => confetti({ particleCount: 80, angle: 120, spread: 55, origin: { x: 1 } }), 600);
+      } else if (newBadges.length > 0) {
+        confetti({ particleCount: 70, spread: 55, origin: { y: 0.6 },
+          colors: ['#16a34a','#fbbf24','#3b82f6','#f97316'] });
+      }
     }
 
     // Missed questions review
@@ -1010,13 +1050,104 @@ const Quiz = (function () {
   }
 
   function shareScore() {
-    const user    = currentUser();
-    const profile = getProfile(user);
     const catInfo = QUIZ_CATEGORIES.find(c => c.id === state.category) || { name: state.category };
     const pct     = Math.round((state.correct / state.questions.length) * 100);
     const emoji   = pct === 100 ? '🏆' : pct >= 70 ? '⭐' : '🌱';
-    const text    = `${emoji} I scored ${pct}% on the "${catInfo.name}" quiz in RecycleRight! Can you beat me? 🌍♻️`;
+    const fallbackText = `${emoji} I scored ${pct}% on the "${catInfo.name}" quiz in RecycleRight! Can you beat me? 🌍♻️`;
 
+    // Build share card canvas
+    const canvas  = document.createElement('canvas');
+    canvas.width  = 600;
+    canvas.height = 320;
+    const ctx     = canvas.getContext('2d');
+
+    // Background gradient
+    const grad = ctx.createLinearGradient(0, 0, 600, 320);
+    grad.addColorStop(0, '#15803d');
+    grad.addColorStop(1, '#166534');
+    ctx.fillStyle = grad;
+    _ctxRoundRect(ctx, 0, 0, 600, 320, 18);
+    ctx.fill();
+
+    // Subtle dot pattern overlay
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    for (let x = 0; x < 600; x += 24) {
+      for (let y = 0; y < 320; y += 24) {
+        ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    // App title
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font      = '600 18px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('♻️  RecycleRight', 300, 44);
+
+    // Category pill background
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    _ctxRoundRect(ctx, 180, 56, 240, 30, 15);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font      = '500 14px system-ui, sans-serif';
+    ctx.fillText(catInfo.name, 300, 76);
+
+    // Big score
+    ctx.fillStyle = '#ffffff';
+    ctx.font      = 'bold 96px system-ui, sans-serif';
+    ctx.fillText(pct + '%', 300, 185);
+
+    // Sub stats row
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.font      = '500 16px system-ui, sans-serif';
+    ctx.fillText(`${state.correct}/${state.questions.length} correct  ·  Best streak: ${state.bestStreak}`, 300, 220);
+
+    // Points earned
+    ctx.fillStyle = '#86efac'; // green-300
+    ctx.font      = 'bold 22px system-ui, sans-serif';
+    ctx.fillText(emoji + '  +' + (document.getElementById('r-pts')?.textContent || '?') + ' pts', 300, 265);
+
+    // Footer CTA
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.font      = '14px system-ui, sans-serif';
+    ctx.fillText('Can you beat me?  recycleright.app', 300, 304);
+
+    // Try sharing as image file, fall back to plain text
+    canvas.toBlob(blob => {
+      if (!blob) { _shareText(fallbackText); return; }
+      const file = new File([blob], 'recycleright-score.png', { type: 'image/png' });
+      if (navigator.canShare?.({ files: [file] })) {
+        navigator.share({ files: [file], title: 'RecycleRight Score', text: fallbackText }).catch(() => {});
+      } else if (navigator.share) {
+        navigator.share({ title: 'RecycleRight Quiz Score', text: fallbackText }).catch(() => {});
+      } else {
+        // Desktop: download the image
+        const url = URL.createObjectURL(blob);
+        const a   = document.createElement('a');
+        a.href    = url;
+        a.download = 'recycleright-score.png';
+        a.click();
+        URL.revokeObjectURL(url);
+        window.Toast?.show?.('🖼️ Score card downloaded!', 'success', 3000);
+      }
+    }, 'image/png');
+  }
+
+  /* Draw a rounded rectangle path */
+  function _ctxRoundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  function _shareText(text) {
     if (navigator.share) {
       navigator.share({ title: 'RecycleRight Quiz Score', text }).catch(() => {});
     } else {

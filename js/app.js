@@ -52,6 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // Render shop on every visit (points may have changed)
       if (target === 'shop') {
         ShopModule.render();
+        // Mark shop as seen today → hide the "new" dot
+        localStorage.setItem('rr_shop_seen', new Date().toISOString().slice(0, 10));
+        _updateShopDot();
       }
     });
   });
@@ -214,6 +217,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function escapeHtml(str) {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
+
+  /* ====================================================
+     SHOP "NEW" DOT
+     ==================================================== */
+  function _updateShopDot() {
+    const dot   = document.getElementById('shop-new-dot');
+    if (!dot) return;
+    const today = new Date().toISOString().slice(0, 10);
+    const seen  = localStorage.getItem('rr_shop_seen');
+    dot.style.display = (seen !== today) ? 'block' : 'none';
+  }
+  _updateShopDot(); // run on page load
 
   /* ====================================================
      KEYBOARD TAB SHORTCUTS  (S / I / Q / B / P)

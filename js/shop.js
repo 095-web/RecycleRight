@@ -246,6 +246,9 @@ const ShopModule = (function () {
       drumEl.textContent  = fake.label;
       drumEl.style.color  = fake.color;
 
+      // Tick sound — every tick when slow, every other when fast
+      if (tick < 12 ? tick % 2 === 0 : true) window.Sounds?.tick?.();
+
       if (tick < TOTAL_TICKS) {
         // Start fast, slow down toward the end
         const delay = tick < 12 ? 80 : tick < 18 ? 140 : 240;
@@ -254,6 +257,10 @@ const ShopModule = (function () {
         // Land on the real prize
         drumEl.textContent = prize.label;
         drumEl.style.color = prize.color;
+
+        // Win sound — fanfare for big prize, chime for normal
+        if (prize.pts >= 500) window.Sounds?.perfect?.();
+        else window.Sounds?.correct?.();
         void drumEl.offsetWidth; // reflow to restart animation
         drumEl.classList.add('spin-drum-pop');
 
