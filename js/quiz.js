@@ -628,8 +628,8 @@ const Quiz = (function () {
 
     state.answered = false;
 
-    if (state.current === 0) {
-      // Show 3-2-1 countdown before the first question
+    if (state.current === 0 && _hardMode) {
+      // Show 3-2-1 countdown only in hard mode
       _showCountdown(() => _activateQuestion());
     } else {
       _activateQuestion();
@@ -822,9 +822,10 @@ const Quiz = (function () {
     const profile = getProfile(user);
     if (!profile) return;
 
-    // 1.5× multiplier for daily challenge
+    // Apply score multipliers
     let finalScore = state.score;
-    if (state.isDaily) finalScore = Math.round(finalScore * 1.5);
+    if (_hardMode)    finalScore = Math.round(finalScore * 1.2); // hard mode 1.2×
+    if (state.isDaily) finalScore = Math.round(finalScore * 1.5); // daily challenge 1.5×
 
     profile.points      += finalScore;
     profile.totalPoints  = (profile.totalPoints || 0) + finalScore;
@@ -926,7 +927,11 @@ const Quiz = (function () {
     document.getElementById('results-emoji').textContent   = emojis;
     document.getElementById('results-heading').textContent = heading;
     document.getElementById('results-subtext').textContent = sub;
-    document.getElementById('r-pts').textContent     = '+' + finalScore + (state.isDaily ? ' (1.5×!)' : '');
+    const ptsLabel = [
+      state.isDaily ? '1.5×' : '',
+      _hardMode     ? '1.2×' : '',
+    ].filter(Boolean).join(' · ');
+    document.getElementById('r-pts').textContent = '+' + finalScore + (ptsLabel ? ` (${ptsLabel})` : '');
     document.getElementById('r-correct').textContent = `${state.correct}/${state.questions.length}`;
     document.getElementById('r-streak').textContent  = state.bestStreak;
     document.getElementById('r-acc').textContent     = pct + '%';
