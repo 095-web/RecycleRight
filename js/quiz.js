@@ -359,11 +359,8 @@ const Quiz = (function () {
   }
 
   function _showAuthLoading() {
-    // Show all quiz screens hidden, just a spinner while Firebase resolves
-    ['quiz-setup', 'google-setup', 'quiz-home', 'quiz-active', 'quiz-results'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.classList.add('hidden');
-    });
+    // Hide all quiz screens while Firebase resolves auth state
+    _hideAll();
     let loader = document.getElementById('quiz-auth-loader');
     if (!loader) {
       loader = document.createElement('div');
