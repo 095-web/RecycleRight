@@ -123,14 +123,7 @@ const Quiz = (function () {
       });
     });
 
-    // If Firebase is configured, hold off — onAuthStateChanged will fire shortly
-    // and call reload() → _decideScreen(). Calling it now would race and flash
-    // the guest setup form for signed-in users.
-    if (window.AuthModule?.isAvailable) {
-      _showAuthLoading();
-    } else {
-      _decideScreen();
-    }
+    _decideScreen();
   }
 
   function _updateHardModeLabel() {
@@ -329,17 +322,6 @@ const Quiz = (function () {
   }
 
   async function _decideScreen() {
-    // If Firebase is configured but hasn't resolved auth yet, wait — don't flash the
-    // guest setup form. onAuthStateChanged will call reload() once it fires.
-    if (window.AuthModule?.isAvailable && !window.AuthModule?.isReady) {
-      _showAuthLoading();
-      return;
-    }
-
-    // Auth has settled — hide the loading spinner if it was shown
-    const loader = document.getElementById('quiz-auth-loader');
-    if (loader) loader.style.display = 'none';
-
     const fbUser = window.AuthModule?.currentUser;
     if (fbUser) {
       const localUser = currentUser();
@@ -356,21 +338,6 @@ const Quiz = (function () {
       const user = currentUser();
       if (user && getProfile(user)) showHome(); else showSetup();
     }
-  }
-
-  function _showAuthLoading() {
-    // Hide all quiz screens while Firebase resolves auth state
-    _hideAll();
-    let loader = document.getElementById('quiz-auth-loader');
-    if (!loader) {
-      loader = document.createElement('div');
-      loader.id = 'quiz-auth-loader';
-      loader.style.cssText = 'display:flex;justify-content:center;align-items:center;padding:3rem;';
-      loader.innerHTML = '<div class="spinner" style="width:2rem;height:2rem;border:3px solid var(--green-200);border-top-color:var(--green-500);border-radius:50%;animation:spin 0.7s linear infinite"></div>';
-      const quizSection = document.getElementById('tab-quiz');
-      if (quizSection) quizSection.appendChild(loader);
-    }
-    loader.style.display = 'flex';
   }
 
   function calcLevel(points) {
