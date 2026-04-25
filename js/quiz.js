@@ -1527,7 +1527,6 @@ const Quiz = (function () {
       default: return;
     }
 
-    const admin = window.AuthModule?.isAdmin === true;
     if (!profile.powerups) profile.powerups = {};
     if (!admin) profile.powerups[puId] = Math.max(0, (profile.powerups[puId] || 0) - 1);
     profile.powerupsUsed = (profile.powerupsUsed || 0) + 1;
