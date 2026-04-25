@@ -10,6 +10,7 @@ const AuthModule = (function () {
   let auth = null;
   let _currentUser = null;
   let _isAdmin     = false;
+  let _authSettled = false; // true once onAuthStateChanged has fired at least once
 
   /* ---- Is Firebase properly configured? ---- */
   function isConfigured() {
@@ -36,6 +37,7 @@ const AuthModule = (function () {
 
       auth.onAuthStateChanged(async (user) => {
         _currentUser = user;
+        _authSettled = true;   // auth has now resolved — safe to decide screen
         updateHeaderUI(user);
 
         if (user) {
@@ -510,6 +512,7 @@ const AuthModule = (function () {
     markChallengeComplete,
     get currentUser()  { return _currentUser; },
     get isAvailable()  { return isConfigured(); },
+    get isReady()      { return _authSettled; },
     get isAdmin()      { return _isAdmin; },
     getGlobalShopSeed,
     setGlobalShopSeed,
