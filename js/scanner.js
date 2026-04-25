@@ -41,7 +41,7 @@ const Scanner = (function () {
     const note     = document.getElementById('dropoff-zip-note');
     const earth911 = document.getElementById('earth911-link');
     if (loc?.zip) {
-      if (earth911) earth911.href = `https://search.earth911.com/?utm_source=recycleright&what=recyclables&where=${loc.zip}`;
+      if (earth911) earth911.href = `https://search.earth911.com/?utm_source=recycleright&where=${loc.zip}`;
       if (note)     note.textContent = `📍 Links pre-filled for ${loc.city ? loc.city + ', ' : ''}${loc.zip}. Results open in a new tab.`;
     } else {
       if (note) note.textContent = '📍 Enter your ZIP in the Recycling Index tab to get location-specific search links.';

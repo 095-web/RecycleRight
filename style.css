@@ -3510,35 +3510,34 @@ input[type="text"]:focus {
 .cat-bars-section {
   margin-top: 16px;
   overflow: visible;
-  padding-right: 4px;
 }
 .cat-bars-title {
   font-size: .82rem;
   font-weight: 600;
   color: var(--gray-600);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   text-transform: uppercase;
   letter-spacing: .04em;
 }
 .cat-bar-wrap {
   display: grid;
-  grid-template-columns: 55px 1fr auto;
+  grid-template-columns: 72px 1fr 56px;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  font-size: .82rem;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: .85rem;
   min-width: 0;
 }
 .cat-bar-label {
   color: var(--gray-600);
   text-align: right;
-  font-size: .75rem;
+  font-size: .8rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .cat-bar-track {
-  height: 10px;
+  height: 12px;
   background: var(--green-50);
   border-radius: 999px;
   overflow: hidden;
@@ -3555,15 +3554,15 @@ input[type="text"]:focus {
 .cat-bar-val {
   text-align: right;
   white-space: nowrap;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--gray-700);
-  font-size: .76rem;
-  white-space: nowrap;
+  font-size: .82rem;
 }
 .cat-bar-val-unplayed {
   font-weight: 400;
   color: var(--gray-400);
   font-style: italic;
+  font-size: .75rem;
 }
 .cat-bar-unplayed {
   background: repeating-linear-gradient(
@@ -3778,6 +3777,35 @@ input[type="text"]:focus {
   display: inline-block;
 }
 [data-theme="dark"] .ach-hint { background: rgba(22,163,74,.12); color: var(--green-400); }
+
+/* Sort game results overlay */
+.sort-results-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(var(--bg-rgb, 255,255,255), 0.96);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  border-radius: var(--radius-lg);
+  animation: fadeInUp .35s ease;
+}
+[data-theme="dark"] .sort-results-overlay { background: rgba(15,23,42,.94); }
+.sort-results-card { text-align: center; padding: 2rem 1.5rem; }
+.sort-results-card h2 { margin: .4rem 0 .2rem; font-size: 1.6rem; }
+
+/* Sort item entrance animation */
+@keyframes sortItemSlideIn {
+  from { opacity: 0; transform: translateY(-16px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+.sort-item-card.sort-item-enter {
+  animation: sortItemSlideIn 0.28s cubic-bezier(.22,1,.36,1);
+}
+
+/* Make sort game screen position:relative so overlay works */
+#quiz-sort-game { position: relative; }
 
 /* ---- Streak freeze snowflake indicator ---- */
 .live-streak-wrap.streak-frozen {

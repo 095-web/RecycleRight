@@ -674,7 +674,16 @@ const Quiz = (function () {
   function _activateQuestion() {
     _questionStartTime = Date.now();
     _keyHandler = (e) => {
+      // Enter or Space → advance to next question after answering
+      if (e.key === 'Enter' || e.key === ' ') {
+        if (state.answered) {
+          e.preventDefault();
+          document.getElementById('next-btn')?.click();
+        }
+        return;
+      }
       if (state.answered) return;
+      // 1–4 → select answer
       const map = { '1': 0, '2': 1, '3': 2, '4': 3 };
       if (map[e.key] !== undefined) {
         const btns = document.querySelectorAll('.option-btn');
@@ -1169,13 +1178,30 @@ const Quiz = (function () {
 
     // Pick 10 random items from RECYCLING_ITEMS
     const pool = [...RECYCLING_ITEMS].sort(() => Math.random() - 0.5).slice(0, 10);
-
     _sortState = { items: pool, current: 0, score: 0, correct: 0, answered: false };
 
     _hideAll();
     document.getElementById('quiz-sort-game').classList.remove('hidden');
+
+    // Remove any results overlay from a previous run
+    document.getElementById('sort-results-overlay')?.remove();
+
+    // Reset game UI to initial state
+    const labels  = document.getElementById('sort-q-label');
+    const score   = document.getElementById('sort-live-score');
+    const nameEl  = document.getElementById('sort-item-name');
+    const tipEl   = document.getElementById('sort-item-tip');
+    const feedback= document.getElementById('sort-feedback');
+    const bins    = document.querySelectorAll('.sort-bin-btn');
+
+    if (labels)   labels.textContent  = 'Item 1 / 10';
+    if (score)    score.textContent   = '0';
+    if (nameEl)   nameEl.textContent  = '';
+    if (tipEl)    tipEl.textContent   = '';
+    if (feedback) feedback.classList.add('hidden');
+    bins.forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); });
+
     _renderSortItem();
-    // Use onclick to avoid stacking listeners on repeated plays
     document.getElementById('sort-next-btn').onclick = _sortNext;
   }
 
@@ -1186,9 +1212,18 @@ const Quiz = (function () {
 
     document.getElementById('sort-q-label').textContent     = `Item ${num} / ${tot}`;
     document.getElementById('sort-live-score').textContent  = _sortState.score;
-    document.getElementById('sort-item-name').textContent   = item.name;
     document.getElementById('sort-item-tip').textContent    = '';
     document.getElementById('sort-feedback').classList.add('hidden');
+
+    // Animate item card in
+    const card   = document.getElementById('sort-item-card');
+    const nameEl = document.getElementById('sort-item-name');
+    if (card) {
+      card.classList.remove('sort-item-enter');
+      void card.offsetWidth; // reflow to restart animation
+      card.classList.add('sort-item-enter');
+    }
+    if (nameEl) nameEl.textContent = item.name;
 
     // Reset bin button states
     document.querySelectorAll('.sort-bin-btn').forEach(b => {
@@ -1266,14 +1301,17 @@ const Quiz = (function () {
       confetti({ particleCount: 120, spread: 70, origin: { y: 0.55 } });
     }
 
-    // Show results inline
+    // Overlay results on top without destroying the game HTML
     const screen = document.getElementById('quiz-sort-game');
-    screen.querySelector('.sort-game-screen').innerHTML = `
+    const overlay = document.createElement('div');
+    overlay.id = 'sort-results-overlay';
+    overlay.className = 'sort-results-overlay';
+    overlay.innerHTML = `
       <div class="sort-results-card">
-        <div class="results-emoji">${perfect ? '🏆' : pct >= 70 ? '⭐' : '🌱'}</div>
+        <div class="results-emoji" style="font-size:3rem">${perfect ? '🏆' : pct >= 70 ? '⭐' : '🌱'}</div>
         <h2>${perfect ? 'Perfect Sort!' : pct >= 70 ? 'Nice Work!' : 'Keep Practicing!'}</h2>
-        <p>${correct} / ${total} items sorted correctly · +${_sortState.score} pts</p>
-        <div class="results-actions" style="margin-top:1.5rem">
+        <p style="color:var(--gray-600);margin:6px 0 1.5rem">${correct} / ${total} items sorted correctly · <strong>+${_sortState.score} pts</strong></p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
           <button class="btn btn-primary btn-lg" onclick="Quiz.startSortGame()">
             <i class="fas fa-redo"></i> Play Again
           </button>
@@ -1282,6 +1320,7 @@ const Quiz = (function () {
           </button>
         </div>
       </div>`;
+    screen.appendChild(overlay);
   }
 
   function exitSortGame() {
@@ -1457,8 +1496,9 @@ const Quiz = (function () {
     const user    = currentUser();
     const profile = getProfile(user);
     if (!profile) return;
+    const admin = window.AuthModule?.isAdmin === true;
     const count = profile.powerups?.[puId] || 0;
-    if (count <= 0) return;
+    if (!admin && count <= 0) return; // admins bypass the count check
 
     switch (puId) {
       case 'fifty_fifty': {

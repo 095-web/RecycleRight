@@ -232,9 +232,7 @@ const ProfileModule = (function () {
       ? `<div class="profile-big-avatar avatar-frame-wrap ${frameCss}">${avatar}</div>`
       : `<div class="profile-big-avatar">${avatar}</div>`;
 
-    // Next title progress bar
-    const totalPts   = profile.totalPoints || profile.points || 0;
-    const nextTitleHtml = _buildNextTitleBar(totalPts, profile);
+    const nextTitleHtml = ''; // removed next-title bar
 
     getContainer().innerHTML = `
       <div class="profile-page">
