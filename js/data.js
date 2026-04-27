@@ -27,7 +27,7 @@ const RECYCLING_ITEMS = [
   /* ---- Paper & Cardboard ---- */
   { id:1,  name:'Cardboard Box',          category:'paper',    status:'yes',    tip:'Flatten boxes and remove all tape and styrofoam inserts before recycling.' },
   { id:2,  name:'Newspaper',              category:'paper',    status:'yes',    tip:'Stack or bundle loosely. Avoid soaking in water.' },
-  { id:3,  name:'Office / Printer Paper', category:'paper',    status:'yes',    tip:'Shredded paper is usually OK — check with your local program.' },
+  { id:3,  name:'Office / Printer Paper', category:'paper',    status:'yes',    tip:'Shredded paper is usually OK; check with your local program.' },
   { id:4,  name:'Paper Bag',              category:'paper',    status:'yes',    tip:'Empty and fold. Brown kraft paper bags are widely accepted.' },
   { id:5,  name:'Pizza Box',              category:'paper',    status:'check',  tip:'Heavily greasy boxes contaminate recycling. Tear off and keep only the clean lid.' },
   { id:6,  name:'Paper Coffee Cup',       category:'paper',    status:'no',     tip:'The plastic/wax lining prevents recycling. Use a reusable cup instead.' },
@@ -43,13 +43,13 @@ const RECYCLING_ITEMS = [
   { id:14, name:'#2 HDPE Milk Jug',        category:'plastics', status:'yes',   tip:'Rinse thoroughly. Labels do not need to be removed.' },
   { id:15, name:'#2 HDPE Shampoo Bottle',  category:'plastics', status:'yes',   tip:'Empty completely. HDPE is highly valuable for recycling.' },
   { id:16, name:'#3 PVC (Pipes/Blister)',  category:'plastics', status:'no',    tip:'PVC releases toxic chlorine during recycling. Very few programs accept it.' },
-  { id:17, name:'#4 LDPE Plastic Bag',     category:'plastics', status:'special',tip:'Never put in curbside bins — bags jam sorting machinery. Drop off at grocery store collection points.' },
+  { id:17, name:'#4 LDPE Plastic Bag',     category:'plastics', status:'special',tip:'Never put in curbside bins; bags jam sorting machinery. Drop off at grocery store collection points.' },
   { id:18, name:'#5 PP Yogurt Container',  category:'plastics', status:'check', tip:'PP acceptance is growing. Check your local program.' },
   { id:19, name:'#6 PS Foam Cup/Plate',    category:'plastics', status:'no',    tip:'Polystyrene foam (Styrofoam) is rarely accepted. Look for specialty foam recyclers.' },
   { id:20, name:'#6 PS Plastic Cutlery',   category:'plastics', status:'no',    tip:'Too small for sorting machinery. Switch to reusable or compostable alternatives.' },
   { id:21, name:'#7 Other Plastics',       category:'plastics', status:'no',    tip:'This catch-all category is rarely recyclable curbside. Check the label.' },
   { id:22, name:'Plastic Straw',           category:'plastics', status:'no',    tip:'Too small and lightweight for sorters. Switch to paper, metal, or silicone straws.' },
-  { id:23, name:'Plastic Bottle Cap',      category:'plastics', status:'check', tip:'Many programs now accept caps on the bottle. Check locally — some collect them separately.' },
+  { id:23, name:'Plastic Bottle Cap',      category:'plastics', status:'check', tip:'Many programs now accept caps on the bottle. Check locally; some collect them separately.' },
   { id:24, name:'Plastic Clamshell (PET)', category:'plastics', status:'check', tip:'Hard PET clamshells are sometimes accepted. Rinse food residue completely.' },
   { id:25, name:'Plastic Wrap / Cling Film',category:'plastics',status:'special',tip:'Thin film plastic goes to store drop-off, not curbside bins.' },
   { id:26, name:'Bubble Wrap',             category:'plastics', status:'special',tip:'Drop off with other plastic bags at grocery/retail store film recycling bins.' },
@@ -84,7 +84,7 @@ const RECYCLING_ITEMS = [
   /* ---- Food & Organic ---- */
   { id:48, name:'Fruit & Vegetable Scraps',category:'food',   status:'special',tip:'Compost in a backyard bin, city compost cart, or community garden drop-off.' },
   { id:49, name:'Coffee Grounds & Filter', category:'food',   status:'special',tip:'Excellent compost material. Also great for garden soil amendment.' },
-  { id:50, name:'Eggshells',              category:'food',    status:'special',tip:'Great for compost — add calcium to soil. Crush before adding to a bin.' },
+  { id:50, name:'Eggshells',              category:'food',    status:'special',tip:'Great for compost; add calcium to soil. Crush before adding to a bin.' },
   { id:51, name:'Yard Waste (leaves/grass)',category:'food',  status:'check',  tip:'Many cities offer curbside yard waste collection. Check your local schedule.' },
   { id:52, name:'Greasy Food Container',  category:'food',    status:'no',     tip:'Grease and food residue contaminate paper/cardboard and cannot be removed at the facility.' },
   { id:53, name:'Dairy & Meat Scraps',    category:'food',    status:'special',tip:'Avoid adding to backyard compost. Accept in city compost programs or bokashi systems.' },
@@ -99,7 +99,7 @@ const RECYCLING_ITEMS = [
 
   /* ---- Batteries ---- */
   { id:60, name:'Alkaline Battery (AA/AAA)',category:'batteries',status:'check', tip:'Some states require recycling; others allow landfill disposal. Use Call2Recycle drop-offs.' },
-  { id:61, name:'Lithium-Ion Battery',    category:'batteries', status:'special',tip:'Never put in bins — fire hazard. Return to retailers (Best Buy, Home Depot).' },
+  { id:61, name:'Lithium-Ion Battery',    category:'batteries', status:'special',tip:'Never put in bins. Fire hazard. Return to retailers (Best Buy, Home Depot).' },
   { id:62, name:'Car Battery (Lead-Acid)',category:'batteries', status:'special',tip:'Auto parts stores are required by law in most states to accept old car batteries.' },
   { id:63, name:'Button Cell Battery',    category:'batteries', status:'special',tip:'Contains heavy metals. Retailers like Duracell and Energizer accept them for recycling.' },
   { id:64, name:'Rechargeable Battery',   category:'batteries', status:'special',tip:'Call2Recycle (call2recycle.org) operates thousands of drop-off locations across North America.' },
@@ -114,7 +114,7 @@ const RECYCLING_ITEMS = [
   /* ---- Household ---- */
   { id:70, name:'Styrofoam Packing',      category:'household',status:'special',tip:'Earth911 lists drop-off locations. Some UPS and FedEx stores accept packing peanuts.' },
   { id:71, name:'Plastic Plant Pot',      category:'household',status:'check',  tip:'Rigid plastic plant pots are accepted in some programs. Rinse soil out completely.' },
-  { id:72, name:'Empty Deodorant Stick',  category:'household',status:'check',  tip:'HDPE or PP body — accepted in some areas. TerraCycle offers a dedicated program.' },
+  { id:72, name:'Empty Deodorant Stick',  category:'household',status:'check',  tip:'HDPE or PP body; accepted in some areas. TerraCycle offers a dedicated program.' },
   { id:73, name:'Light Bulb (LED/incand)',category:'household',status:'special',tip:'Some hardware stores accept LEDs. Incandescent bulbs go to trash (not hazardous).' },
   { id:74, name:'Disposable Razor',       category:'household',status:'special',tip:'Gillette and TerraCycle partner on a razor recycling program (free shipping kit).' },
   { id:75, name:'Tissue Box (cardboard)', category:'household',status:'yes',    tip:'Cardboard tissue boxes are readily recyclable. Remove the plastic film insert first.' },
@@ -122,34 +122,34 @@ const RECYCLING_ITEMS = [
   { id:77, name:'Zip-Lock Bag (clean)',   category:'household',status:'special',tip:'Clean, dry zip-lock bags can go with film plastic to grocery store drop-offs.' },
 
   /* ---- More Glass ---- */
-  { id:78, name:'Glass Baking Dish (Pyrex)', category:'glass', status:'no',    tip:'Pyrex and borosilicate glass have a different composition from bottles — they contaminate glass recycling batches.' },
+  { id:78, name:'Glass Baking Dish (Pyrex)', category:'glass', status:'no',    tip:'Pyrex and borosilicate glass have a different composition from bottles; they contaminate glass recycling batches.' },
   { id:79, name:'Glass Vase',                category:'glass', status:'check', tip:'Clear glass vases can go with glass bottles in many programs. Check your local guidelines.' },
   { id:80, name:'Glass Candle Jar',          category:'glass', status:'yes',   tip:'Clean out wax residue with hot water, remove the wick, then recycle like any glass jar.' },
 
   /* ---- More Metals ---- */
   { id:81, name:'Empty Paint Can (metal)',  category:'metals',  status:'special', tip:'Let the paint fully dry or harden before disposal. Many hardware stores accept empty metal paint cans.' },
-  { id:82, name:'Stainless Steel Cookware', category:'metals',  status:'special', tip:'Not curbside — take to a scrap metal dealer or donation center if still usable.' },
+  { id:82, name:'Stainless Steel Cookware', category:'metals',  status:'special', tip:'Not curbside; take to a scrap metal dealer or donation center if still usable.' },
   { id:83, name:'Metal Baking Pan',          category:'metals',  status:'yes',    tip:'Clean aluminum or steel baking pans are generally accepted in curbside metal recycling.' },
-  { id:84, name:'Aluminum Pie Tin',          category:'metals',  status:'yes',    tip:'Rinse and flatten. Aluminum trays are widely accepted — ball up small ones with foil.' },
+  { id:84, name:'Aluminum Pie Tin',          category:'metals',  status:'yes',    tip:'Rinse and flatten. Aluminum trays are widely accepted; ball up small ones with foil.' },
   { id:85, name:'Steel Bottle Cap',          category:'metals',  status:'yes',    tip:'Place several caps inside a steel can and crimp the top closed so they don\'t fall through sorting screens.' },
 
   /* ---- More Electronics ---- */
   { id:86, name:'Smart Speaker / Echo',     category:'electronics', status:'special', tip:'Manufacturers like Amazon and Google offer take-back or recycling programs for smart devices.' },
   { id:87, name:'Gaming Console',           category:'electronics', status:'special', tip:'Best Buy and manufacturer trade-in programs accept consoles. Working units can be donated.' },
   { id:88, name:'External Hard Drive / SSD',category:'electronics', status:'special', tip:'Wipe data before recycling. Best Buy, Staples, and e-waste facilities accept drives.' },
-  { id:89, name:'Power Bank',               category:'batteries',   status:'special', tip:'Contains lithium-ion cells — never curbside. Return to the retailer or a battery recycling location.' },
+  { id:89, name:'Power Bank',               category:'batteries',   status:'special', tip:'Contains lithium-ion cells. Never curbside. Return to the retailer or a battery recycling location.' },
 
   /* ---- More Plastics ---- */
   { id:90, name:'Styrofoam Takeout Box',    category:'plastics', status:'no',      tip:'EPS foam is not accepted curbside. Look for specialty foam drop-off programs or Earth911 locations.' },
-  { id:91, name:'Plastic Produce Bag',      category:'plastics', status:'special', tip:'Thin film — bring clean and dry to grocery store film-plastic drop-off bins.' },
+  { id:91, name:'Plastic Produce Bag',      category:'plastics', status:'special', tip:'Thin film; bring clean and dry to grocery store film-plastic drop-off bins.' },
   { id:92, name:'Reusable Plastic Container (PP)', category:'plastics', status:'check', tip:'#5 PP containers are increasingly accepted curbside. Rinse thoroughly and check locally.' },
   { id:93, name:'Plastic Pill Bottle',      category:'plastics', status:'check',   tip:'Many pharmacies and retailers (Whole Foods, Gimme 5) collect #5 PP pill bottles for recycling.' },
-  { id:94, name:'Single-Use K-Cup',         category:'plastics', status:'special', tip:'Keurig has a take-back program. Remove grounds and foil lid — some may be #5 PP recyclable locally.' },
+  { id:94, name:'Single-Use K-Cup',         category:'plastics', status:'special', tip:'Keurig has a take-back program. Remove grounds and foil lid; some may be #5 PP recyclable locally.' },
 
   /* ---- More Paper ---- */
   { id:95, name:'Gift Wrapping Paper',      category:'paper',    status:'check',   tip:'Plain paper wrapping is recyclable; foil, glitter, or laminated wrap is not. Do the scrunch test.' },
   { id:96, name:'Paper Straw',              category:'paper',    status:'no',      tip:'Too small and wet-contaminated for paper recycling. Compost if unbleached, otherwise trash.' },
-  { id:97, name:'Cardboard Coffee Sleeve',  category:'paper',    status:'yes',     tip:'Cardboard sleeves are plain corrugated paper — recyclable. Remove any plastic or foil elements.' },
+  { id:97, name:'Cardboard Coffee Sleeve',  category:'paper',    status:'yes',     tip:'Cardboard sleeves are plain corrugated paper and recyclable. Remove any plastic or foil elements.' },
 
   /* ---- More Food ---- */
   { id:98, name:'Cooking Oil (used)',       category:'hazardous', status:'special', tip:'Never pour down the drain. Many grocery stores, restaurants, and transfer stations collect used cooking oil.' },
@@ -159,7 +159,7 @@ const RECYCLING_ITEMS = [
   { id:100, name:'Nail Polish',             category:'hazardous', status:'special', tip:'Considered hazardous waste. Bring to a local HHW event. Some salons also collect old polish.' },
   { id:101, name:'Broken Ceramic / Pottery',category:'household',  status:'no',     tip:'Ceramics are not recyclable and contaminate glass recycling. Wrap carefully and dispose in trash.' },
   { id:102, name:'Foam Mattress / Memory Foam', category:'household', status:'special', tip:'Mattress Firm and local recycling centers often accept mattresses. Foam can be shredded for carpet padding.' },
-  { id:103, name:'Reusable Shopping Bag (woven PP)', category:'plastics', status:'no', tip:'Woven polypropylene bags are not curbside recyclable but are durable — keep reusing them!' },
+  { id:103, name:'Reusable Shopping Bag (woven PP)', category:'plastics', status:'no', tip:'Woven polypropylene bags are not curbside recyclable but are durable; keep reusing them!' },
   { id:104, name:'Single-Use Coffee Pod (aluminum)', category:'metals', status:'special', tip:'Nespresso runs a dedicated take-back program for aluminum pods. Collect in the return bag and drop off.' },
 
   /* ---- Textiles ---- */
@@ -205,7 +205,7 @@ const QUIZ_QUESTIONS = [
 
   { id:6, cat:'general', q:'How many times can aluminum be recycled without losing quality?',
     opts:['Up to 5 times','Up to 10 times','Up to 20 times','Infinitely'],
-    ans:3, exp:'Aluminum can be recycled infinitely — there is no degradation in quality, making it one of the most valuable recyclable materials.' },
+    ans:3, exp:'Aluminum can be recycled infinitely with no degradation in quality, making it one of the most valuable recyclable materials.' },
 
   { id:7, cat:'general', q:'What is "single-stream recycling"?',
     opts:['Recycling only one material type at a time','Putting all recyclables in one bin without sorting','Recycling in a river or stream','Melting multiple plastics together'],
@@ -217,11 +217,11 @@ const QUIZ_QUESTIONS = [
 
   { id:9, cat:'general', q:'What is "downcycling"?',
     opts:['Recycling that uses less energy','Turning a material into a lower-quality product','Sending recyclables to a landfill','Composting organic waste underground'],
-    ans:1, exp:'Downcycling converts a material into something of lower value or quality — like plastic bottles becoming fleece fabric that cannot be recycled again.' },
+    ans:1, exp:'Downcycling converts a material into something of lower value or quality, like plastic bottles becoming fleece fabric that cannot be recycled again.' },
 
   { id:10, cat:'general', q:'Should you leave food residue in containers before recycling them?',
-    opts:['Yes — the recycling plant cleans them','No — rinse them first to prevent contamination','It does not matter either way','Only for glass containers'],
-    ans:1, exp:'Food residue contaminates other recyclables and attracts pests. A quick rinse is all that\'s needed — they do not need to be spotless.' },
+    opts:['Yes, the recycling plant cleans them','No, rinse them first to prevent contamination','It does not matter either way','Only for glass containers'],
+    ans:1, exp:'Food residue contaminates other recyclables and attracts pests. A quick rinse is all that\'s needed; they do not need to be spotless.' },
 
   { id:11, cat:'general', q:'Which is the correct order of the "3 Rs" in terms of priority?',
     opts:['Recycle, Reduce, Reuse','Reduce, Reuse, Recycle','Reuse, Recycle, Reduce','Recycle, Reuse, Reduce'],
@@ -234,7 +234,7 @@ const QUIZ_QUESTIONS = [
   /* Plastics */
   { id:13, cat:'plastics', q:'Which plastic resin code is most widely accepted for curbside recycling in the US?',
     opts:['#3 PVC','#1 PET','#6 PS (Styrofoam)','#7 Other'],
-    ans:1, exp:'#1 PET (polyethylene terephthalate) — used in water and soda bottles — is accepted by virtually every curbside program.' },
+    ans:1, exp:'#1 PET (polyethylene terephthalate), used in water and soda bottles, is accepted by virtually every curbside program.' },
 
   { id:14, cat:'plastics', q:'What does HDPE stand for?',
     opts:['Hard Density Polyethylene','High-Duty Plastic Element','High-Density Polyethylene','Heat-Durable Plastic Enclosure'],
@@ -254,7 +254,7 @@ const QUIZ_QUESTIONS = [
 
   { id:18, cat:'plastics', q:'What should you do with a plastic bottle cap before recycling?',
     opts:['Remove it and throw it in the trash','Leave it screwed on the bottle','Drop it separately in the bin','It does not matter'],
-    ans:1, exp:'Most programs now say to leave caps on — they are too small to be sorted alone and can be captured at the facility when attached to the larger bottle.' },
+    ans:1, exp:'Most programs now say to leave caps on. They are too small to be sorted alone and can be captured at the facility when attached to the larger bottle.' },
 
   { id:19, cat:'plastics', q:'#5 Polypropylene (PP) is commonly found in which everyday item?',
     opts:['Water bottles','Yogurt containers and bottle caps','Cling wrap','Styrofoam cups'],
@@ -270,7 +270,7 @@ const QUIZ_QUESTIONS = [
 
   { id:22, cat:'plastics', q:'What is a "compostable" plastic bag actually made from?',
     opts:['Recycled PET','Plant-based starches or PLA','Biodegradable petroleum plastic','Hemp fiber'],
-    ans:1, exp:'Compostable plastics are usually made from PLA (polylactic acid) derived from corn starch or sugarcane — but require industrial composting conditions.' },
+    ans:1, exp:'Compostable plastics are usually made from PLA (polylactic acid) derived from corn starch or sugarcane, but require industrial composting conditions.' },
 
   /* Paper & Cardboard */
   { id:23, cat:'paper', q:'Why is a greasy pizza box problematic for paper recycling?',
@@ -286,7 +286,7 @@ const QUIZ_QUESTIONS = [
     ans:1, exp:'Flattening boxes saves space in bins and trucks. Tape won\'t ruin the batch, but foam peanuts and inserts must be removed as they contaminate the load.' },
 
   { id:26, cat:'paper', q:'Can shredded paper be placed loose in a curbside recycling bin?',
-    opts:['Yes, always','No, never — shredded paper must be bagged','It depends — many programs prefer it in a paper bag or stapled envelope','Only if it is white paper'],
+    opts:['Yes, always','No, shredded paper must be bagged separately','It depends; many programs prefer it in a paper bag or stapled envelope','Only if it is white paper'],
     ans:2, exp:'Loose shreds blow away and jam machines. Many programs ask you to contain shredded paper in a paper bag or envelope so it stays together during sorting.' },
 
   { id:27, cat:'paper', q:'Which of these is NOT recyclable in standard paper recycling?',
@@ -300,7 +300,7 @@ const QUIZ_QUESTIONS = [
   /* Food & Composting */
   { id:29, cat:'food', q:'What is composting?',
     opts:['A method of producing plastic-free food packaging','The breakdown of organic matter into nutrient-rich soil amendment','A sorting process for cleaning and reusing food containers','A government program that taxes businesses for food waste'],
-    ans:1, exp:'Composting breaks down organic material (food scraps, yard waste) through microbial activity, creating humus — a natural fertilizer for soil.' },
+    ans:1, exp:'Composting breaks down organic material (food scraps, yard waste) through microbial activity, creating humus, a natural fertilizer for soil.' },
 
   { id:30, cat:'food', q:'Which of these items should NOT go into a standard backyard compost bin?',
     opts:['Vegetable peels','Coffee grounds','Meat and dairy products','Eggshells'],
@@ -312,7 +312,7 @@ const QUIZ_QUESTIONS = [
 
   { id:32, cat:'food', q:'What is "vermiculture"?',
     opts:['Composting using red worms (worm bins)','A type of urban recycling program','Growing food vertically in cities','A method of shredding food waste'],
-    ans:0, exp:'Vermiculture uses red worms (Eisenia fetida) to break down food scraps into worm castings — one of the richest organic fertilizers available.' },
+    ans:0, exp:'Vermiculture uses red worms (Eisenia fetida) to break down food scraps into worm castings, one of the richest organic fertilizers available.' },
 
   { id:33, cat:'food', q:'Which food scrap is best avoided in compost due to its effect on soil pH?',
     opts:['Citrus peels in excess','Eggshells','Coffee grounds','Dry leaves'],
@@ -340,7 +340,7 @@ const QUIZ_QUESTIONS = [
     ans:1, exp:'Working electronics can be donated to schools or nonprofits. For recycling, certified e-Stewards or R2-certified recyclers ensure responsible processing.' },
 
   { id:39, cat:'ewaste', q:'What should you do before recycling a smartphone?',
-    opts:['Only remove the SIM card; the rest is the recycler\'s job','Do nothing — certified recyclers handle all data wiping for you','Factory reset it, back up your data, and remove the SIM and SD cards','Smash the screen so the facility can disassemble it more easily'],
+    opts:['Only remove the SIM card; the rest is the recycler\'s job','Do nothing; certified recyclers handle all data wiping for you','Factory reset it, back up your data, and remove the SIM and SD cards','Smash the screen so the facility can disassemble it more easily'],
     ans:2, exp:'Always factory reset your device to protect personal data. Remove your SIM and SD cards. Back up any data you want to keep beforehand.' },
 
   { id:40, cat:'ewaste', q:'Which program operates thousands of battery recycling drop-off locations across North America?',
@@ -358,7 +358,7 @@ const QUIZ_QUESTIONS = [
 
   { id:43, cat:'general', q:'Which of the following takes the longest to decompose in a landfill?',
     opts:['Paper bag','Aluminum can','Glass bottle','Plastic bag'],
-    ans:2, exp:'Glass is made from silica that does not biodegrade — it is estimated to take over 1 million years to decompose in a landfill, making recycling critical.' },
+    ans:2, exp:'Glass is made from silica that does not biodegrade. It is estimated to take over 1 million years to decompose in a landfill, making recycling critical.' },
 
   { id:44, cat:'general', q:'What is a "deposit return scheme" (DRS)?',
     opts:['A bank program for green investments','Consumers pay a small deposit on containers and get it back when they return them for recycling','A government subsidy for recycling companies','A system where businesses deposit recyclables at government centers'],
@@ -370,15 +370,15 @@ const QUIZ_QUESTIONS = [
 
   { id:46, cat:'general', q:'What is "upcycling"?',
     opts:['Increasing recycling targets by law','Transforming waste into something of higher quality or value','Recycling the same material multiple times','Sending recyclables to be processed abroad'],
-    ans:1, exp:'Upcycling converts waste into products of greater value — like turning wine bottles into glasses, old jeans into bags, or pallet wood into furniture.' },
+    ans:1, exp:'Upcycling converts waste into products of greater value, like turning wine bottles into glasses, old jeans into bags, or pallet wood into furniture.' },
 
   { id:47, cat:'general', q:'Which country consistently ranks among the top nations for recycling percentage?',
     opts:['United States','Japan','Germany','Australia'],
     ans:2, exp:'Germany consistently leads globally, recycling and composting over 65% of its municipal waste through strict separation rules, deposit systems, and producer responsibility laws.' },
 
   { id:48, cat:'general', q:'What does "post-consumer recycled content" (PCR) mean on a product label?',
-    opts:['The product was made in a recycling facility','It contains material recovered after use by real consumers — not just manufacturing offcuts','The product can be recycled after use','The product was tested by consumers before manufacture'],
-    ans:1, exp:'PCR content means the material was recovered from consumer use streams — bottles, paper, etc. "Pre-consumer" waste is manufacturing scrap, which is a lower bar.' },
+    opts:['The product was made in a recycling facility','It contains material recovered after use by real consumers, not just manufacturing offcuts','The product can be recycled after use','The product was tested by consumers before manufacture'],
+    ans:1, exp:'PCR content means the material was recovered from consumer use streams (bottles, paper, etc.). "Pre-consumer" waste is manufacturing scrap, which is a lower bar.' },
 
   { id:49, cat:'general', q:'How much energy does recycling aluminum save compared to making it from raw ore?',
     opts:['About 10%','About 40%','About 75%','About 95%'],
@@ -386,7 +386,7 @@ const QUIZ_QUESTIONS = [
 
   { id:50, cat:'general', q:'What does the Green Dot symbol (two interlocking arrows) on packaging mean?',
     opts:['The product is recyclable','The manufacturer financially contributes to a recycling program in their country','The product contains recycled content','The packaging must be recycled by law'],
-    ans:1, exp:'The Green Dot (Der Grüne Punkt) signals the manufacturer funds a national recycling collection system — NOT that the item itself is necessarily recyclable.' },
+    ans:1, exp:'The Green Dot (Der Grüne Punkt) signals the manufacturer funds a national recycling collection system, NOT that the item itself is necessarily recyclable.' },
 
   { id:51, cat:'general', q:'What is "open-loop recycling"?',
     opts:['Recycling that takes place outdoors','Recycling where material is converted into a different product type than the original','A recycling system with no sorting required','Recycling exports to other countries'],
@@ -402,7 +402,7 @@ const QUIZ_QUESTIONS = [
 
   { id:54, cat:'general', q:'What is "wishcycling"?',
     opts:['Recycling holiday wrapping paper','Tossing uncertain items in the recycling bin hoping they will be accepted, even if unsure','A recycling program that operates via donated wish-lists','Sorting recyclables by hand at home'],
-    ans:1, exp:'Wishcycling contaminates entire loads — if you\'re not sure an item is accepted, check your local guidelines rather than guessing. When in doubt, throw it out.' },
+    ans:1, exp:'Wishcycling contaminates entire loads. If you\'re not sure an item is accepted, check your local guidelines rather than guessing. When in doubt, throw it out.' },
 
   { id:55, cat:'general', q:'What percentage of all plastic produced globally has ever been recycled?',
     opts:['About 50%','About 30%','About 9%','About 65%'],
@@ -414,24 +414,24 @@ const QUIZ_QUESTIONS = [
 
   { id:57, cat:'general', q:'Which of the "3 Rs" should come first?',
     opts:['Recycle','Reuse','Reduce','All three are equal'],
-    ans:2, exp:'Reducing consumption is the most powerful action. Reuse comes second. Recycling is a last resort — it still requires energy, water, and transportation.' },
+    ans:2, exp:'Reducing consumption is the most powerful action. Reuse comes second. Recycling is a last resort; it still requires energy, water, and transportation.' },
 
   { id:58, cat:'general', q:'What is the main benefit of composting food scraps instead of landfilling them?',
     opts:['Composting produces more energy','Composting produces CO₂ instead of methane, which is far less potent as a greenhouse gas','Composting takes up less space','Composting happens faster'],
-    ans:1, exp:'Landfill decomposition is anaerobic (no oxygen), producing methane — roughly 80× more potent than CO₂ over 20 years. Aerobic composting produces CO₂ and returns carbon to soil.' },
+    ans:1, exp:'Landfill decomposition is anaerobic (no oxygen), producing methane, which is roughly 80x more potent than CO2 over 20 years. Aerobic composting produces CO2 and returns carbon to soil.' },
 
   /* Plastics — extra pool */
   { id:59, cat:'plastics', q:'What does PET stand for?',
     opts:['Plastic Environmental Technology','Polyethylene Terephthalate','Petroleum-Extracted Thermoplastic','Polyester Ethylene Tube'],
     ans:1, exp:'PET (Polyethylene Terephthalate) is resin code #1, used for water bottles, soda bottles, and food containers. It is widely accepted curbside.' },
 
-  { id:60, cat:'plastics', q:'Compostable plastics labeled "PLA" — can they go in curbside recycling bins?',
-    opts:['Yes, they recycle just like regular plastic','No — they contaminate plastic recycling and need industrial composting','Yes, but only if marked with a recycling symbol','Yes — bioplastics always go in the green bin'],
+  { id:60, cat:'plastics', q:'Compostable plastics labeled "PLA": can they go in curbside recycling bins?',
+    opts:['Yes, they recycle just like regular plastic','No, they contaminate plastic recycling and need industrial composting','Yes, but only if marked with a recycling symbol','Yes, bioplastics always go in the green bin'],
     ans:1, exp:'Compostable PLA plastics contaminate regular plastic recycling streams. They only break down in industrial composting facilities at sustained high temperatures.' },
 
   { id:61, cat:'plastics', q:'What is bubble wrap made from?',
     opts:['#1 PET','#2 HDPE','#4 LDPE','#5 PP'],
-    ans:2, exp:'Bubble wrap is #4 LDPE film. Like all soft film plastics, it cannot go in curbside recycling bins — drop it off at grocery or retail store film collection points.' },
+    ans:2, exp:'Bubble wrap is #4 LDPE film. Like all soft film plastics, it cannot go in curbside recycling bins. Drop it off at grocery or retail store film collection points.' },
 
   { id:62, cat:'plastics', q:'What are microplastics?',
     opts:['A brand of biodegradable plastic','Plastic fragments smaller than 5mm formed by the breakdown of larger plastics','A type of plastic used only in medical devices','Very thin plastic film used in food packaging'],
@@ -439,10 +439,10 @@ const QUIZ_QUESTIONS = [
 
   { id:63, cat:'plastics', q:'Why is black plastic packaging almost never recycled?',
     opts:['It is made from a different chemical formula','Infrared sorting machines at recycling facilities cannot detect the carbon-black pigment','It is too heavy for conveyor belts','It costs more to process than other colors'],
-    ans:1, exp:'Optical sorting at MRFs uses near-infrared (NIR) light that is blind to carbon-black pigmented plastics — they are sorted out as contamination.' },
+    ans:1, exp:'Optical sorting at MRFs uses near-infrared (NIR) light that is blind to carbon-black pigmented plastics, so they are sorted out as contamination.' },
 
   { id:64, cat:'plastics', q:'Why is recycling plastics more complex than recycling metals like aluminum?',
-    opts:['Plastics are heavier and harder to transport','Different plastics have incompatible chemistry and melting points — they cannot be mixed during processing','Plastics must be recycled in specialized overseas factories','Plastic recycling always releases toxic gases'],
+    opts:['Plastics are heavier and harder to transport','Different plastics have incompatible chemistry and melting points, so they cannot be mixed during processing','Plastics must be recycled in specialized overseas factories','Plastic recycling always releases toxic gases'],
     ans:1, exp:'Aluminum is one consistent material. Plastics are a family of different polymers with different chemistries that produce weak, useless material when mixed.' },
 
   { id:65, cat:'plastics', q:'What is "chemical recycling" of plastics?',
@@ -455,9 +455,9 @@ const QUIZ_QUESTIONS = [
 
   { id:67, cat:'plastics', q:'What fraction of plastic packaging is used just once before disposal?',
     opts:['About one-quarter','About one-third','About half','About two-thirds'],
-    ans:2, exp:'Roughly half of all plastic produced is designed for single-use applications — packaging, straws, cups, and bags — most of which ends up in landfill or the environment.' },
+    ans:2, exp:'Roughly half of all plastic produced is designed for single-use applications (packaging, straws, cups, and bags), most of which ends up in landfill or the environment.' },
 
-  { id:68, cat:'plastics', q:'When a plastic bottle says "#1 PET — Please Recycle," what does that guarantee?',
+  { id:68, cat:'plastics', q:'When a plastic bottle says "#1 PET - Please Recycle," what does that guarantee?',
     opts:['It will definitely be recycled in your municipality','It is a widely recyclable plastic type, but local acceptance still varies','It meets environmental safety standards','It will biodegrade within 10 years'],
     ans:1, exp:'The resin code only identifies the plastic polymer. Whether it is accepted by your local recycling program depends on local markets and facility capabilities.' },
 
@@ -471,7 +471,7 @@ const QUIZ_QUESTIONS = [
 
   /* Paper — extra pool */
   { id:71, cat:'paper', q:'Can paper with ink printed on it still be recycled?',
-    opts:['No — ink permanently ruins the paper fibers','Yes — modern de-inking processes remove most inks during pulping','Only if the ink is vegetable-based','Only black-and-white printed paper can be recycled'],
+    opts:['No, ink permanently ruins the paper fibers','Yes, modern de-inking processes remove most inks during pulping','Only if the ink is vegetable-based','Only black-and-white printed paper can be recycled'],
     ans:1, exp:'Most printed paper is recyclable. De-inking during paper recycling uses water, chemicals, and flotation to remove ink. Glossy inks may cause minor quality loss.' },
 
   { id:72, cat:'paper', q:'How many times can a paper fiber typically be recycled before it becomes too short to use?',
@@ -487,12 +487,12 @@ const QUIZ_QUESTIONS = [
     ans:1, exp:'Thermal paper receipts use BPA or BPS in their heat-sensitive coating. These chemicals contaminate paper recycling batches and should go in the trash.' },
 
   { id:75, cat:'paper', q:'Should you remove plastic windows from envelopes before recycling?',
-    opts:['No — leave them in; facilities handle it','Yes — remove the plastic film as it contaminates paper recycling','Shred the entire envelope instead','Tear off the entire address area'],
+    opts:['No, leave them in; facilities handle it','Yes, remove the plastic film as it contaminates paper recycling','Shred the entire envelope instead','Tear off the entire address area'],
     ans:1, exp:'Plastic windows on envelopes do not break down in the paper pulping process and contaminate the slurry. Many programs ask you to tear them out before recycling.' },
 
   { id:76, cat:'paper', q:'Which of these is NOT recyclable in standard paper recycling?',
     opts:['Brown paper bag','Glossy magazine','Wax-coated cardboard','Cardboard cereal box'],
-    ans:2, exp:'Wax-coated cardboard (produce boxes, frozen food cartons) cannot be recycled — the wax cannot be separated from the paper fibers during pulping.' },
+    ans:2, exp:'Wax-coated cardboard (produce boxes, frozen food cartons) cannot be recycled because the wax cannot be separated from the paper fibers during pulping.' },
 
   { id:77, cat:'paper', q:'What happens to paper fibers during the recycling pulping stage?',
     opts:['They are sorted by color','They are shredded and compressed into new paper instantly','They are broken apart in water to form a wet slurry for cleaning and reforming','They are burned to generate energy for the facility'],
@@ -504,10 +504,10 @@ const QUIZ_QUESTIONS = [
 
   { id:79, cat:'paper', q:'Corrugated cardboard (the fluted wave-layer type) is especially valuable in recycling because:',
     opts:['It has very long, strong fibers ideal for making new packaging','It is always clean and uncontaminated','It is the most common item recycled','It does not require de-inking'],
-    ans:0, exp:'Corrugated cardboard has long, strong fibers prized for making new kraft paper, shipping boxes, and packaging — and it is recycled at one of the highest rates of any material.' },
+    ans:0, exp:'Corrugated cardboard has long, strong fibers prized for making new kraft paper, shipping boxes, and packaging, and it is recycled at one of the highest rates of any material.' },
 
   { id:80, cat:'paper', q:'Can you recycle paper that got wet and then dried out?',
-    opts:['Yes, it recycles perfectly','No — water damages the fiber structure and reduces quality or usability','Only if dried within 24 hours','Yes, but only if it has not turned moldy'],
+    opts:['Yes, it recycles perfectly','No, water damages the fiber structure and reduces quality or usability','Only if dried within 24 hours','Yes, but only if it has not turned moldy'],
     ans:1, exp:'Water breaks down paper fibers. Soaked and dried paper has weaker, shorter fibers that reduce recycled pulp quality. Always keep recyclables dry.' },
 
   { id:81, cat:'paper', q:'What does "virgin fiber" mean in paper production?',
@@ -516,47 +516,47 @@ const QUIZ_QUESTIONS = [
 
   { id:82, cat:'paper', q:'Which of these paper products IS widely recyclable in curbside programs?',
     opts:['Paper coffee cup','Wax paper','Toilet paper roll (cardboard tube)','Thermal receipt'],
-    ans:2, exp:'Cardboard toilet paper and paper towel rolls are among the most easily recycled items — clean cardboard with no problematic coatings.' },
+    ans:2, exp:'Cardboard toilet paper and paper towel rolls are among the most easily recycled items; clean cardboard with no problematic coatings.' },
 
   /* Food & Composting — extra pool */
   { id:83, cat:'food', q:'What is the primary greenhouse gas produced when food waste decomposes in a landfill?',
     opts:['Carbon dioxide (CO₂)','Methane (CH₄)','Nitrous oxide (N₂O)','Hydrogen sulfide (H₂S)'],
-    ans:1, exp:'Food decomposing without oxygen in landfills produces methane — a greenhouse gas roughly 80× more potent than CO₂ over 20 years.' },
+    ans:1, exp:'Food decomposing without oxygen in landfills produces methane, a greenhouse gas roughly 80x more potent than CO2 over 20 years.' },
 
   { id:84, cat:'food', q:'What are "greens" and "browns" in a compost pile?',
     opts:['Green = plant-based, brown = animal-based','Green = nitrogen-rich fresh materials, brown = carbon-rich dry materials','Green = wet, brown = dry','Green = recyclable, brown = compostable'],
-    ans:1, exp:'A healthy compost pile balances greens (food scraps, fresh grass — nitrogen) with browns (dried leaves, cardboard, straw — carbon) at roughly 1:2 by volume.' },
+    ans:1, exp:'A healthy compost pile balances greens (food scraps, fresh grass = nitrogen) with browns (dried leaves, cardboard, straw = carbon) at roughly 1:2 by volume.' },
 
   { id:85, cat:'food', q:'What does "industrial composting" mean compared to backyard composting?',
     opts:['Industrial composting uses plastic bags','Industrial composting uses sustained high heat (140–160°F) to break down meat, dairy, and certified compostable plastics','Industrial composting occurs in regular recycling plants','They are the same process at a larger scale'],
-    ans:1, exp:'Industrial composting reaches temperatures that kill pathogens and break down compostable plastics and food packaging — conditions impossible to achieve in a home bin.' },
+    ans:1, exp:'Industrial composting reaches temperatures that kill pathogens and break down compostable plastics and food packaging, conditions impossible to achieve in a home bin.' },
 
   { id:86, cat:'food', q:'What fraction of all food produced globally is wasted or lost?',
     opts:['About 5%','About 15%','About one-third','About half'],
-    ans:2, exp:'About one-third of all food produced globally — 1.3 billion tonnes per year — is lost or wasted. If it were a country, food waste would be the third-largest emitter of greenhouse gases.' },
+    ans:2, exp:'About one-third of all food produced globally (1.3 billion tonnes per year) is lost or wasted. If it were a country, food waste would be the third-largest emitter of greenhouse gases.' },
 
   { id:87, cat:'food', q:'What is a bokashi system?',
     opts:['A Japanese word for leaf composting','A fermentation system that can process all food waste including meat and dairy','A type of outdoor garden bin','A machine that liquefies food waste'],
-    ans:1, exp:'Bokashi uses beneficial microbes to ferment all food scraps — including meat, dairy, and cooked food — in an airtight container. The fermented matter then goes in compost or soil.' },
+    ans:1, exp:'Bokashi uses beneficial microbes to ferment all food scraps (including meat, dairy, and cooked food) in an airtight container. The fermented matter then goes in compost or soil.' },
 
   { id:88, cat:'food', q:'What is anaerobic digestion of food waste?',
     opts:['Composting without any water','Breaking down organic matter without oxygen, producing biogas and a soil amendment','Burning food waste at very high temperatures','Freezing food waste to prevent decomposition'],
-    ans:1, exp:'Anaerobic digestion breaks organic matter down without oxygen, producing biogas (used for energy) and digestate (used as fertilizer) — a carbon-neutral process.' },
+    ans:1, exp:'Anaerobic digestion breaks organic matter down without oxygen, producing biogas (used for energy) and digestate (used as fertilizer) in a carbon-neutral process.' },
 
   { id:89, cat:'food', q:'Why should meat and dairy be avoided in a standard backyard compost bin?',
-    opts:['They decompose too quickly and kill beneficial bacteria','They attract pests and create odors — use a city compost cart or bokashi system instead','They make the compost too acidic','They are not allowed by law in home composting bins'],
+    opts:['They decompose too quickly and kill beneficial bacteria','They attract pests and create odors; use a city compost cart or bokashi system instead','They make the compost too acidic','They are not allowed by law in home composting bins'],
     ans:1, exp:'Meat and dairy attract rodents, flies, and other pests, and create strong odors in backyard bins. Industrial composting or bokashi systems handle them safely.' },
 
   { id:90, cat:'food', q:'What is "food rescue" or "food recovery"?',
     opts:['A government program to test food safety','Collecting surplus food from restaurants, farms, and stores to donate before it becomes waste','A composting technique for expired food','A process of extracting nutrients from food waste'],
-    ans:1, exp:'Food rescue redirects surplus edible food to people in need, sitting at the very top of the waste hierarchy — the best outcome for food is always for it to be eaten.' },
+    ans:1, exp:'Food rescue redirects surplus edible food to people in need, sitting at the very top of the waste hierarchy. The best outcome for food is always for it to be eaten.' },
 
   { id:91, cat:'food', q:'What does "compost maturity" mean?',
     opts:['Compost that smells very strong','Fully broken-down compost that is safe to add to soil without harming plant roots','Compost that has been aged for at least 2 years','Compost produced by the oldest traditional technique'],
     ans:1, exp:'Mature compost looks like dark crumbly soil, has an earthy smell, and will not burn plant roots with excess nitrogen. Immature compost can harm seedlings.' },
 
   { id:92, cat:'food', q:'Can you compost citrus peels and onions in a worm bin?',
-    opts:['Yes, worms love them','Avoid them — worms dislike the acidity and natural compounds; use sparingly','Yes, but only if finely chopped','No — all fruits and vegetables harm worms'],
+    opts:['Yes, worms love them','Avoid them; worms dislike the acidity and natural compounds, so use sparingly','Yes, but only if finely chopped','No, all fruits and vegetables harm worms'],
     ans:1, exp:'Citrus peels and onions contain compounds that irritate worms and can make a worm bin too acidic. Use them very sparingly or stick to milder food scraps.' },
 
   { id:93, cat:'food', q:'What should be your first priority when dealing with excess food?',
@@ -565,11 +565,11 @@ const QUIZ_QUESTIONS = [
 
   { id:94, cat:'food', q:'Why does adding too many kitchen scraps too quickly kill a compost pile?',
     opts:['The scraps use up all the oxygen','The pile becomes too heavy','The nitrogen-rich scraps overwhelm beneficial bacteria and create a slimy, anaerobic, smelly mess','Kitchen scraps are incompatible with outdoor composting'],
-    ans:2, exp:'A compost pile needs a carbon-to-nitrogen balance. Overloading with wet nitrogen-rich scraps without enough browns causes anaerobic conditions — smelly and ineffective.' },
+    ans:2, exp:'A compost pile needs a carbon-to-nitrogen balance. Overloading with wet nitrogen-rich scraps without enough browns causes anaerobic conditions, which are smelly and ineffective.' },
 
   { id:95, cat:'food', q:'What percentage of municipal solid waste in the US is made up of food scraps?',
     opts:['About 5%','About 14%','About 22%','About 35%'],
-    ans:2, exp:'Food waste makes up about 22% of municipal solid waste sent to landfills in the US — more than any other single material — making composting programs critically important.' },
+    ans:2, exp:'Food waste makes up about 22% of municipal solid waste sent to landfills in the US, more than any other single material, making composting programs critically important.' },
 
   /* Myth Busters */
   { id:108, cat:'myths', q:'MYTH: All plastic with a recycling symbol on it can be recycled curbside.',
@@ -596,7 +596,7 @@ const QUIZ_QUESTIONS = [
     opts:['True — the de-inking process uses enormous energy','False — recycling paper uses 40–64% less energy than making it from virgin wood pulp','True — only if the recycling facility is far away','False — recycled paper uses 90% less energy'],
     ans:1, exp:'Recycling paper uses approximately 40–64% less energy than virgin paper production. It also saves 7,000 gallons of water per ton and reduces greenhouse gas emissions significantly.' },
 
-  { id:114, cat:'myths', q:'MYTH: Recycling has no real impact — companies just ship it overseas anyway.',
+  { id:114, cat:'myths', q:'MYTH: Recycling has no real impact. Companies just ship it overseas anyway.',
     opts:['True — most US recycling goes to China and is landfilled','False — while export markets exist, many materials are recycled domestically and global recycling still reduces raw material extraction','True — it\'s all greenwashing','False — nothing is ever exported'],
     ans:1, exp:'While exports are real (especially after China\'s 2018 National Sword policy changed trade), domestic recycling industries have grown significantly. Even imperfect recycling reduces mining, deforestation, and emissions.' },
 
@@ -608,13 +608,13 @@ const QUIZ_QUESTIONS = [
     opts:['True — the product is the same either way','False — buying recycled content creates market demand that makes recycling economically viable and funds collection programs','True — companies just claim "recycled" for marketing','False — only if the item is 100% recycled content'],
     ans:1, exp:'Recycling only works as a system when there are buyers for recycled materials. Purchasing recycled-content products "closes the loop" and makes the economics work for recycling programs.' },
 
-  { id:117, cat:'myths', q:'MYTH: Composting is complicated and smelly — it\'s not practical at home.',
+  { id:117, cat:'myths', q:'MYTH: Composting is complicated and smelly. Is it practical at home?',
     opts:['True — home composting always produces bad odors','False — a properly maintained compost bin with balanced greens and browns produces little odor and is straightforward to manage','True — only city-run programs work well','False — but only if you have a large yard'],
     ans:1, exp:'Odor comes from imbalanced piles (too many food scraps, not enough carbon-rich browns). A properly balanced pile with a 2:1 brown-to-green ratio and occasional turning is nearly odor-free.' },
 
   { id:118, cat:'myths', q:'MYTH: Recycling aluminum is not important because bauxite ore is abundant.',
     opts:['True — aluminum ore reserves will last thousands of years','False — recycling aluminum uses 95% less energy than mining and smelting new aluminum, making it one of the most valuable recyclables','True — the energy savings are minimal','False — but only in countries that lack bauxite deposits'],
-    ans:1, exp:'Even though bauxite deposits exist, the smelting process is extraordinarily energy-intensive. Recycling uses 95% less energy — a recycled can can be back on shelves in just 60 days.' },
+    ans:1, exp:'Even though bauxite deposits exist, the smelting process is extraordinarily energy-intensive. Recycling uses 95% less energy; a recycled can can be back on shelves in just 60 days.' },
 
   { id:119, cat:'myths', q:'MYTH: Throwing one wrong item in a recycling bin doesn\'t affect the rest of the load.',
     opts:['True — one item is too small to matter in a full truckload','False — one bad item can cause an entire truckload to be rejected','True — facility workers remove problem items before processing','False — but only liquid-filled containers cause real problems'],
@@ -623,7 +623,7 @@ const QUIZ_QUESTIONS = [
   /* ---- NEW General questions ---- */
   { id:120, cat:'general', q:'Which US state has the highest bottle deposit refund per container?',
     opts:['California','Oregon','New York','Michigan'],
-    ans:3, exp:'Michigan has a 10-cent deposit per container — the highest in the US — which is why it consistently achieves over 90% return rates for bottles and cans.' },
+    ans:3, exp:'Michigan has a 10-cent deposit per container (the highest in the US), which is why it consistently achieves over 90% return rates for bottles and cans.' },
 
   { id:121, cat:'general', q:'What is a "Materials Recovery Facility" primarily designed to do?',
     opts:['Burn waste to generate electricity','Sort mixed recyclables into separate material streams for sale','Store hazardous materials safely underground','Compost food waste at large scale'],
@@ -635,7 +635,7 @@ const QUIZ_QUESTIONS = [
 
   { id:123, cat:'general', q:'What does "life cycle assessment" (LCA) measure?',
     opts:['How long a product lasts before breaking','The total environmental impact of a product from raw material to disposal','A company\'s annual recycling tonnage','The cost of recycling programs per household'],
-    ans:1, exp:'An LCA tracks all environmental impacts — energy use, emissions, water use, waste — across a product\'s entire life from raw material extraction through manufacturing, use, and end of life.' },
+    ans:1, exp:'An LCA tracks all environmental impacts (energy use, emissions, water use, waste) across a product\'s entire life from raw material extraction through manufacturing, use, and end of life.' },
 
   { id:124, cat:'general', q:'Which of these is the correct hierarchy for managing waste, from most to least preferred?',
     opts:['Recycle → Reduce → Reuse → Dispose','Reduce → Reuse → Recycle → Recover → Dispose','Dispose → Recycle → Reuse → Reduce','Reuse → Reduce → Recycle → Dispose'],
@@ -652,11 +652,11 @@ const QUIZ_QUESTIONS = [
   /* ---- NEW Plastics questions ---- */
   { id:127, cat:'plastics', q:'What does "ocean-bound plastic" mean on a product label?',
     opts:['Plastic collected directly from the ocean floor','Plastic waste collected from coastal communities before it reaches the ocean','A type of water-resistant plastic coating','Plastic designed to float and be collected from ocean gyres'],
-    ans:1, exp:'"Ocean-bound plastic" is collected from coastal areas, rivers, and communities within ~50km of the ocean — intercepting it before it enters the sea. It\'s not literally collected from the ocean.' },
+    ans:1, exp:'"Ocean-bound plastic" is collected from coastal areas, rivers, and communities within ~50km of the ocean, intercepting it before it enters the sea. It is not literally collected from the ocean.' },
 
   { id:128, cat:'plastics', q:'What is the main problem with oxo-degradable plastics?',
     opts:['They cost more to produce than regular plastics','They fragment into microplastics but don\'t actually biodegrade','They cannot be formed into thin films or bags','They release sulfur compounds when heated'],
-    ans:1, exp:'Oxo-degradable plastics just break into smaller and smaller pieces — microplastics — rather than truly biodegrading. They\'re banned in the EU for this reason.' },
+    ans:1, exp:'Oxo-degradable plastics just break into smaller and smaller pieces (microplastics) rather than truly biodegrading. They are banned in the EU for this reason.' },
 
   { id:129, cat:'plastics', q:'Which plastic has the highest recycling rate in the United States?',
     opts:['#5 PP (polypropylene)','#2 HDPE (natural color)','#1 PET bottles','#4 LDPE film'],
@@ -664,9 +664,9 @@ const QUIZ_QUESTIONS = [
 
   { id:130, cat:'plastics', q:'What happens to plastic when it is recycled into a lower-quality product?',
     opts:['It is called upcycling','It is called downcycling','It is called open-loop recycling','It is called chemical recycling'],
-    ans:1, exp:'Downcycling produces something of lower quality — PET bottles become polyester fleece which cannot be recycled again. Unlike metals, most plastic can only be recycled a few times.' },
+    ans:1, exp:'Downcycling produces something of lower quality; PET bottles become polyester fleece which cannot be recycled again. Unlike metals, most plastic can only be recycled a few times.' },
 
-  { id:131, cat:'plastics', q:'Which resin code covers "Other" plastics — a category that is almost never recyclable curbside?',
+  { id:131, cat:'plastics', q:'Which resin code covers "Other" plastics, a category that is almost never recyclable curbside?',
     opts:['#4','#5','#6','#7'],
     ans:3, exp:'#7 is a catch-all for plastics that don\'t fit codes 1–6, including polycarbonate, PLA, and layered films. These are rarely accepted by curbside programs.' },
 
@@ -677,11 +677,11 @@ const QUIZ_QUESTIONS = [
 
   { id:133, cat:'paper', q:'What is "de-inking" in the paper recycling process?',
     opts:['Removing metallic staples and clips from paper','Stripping ink from paper fibers using water, chemicals, and flotation','Bleaching paper to make it white again','Sorting paper by color in the recycling facility'],
-    ans:1, exp:'De-inking uses a soapy water solution and air flotation — ink particles are attracted to air bubbles and float away from the paper fiber slurry, leaving cleaner pulp.' },
+    ans:1, exp:'De-inking uses a soapy water solution and air flotation. Ink particles are attracted to air bubbles and float away from the paper fiber slurry, leaving cleaner pulp.' },
 
   { id:134, cat:'paper', q:'Can you recycle a paper bag that has been used to hold produce?',
     opts:['No — any contact with food makes paper unrecyclable','Yes — paper bags with light food residue are generally still recyclable after being emptied','Only if you wash and dry it first','Only brown kraft bags, not white ones'],
-    ans:1, exp:'Light food residue on paper bags is acceptable — the pulping process handles minor contamination. Empty it, and it\'s fine for most curbside programs.' },
+    ans:1, exp:'Light food residue on paper bags is acceptable; the pulping process handles minor contamination. Empty it out and it\'s fine for most curbside programs.' },
 
   { id:135, cat:'paper', q:'Why do paper fibers get shorter with each recycling cycle?',
     opts:['Recycling machines physically cut them','Chemical de-inking agents dissolve the fiber bonds','Mechanical agitation during pulping breaks and shortens existing fibers','Heat during drying causes fibers to shrink permanently'],
@@ -702,16 +702,16 @@ const QUIZ_QUESTIONS = [
 
   { id:139, cat:'food', q:'What do worms need most in a vermicomposting bin to stay healthy?',
     opts:['Direct sunlight and warm temperatures above 90°F','Moist, dark conditions with a balanced diet of food scraps and bedding','A very acidic environment with citrus peels','Meat and dairy for protein-rich nutrition'],
-    ans:1, exp:'Red wigglers thrive at 55–77°F in moist, dark conditions. They need bedding (shredded paper, cardboard) and a balanced diet — avoid citrus, onions, and meat.' },
+    ans:1, exp:'Red wigglers thrive at 55-77°F in moist, dark conditions. They need bedding (shredded paper, cardboard) and a balanced diet. Avoid citrus, onions, and meat.' },
 
   /* ---- NEW E-Waste questions ---- */
   { id:140, cat:'ewaste', q:'Which company operates the largest in-store electronics take-back program in the US?',
     opts:['Walmart','Target','Best Buy','Home Depot'],
-    ans:2, exp:'Best Buy accepts TVs, computers, phones, cables, and more at most stores for certified recycling — regardless of where you bought the item.' },
+    ans:2, exp:'Best Buy accepts TVs, computers, phones, cables, and more at most stores for certified recycling, regardless of where you bought the item.' },
 
   { id:141, cat:'ewaste', q:'What is "planned obsolescence" in electronics?',
     opts:['A recall when electronics fail safety tests','Designing products to become outdated or stop working to encourage new purchases','A law requiring manufacturers to upgrade products for free','Deliberately limiting the lifespan of batteries'],
-    ans:1, exp:'Planned obsolescence drives e-waste by making devices intentionally short-lived — through software lock-outs, non-replaceable batteries, or design choices that discourage repair.' },
+    ans:1, exp:'Planned obsolescence drives e-waste by making devices intentionally short-lived through software lock-outs, non-replaceable batteries, or design choices that discourage repair.' },
 
   { id:142, cat:'ewaste', q:'What does "R2 certification" mean for an electronics recycler?',
     opts:['They recycle at least 2 tons of e-waste daily','They meet rigorous standards for responsible recycling and worker safety','They are registered in 2 or more states','They use a two-step manual and automated process'],
@@ -719,7 +719,7 @@ const QUIZ_QUESTIONS = [
 
   { id:143, cat:'ewaste', q:'Why are rare earth elements in electronics important to recover?',
     opts:['They are highly radioactive and must be contained safely','Mining them is extremely destructive and they are critical for renewable energy tech','They are so valuable that recovery pays for the full recycling process','They are needed to make new plastic components'],
-    ans:1, exp:'Rare earths (neodymium, terbium, etc.) are essential for EV motors, wind turbines, and electronics. They\'re hard to mine and often sourced under harmful conditions — recovery matters.' },
+    ans:1, exp:'Rare earths (neodymium, terbium, etc.) are essential for EV motors, wind turbines, and electronics. They are hard to mine and often sourced under harmful conditions, so recovery matters.' },
 
   /* ---- NEW Myth questions ---- */
   { id:144, cat:'myths', q:'MYTH: Glass is recycled back into new glass bottles.',
@@ -732,11 +732,11 @@ const QUIZ_QUESTIONS = [
 
   { id:146, cat:'myths', q:'MYTH: Paper is the number-one material in US landfills.',
     opts:['True — paper makes up most landfill volume','False — food waste is now the single largest material category in US landfills','True — even with recycling, paper dominates','False — plastic is by far the largest landfill material'],
-    ans:1, exp:'Food waste overtook paper as the largest landfill material in the US. About 22% of landfill content is food scraps — a key reason composting programs are expanding.' },
+    ans:1, exp:'Food waste overtook paper as the largest landfill material in the US. About 22% of landfill content is food scraps, a key reason composting programs are expanding.' },
 
   { id:147, cat:'myths', q:'MYTH: Styrofoam is just another word for any foam plastic.',
     opts:['True — Styrofoam is a generic term for all foam plastics','False — Styrofoam is a Dow Chemical trademark specifically for extruded polystyrene (XPS) insulation, not food containers','True — all food foam is technically Styrofoam','False — Styrofoam refers only to biodegradable foam'],
-    ans:1, exp:'Styrofoam® is a Dow Chemical brand name for blue XPS foam used in building insulation. White foam food containers are expanded polystyrene (EPS) — a different form of the same resin.' },
+    ans:1, exp:'Styrofoam® is a Dow Chemical brand name for blue XPS foam used in building insulation. White foam food containers are expanded polystyrene (EPS), a different form of the same resin.' },
 
   /* E-Waste — extra pool */
   { id:96, cat:'ewaste', q:'What is an "e-Stewards" certification for electronics recyclers?',
@@ -864,11 +864,26 @@ const SHOP_PERMANENT = [
   { id:'sh_pu_boost',     type:'powerup', puId:'point_booster', name:'Point Booster', cost:400 },
   { id:'sh_pu_reset',     type:'powerup', puId:'daily_reset',   name:'Daily Reset',   cost:125 },
   /* Profile Frames */
-  { id:'sh_frame_green',   type:'frame', frameId:'frame_green',   name:'Forest Frame 🌿',   cost:350  },
-  { id:'sh_frame_blue',    type:'frame', frameId:'frame_blue',    name:'Ocean Frame 🌊',    cost:350  },
-  { id:'sh_frame_gold',    type:'frame', frameId:'frame_gold',    name:'Gold Frame ✨',      cost:900  },
-  { id:'sh_frame_rainbow', type:'frame', frameId:'frame_rainbow', name:'Rainbow Frame 🌈',  cost:1400 },
-  { id:'sh_frame_fire',    type:'frame', frameId:'frame_fire',    name:'Fire Frame 🔥',     cost:1400 },
+  { id:'sh_frame_green',    type:'frame', frameId:'frame_green',    name:'Forest Frame 🌿',    cost:350  },
+  { id:'sh_frame_blue',     type:'frame', frameId:'frame_blue',     name:'Ocean Frame 🌊',     cost:350  },
+  { id:'sh_frame_silver',   type:'frame', frameId:'frame_silver',   name:'Silver Frame 🪙',    cost:500  },
+  { id:'sh_frame_purple',   type:'frame', frameId:'frame_purple',   name:'Amethyst Frame 💜',  cost:600  },
+  { id:'sh_frame_rose',     type:'frame', frameId:'frame_rose',     name:'Rose Frame 🌸',      cost:600  },
+  { id:'sh_frame_mint',     type:'frame', frameId:'frame_mint',     name:'Mint Frame 🩵',      cost:650  },
+  { id:'sh_frame_shadow',   type:'frame', frameId:'frame_shadow',   name:'Shadow Frame 🌑',    cost:700  },
+  { id:'sh_frame_emerald',  type:'frame', frameId:'frame_emerald',  name:'Emerald Frame 💚',   cost:700  },
+  { id:'sh_frame_ice',      type:'frame', frameId:'frame_ice',      name:'Frost Frame ❄️',     cost:750  },
+  { id:'sh_frame_crimson',  type:'frame', frameId:'frame_crimson',  name:'Crimson Frame ❤️',   cost:800  },
+  { id:'sh_frame_sunset',   type:'frame', frameId:'frame_sunset',   name:'Sunset Frame 🌅',    cost:900  },
+  { id:'sh_frame_gold',     type:'frame', frameId:'frame_gold',     name:'Gold Frame ✨',       cost:900  },
+  { id:'sh_frame_lava',     type:'frame', frameId:'frame_lava',     name:'Lava Frame 🌋',      cost:1000 },
+  { id:'sh_frame_electric', type:'frame', frameId:'frame_electric', name:'Electric Frame ⚡',  cost:1000 },
+  { id:'sh_frame_neon',     type:'frame', frameId:'frame_neon',     name:'Neon Frame 🟢',      cost:1000 },
+  { id:'sh_frame_void',     type:'frame', frameId:'frame_void',     name:'Void Frame 🌌',      cost:1200 },
+  { id:'sh_frame_rainbow',  type:'frame', frameId:'frame_rainbow',  name:'Rainbow Frame 🌈',   cost:1400 },
+  { id:'sh_frame_fire',     type:'frame', frameId:'frame_fire',     name:'Fire Frame 🔥',      cost:1400 },
+  { id:'sh_frame_galaxy',   type:'frame', frameId:'frame_galaxy',   name:'Galaxy Frame 🔮',    cost:1800 },
+  { id:'sh_frame_cosmic',   type:'frame', frameId:'frame_cosmic',   name:'Cosmic Frame 🌠',    cost:1800 },
 ];
 
 const SHOP_ROTATING = [
@@ -938,9 +953,9 @@ const PACKAGING_MAP = {
   'pp':               { verdict:'recyclable',     label:'PP (#5 Plastic)',   tips:['Check your local program.'] },
   // Check locally
   'plastic':          { verdict:'check-local',    label:'Plastic',           tips:['Check the resin code and your local program.'] },
-  'pvc':              { verdict:'check-local',    label:'PVC (#3 Plastic)',  tips:['Rarely accepted — check locally.'] },
+  'pvc':              { verdict:'check-local',    label:'PVC (#3 Plastic)',  tips:['Rarely accepted; check locally.'] },
   'ldpe':             { verdict:'check-local',    label:'LDPE (#4 Plastic)', tips:['Film plastics go to store drop-off.'] },
-  'composite':        { verdict:'check-local',    label:'Composite Material',tips:['Mixed materials are hard to recycle — check locally.'] },
+  'composite':        { verdict:'check-local',    label:'Composite Material',tips:['Mixed materials are hard to recycle; check locally.'] },
   'multilayer':       { verdict:'check-local',    label:'Multi-layer',       tips:['Multi-layer packaging is rarely recyclable.'] },
   'sleeve':           { verdict:'check-local',    label:'Plastic Sleeve',    tips:['Remove sleeve and recycle separately if possible.'] },
   // Not recyclable
@@ -1030,12 +1045,27 @@ const MISSION_POOL = [
    PROFILE FRAMES
    ============================================================ */
 const FRAMES = [
-  { id:'frame_none',    label:'None',    css:'',              desc:'No frame'            },
-  { id:'frame_green',   label:'Forest',  css:'frame-green',   desc:'Lush green ring'     },
-  { id:'frame_blue',    label:'Ocean',   css:'frame-blue',    desc:'Calm blue glow'      },
-  { id:'frame_gold',    label:'Gold',    css:'frame-gold',    desc:'Shining gold ring'   },
-  { id:'frame_rainbow', label:'Rainbow', css:'frame-rainbow', desc:'All the colors!'     },
-  { id:'frame_fire',    label:'Fire',    css:'frame-fire',    desc:'Blazing hot ring'    },
+  { id:'frame_none',     label:'None',     css:'',               desc:'No frame'                   },
+  { id:'frame_green',    label:'Forest',   css:'frame-green',    desc:'Lush green ring'             },
+  { id:'frame_blue',     label:'Ocean',    css:'frame-blue',     desc:'Calm blue glow'              },
+  { id:'frame_gold',     label:'Gold',     css:'frame-gold',     desc:'Shining gold ring'           },
+  { id:'frame_rainbow',  label:'Rainbow',  css:'frame-rainbow',  desc:'All the colors!'             },
+  { id:'frame_fire',     label:'Fire',     css:'frame-fire',     desc:'Blazing hot ring'            },
+  { id:'frame_purple',   label:'Amethyst', css:'frame-purple',   desc:'Deep purple glow'            },
+  { id:'frame_silver',   label:'Silver',   css:'frame-silver',   desc:'Shimmering silver ring'      },
+  { id:'frame_rose',     label:'Rose',     css:'frame-rose',     desc:'Soft pink glow'              },
+  { id:'frame_ice',      label:'Frost',    css:'frame-ice',      desc:'Icy blue sparkle'            },
+  { id:'frame_neon',     label:'Neon',     css:'frame-neon',     desc:'Blinding neon green'         },
+  { id:'frame_shadow',   label:'Shadow',   css:'frame-shadow',   desc:'Dark charcoal ring'          },
+  { id:'frame_crimson',  label:'Crimson',  css:'frame-crimson',  desc:'Deep red pulse'              },
+  { id:'frame_electric', label:'Electric', css:'frame-electric', desc:'Electric cyan flash'         },
+  { id:'frame_emerald',  label:'Emerald',  css:'frame-emerald',  desc:'Rich emerald glow'           },
+  { id:'frame_cosmic',   label:'Cosmic',   css:'frame-cosmic',   desc:'Swirling cosmic gradient'    },
+  { id:'frame_galaxy',   label:'Galaxy',   css:'frame-galaxy',   desc:'Galaxy purple swirl'         },
+  { id:'frame_sunset',   label:'Sunset',   css:'frame-sunset',   desc:'Warm orange-pink gradient'   },
+  { id:'frame_lava',     label:'Lava',     css:'frame-lava',     desc:'Molten lava burst'           },
+  { id:'frame_mint',     label:'Mint',     css:'frame-mint',     desc:'Cool teal mint ring'         },
+  { id:'frame_void',     label:'Void',     css:'frame-void',     desc:'Deep space indigo pulse'     },
 ];
 
 /* ============================================================

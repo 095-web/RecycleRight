@@ -242,7 +242,7 @@ const Quiz = (function () {
     document.getElementById('banner-avatar').textContent   = AVATARS[profile.avatarIdx] || AVATARS[0];
     document.getElementById('banner-username').textContent = profile.username;
     document.getElementById('stat-points').textContent     = profile.points.toLocaleString();
-    document.getElementById('stat-level').textContent      = calcLevel(profile.points);
+    document.getElementById('stat-level').textContent      = calcLevel(profile.totalPoints || profile.points || 0);
     document.getElementById('stat-streak').textContent     = profile.bestStreak;
     document.getElementById('stat-quizzes').textContent    = profile.quizzes;
 
@@ -341,11 +341,26 @@ const Quiz = (function () {
   }
 
   function calcLevel(points) {
-    if (points < 100)  return 1;
-    if (points < 300)  return 2;
-    if (points < 700)  return 3;
-    if (points < 1500) return 4;
-    return 5;
+    if (points < 100)   return 1;
+    if (points < 250)   return 2;
+    if (points < 500)   return 3;
+    if (points < 900)   return 4;
+    if (points < 1500)  return 5;
+    if (points < 2300)  return 6;
+    if (points < 3400)  return 7;
+    if (points < 5000)  return 8;
+    if (points < 7000)  return 9;
+    if (points < 9500)  return 10;
+    if (points < 12500) return 11;
+    if (points < 16500) return 12;
+    if (points < 21500) return 13;
+    if (points < 28000) return 14;
+    if (points < 36000) return 15;
+    if (points < 46000) return 16;
+    if (points < 58000) return 17;
+    if (points < 73000) return 18;
+    if (points < 92000) return 19;
+    return 20;
   }
 
   /* ====================================================
@@ -1626,7 +1641,7 @@ const Quiz = (function () {
         <div class="friend-avatar">${AVATARS[f.avatarIdx || 0]}</div>
         <div class="friend-info">
           <div class="friend-name">${escapeHtml(f.username)}</div>
-          <div class="friend-meta">Lv ${calcLevel(f.points)} · ${f.quizzes || 0} quizzes · Best streak: ${f.bestStreak || 0}</div>
+          <div class="friend-meta">Lv ${calcLevel(f.totalPoints || f.points || 0)} · ${f.quizzes || 0} quizzes · Best streak: ${f.bestStreak || 0}</div>
         </div>
         <div class="friend-score">${(f.points || 0).toLocaleString()} pts</div>
       </div>`).join('');

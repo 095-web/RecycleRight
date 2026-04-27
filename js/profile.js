@@ -59,9 +59,16 @@ const ProfileModule = (function () {
   function saveFriends(f) { localStorage.setItem(KEY_FRIENDS, JSON.stringify(f)); }
 
   function calcLevel(pts) {
-    if (pts < 100)  return 1; if (pts < 300)  return 2;
-    if (pts < 700)  return 3; if (pts < 1500) return 4;
-    return 5;
+    if (pts < 100)   return 1;  if (pts < 250)   return 2;
+    if (pts < 500)   return 3;  if (pts < 900)   return 4;
+    if (pts < 1500)  return 5;  if (pts < 2300)  return 6;
+    if (pts < 3400)  return 7;  if (pts < 5000)  return 8;
+    if (pts < 7000)  return 9;  if (pts < 9500)  return 10;
+    if (pts < 12500) return 11; if (pts < 16500) return 12;
+    if (pts < 21500) return 13; if (pts < 28000) return 14;
+    if (pts < 36000) return 15; if (pts < 46000) return 16;
+    if (pts < 58000) return 17; if (pts < 73000) return 18;
+    if (pts < 92000) return 19; return 20;
   }
   function getTitle(profile) {
     if (!TITLES) return '';
@@ -223,7 +230,7 @@ const ProfileModule = (function () {
     if (!profile) { renderSetupScreen(user, null); return; }
 
     const avatar     = AVATARS[profile.avatarIdx] || AVATARS[0];
-    const level      = calcLevel(profile.points || 0);
+    const level      = calcLevel(profile.totalPoints || profile.points || 0);
     const titleText  = getTitle(profile);
     const photoHTML  = user.photoURL
       ? `<img src="${esc(user.photoURL)}" alt="" class="profile-google-photo-sm">` : '';
