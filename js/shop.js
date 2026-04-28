@@ -46,7 +46,7 @@ const ShopModule = (function () {
 
     const pool  = [...(SHOP_ROTATING || [])];
     const picks = [];
-    while (picks.length < 4 && pool.length > 0) {
+    while (picks.length < 8 && pool.length > 0) {
       const i = Math.floor(rng() * pool.length);
       picks.push(pool.splice(i, 1)[0]);
     }

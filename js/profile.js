@@ -719,11 +719,13 @@ const ProfileModule = (function () {
       const unplayed = best === 0;
       return `
         <div class="cat-bar-wrap">
-          <div class="cat-bar-label">${cat.name.split(' ')[0]}</div>
+          <div class="cat-bar-header">
+            <span class="cat-bar-label">${cat.name}</span>
+            <span class="cat-bar-val${unplayed ? ' cat-bar-val-unplayed' : ''}">${best || 'Not played'}</span>
+          </div>
           <div class="cat-bar-track${unplayed ? ' cat-bar-unplayed' : ''}">
             ${unplayed ? '' : `<div class="cat-bar-fill" style="width:${pct}%"></div>`}
           </div>
-          <div class="cat-bar-val${unplayed ? ' cat-bar-val-unplayed' : ''}">${best || 'Not played'}</div>
         </div>`;
     }).join('') || '';
 

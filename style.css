@@ -3581,49 +3581,49 @@ input[type="text"]:focus {
   letter-spacing: .04em;
 }
 .cat-bar-wrap {
-  display: grid;
-  grid-template-columns: 72px 1fr 56px;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  font-size: .85rem;
-  min-width: 0;
+  margin-bottom: 16px;
+}
+.cat-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
 }
 .cat-bar-label {
-  color: var(--gray-600);
-  text-align: right;
-  font-size: .8rem;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--gray-700);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .cat-bar-track {
-  height: 12px;
+  height: 14px;
   background: var(--green-50);
   border-radius: 999px;
   overflow: hidden;
   border: 1px solid var(--green-100);
-  min-width: 0;
 }
 .cat-bar-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--green-400), var(--green-600));
   border-radius: 999px;
   transition: width .5s ease;
-  min-width: 2px;
+  min-width: 3px;
 }
 .cat-bar-val {
-  text-align: right;
+  flex-shrink: 0;
   white-space: nowrap;
   font-weight: 700;
-  color: var(--gray-700);
-  font-size: .82rem;
+  color: var(--green-600);
+  font-size: .88rem;
 }
 .cat-bar-val-unplayed {
   font-weight: 400;
   color: var(--gray-400);
   font-style: italic;
-  font-size: .75rem;
+  font-size: .82rem;
 }
 .cat-bar-unplayed {
   background: repeating-linear-gradient(
@@ -3750,6 +3750,7 @@ input[type="text"]:focus {
 /* ============================================================
    ITEM OF THE DAY (Scanner tab)
    ============================================================ */
+#item-of-day { margin-top: 28px; }
 .iotd-card {
   background: linear-gradient(135deg, var(--green-50), var(--green-100));
   border: 1.5px solid var(--green-200);
