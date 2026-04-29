@@ -201,7 +201,7 @@ const Scanner = (function () {
     return { verdict: worstVerdict, tips: [...new Set(allTips)] };
   }
 
-  /* ---- Award scan points (5 pts, max 5 unique barcodes/day) ---- */
+  /* ---- Award scan points (30 pts, max 5 unique barcodes/day) ---- */
   function awardScanPoints(barcode) {
     const username = localStorage.getItem('rr_current');
     if (!username) return 0;
@@ -231,7 +231,7 @@ const Scanner = (function () {
       return 0;
     }
 
-    const pts = 5;
+    const pts = 30;
     daily.barcodes = [...(daily.barcodes || []), barcode];
     localStorage.setItem('rr_scan_daily', JSON.stringify(daily));
 

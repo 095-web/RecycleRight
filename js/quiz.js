@@ -792,7 +792,8 @@ const Quiz = (function () {
     if (state.answered) return;
     state.answered = true;
     _stopTimer();
-    _removeKeyHandler();
+    // Keep _keyHandler alive — it handles Enter/Space → next question.
+    // It will be removed at the top of renderQuestion() on the next call.
 
     const elapsed = (Date.now() - _questionStartTime) / 1000;
     const q       = state.questions[state.current];

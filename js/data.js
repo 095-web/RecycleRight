@@ -299,7 +299,7 @@ const QUIZ_QUESTIONS = [
 
   /* Food & Composting */
   { id:29, cat:'food', q:'What is composting?',
-    opts:['A method of producing plastic-free food packaging','The breakdown of organic matter into nutrient-rich soil amendment','A sorting process for cleaning and reusing food containers','A government program that taxes businesses for food waste'],
+    opts:['A method of producing plastic-free packaging from plant-based materials','The breakdown of organic matter into nutrient-rich soil amendment','A sorting process for separating and cleaning reusable food containers','A government program that taxes businesses for generating excess food waste'],
     ans:1, exp:'Composting breaks down organic material (food scraps, yard waste) through microbial activity, creating humus, a natural fertilizer for soil.' },
 
   { id:30, cat:'food', q:'Which of these items should NOT go into a standard backyard compost bin?',
@@ -307,7 +307,7 @@ const QUIZ_QUESTIONS = [
     ans:2, exp:'Meat and dairy attract pests and create odors in backyard bins. They should go in a city compost cart (industrial composting) or bokashi system.' },
 
   { id:31, cat:'food', q:'Why does food contamination on recyclables matter so much?',
-    opts:['It adds too much weight to the load','It attracts animals to recycling trucks','It breeds bacteria that destroy paper and plastic fibers during processing','Recycling facilities cannot accept food for legal reasons'],
+    opts:['It adds too much weight and increases transport fuel costs for collection trucks','It attracts animals and pests that damage recycling trucks and sorting equipment','It breeds bacteria that destroy paper and plastic fibers during processing','Recycling facilities are legally prohibited from accepting any food-contaminated materials'],
     ans:2, exp:'During paper recycling, the pulping process is undermined by fats and oils. In plastic recycling, contamination weakens the final recycled material.' },
 
   { id:32, cat:'food', q:'What is "vermiculture"?',
@@ -315,7 +315,7 @@ const QUIZ_QUESTIONS = [
     ans:0, exp:'Vermiculture uses red worms (Eisenia fetida) to break down food scraps into worm castings, one of the richest organic fertilizers available.' },
 
   { id:33, cat:'food', q:'Which food scrap is best avoided in compost due to its effect on soil pH?',
-    opts:['Citrus peels in excess','Eggshells','Coffee grounds','Dry leaves'],
+    opts:['Citrus peels in excess','Eggshells crushed finely','Coffee grounds and filters','Dry autumn leaves'],
     ans:0, exp:'Too many citrus peels can make compost more acidic. Use in moderation, or balance with alkaline materials like eggshells or wood ash.' },
 
   /* E-Waste */
@@ -524,11 +524,11 @@ const QUIZ_QUESTIONS = [
     ans:1, exp:'Food decomposing without oxygen in landfills produces methane, a greenhouse gas roughly 80x more potent than CO2 over 20 years.' },
 
   { id:84, cat:'food', q:'What are "greens" and "browns" in a compost pile?',
-    opts:['Green = plant-based, brown = animal-based','Green = nitrogen-rich fresh materials, brown = carbon-rich dry materials','Green = wet, brown = dry','Green = recyclable, brown = compostable'],
+    opts:['Green = plant-based food scraps only, brown = animal-derived materials like manure','Green = nitrogen-rich fresh materials, brown = carbon-rich dry materials','Green = anything wet or recently harvested, brown = any dry household waste','Green = items destined for composting, brown = items that should be recycled instead'],
     ans:1, exp:'A healthy compost pile balances greens (food scraps, fresh grass = nitrogen) with browns (dried leaves, cardboard, straw = carbon) at roughly 1:2 by volume.' },
 
   { id:85, cat:'food', q:'What does "industrial composting" mean compared to backyard composting?',
-    opts:['Industrial composting uses plastic bags','Industrial composting uses sustained high heat (140–160°F) to break down meat, dairy, and certified compostable plastics','Industrial composting occurs in regular recycling plants','They are the same process at a larger scale'],
+    opts:['Industrial composting uses large sealed plastic bags to control moisture levels and speed up decomposition','Industrial composting uses sustained high heat (140–160°F) to break down meat, dairy, and certified compostable plastics','Industrial composting takes place inside standard recycling facilities, processed alongside paper and cardboard','They are essentially the same process, just running at a larger scale with more volume of material'],
     ans:1, exp:'Industrial composting reaches temperatures that kill pathogens and break down compostable plastics and food packaging, conditions impossible to achieve in a home bin.' },
 
   { id:86, cat:'food', q:'What fraction of all food produced globally is wasted or lost?',
@@ -536,35 +536,35 @@ const QUIZ_QUESTIONS = [
     ans:2, exp:'About one-third of all food produced globally (1.3 billion tonnes per year) is lost or wasted. If it were a country, food waste would be the third-largest emitter of greenhouse gases.' },
 
   { id:87, cat:'food', q:'What is a bokashi system?',
-    opts:['A Japanese word for leaf composting','A fermentation system that can process all food waste including meat and dairy','A type of outdoor garden bin','A machine that liquefies food waste'],
+    opts:['A Japanese word for composting leaves and yard waste in an open outdoor pile','A fermentation system that can process all food waste including meat and dairy','A type of outdoor garden bin that uses sealed lids to keep rodents and pests out','A machine that liquefies food waste and pumps it into soil as a liquid fertilizer'],
     ans:1, exp:'Bokashi uses beneficial microbes to ferment all food scraps (including meat, dairy, and cooked food) in an airtight container. The fermented matter then goes in compost or soil.' },
 
   { id:88, cat:'food', q:'What is anaerobic digestion of food waste?',
-    opts:['Composting without any water','Breaking down organic matter without oxygen, producing biogas and a soil amendment','Burning food waste at very high temperatures','Freezing food waste to prevent decomposition'],
+    opts:['Composting organic matter without any added water, relying on dry heat to speed up breakdown','Breaking down organic matter without oxygen, producing biogas and a soil amendment','Burning food waste at extremely high temperatures to generate electricity from the steam','Freezing food waste at sub-zero temperatures to halt decomposition for later processing'],
     ans:1, exp:'Anaerobic digestion breaks organic matter down without oxygen, producing biogas (used for energy) and digestate (used as fertilizer) in a carbon-neutral process.' },
 
   { id:89, cat:'food', q:'Why should meat and dairy be avoided in a standard backyard compost bin?',
-    opts:['They decompose too quickly and kill beneficial bacteria','They attract pests and create odors; use a city compost cart or bokashi system instead','They make the compost too acidic','They are not allowed by law in home composting bins'],
+    opts:['They break down too quickly, overheating the pile and killing the beneficial composting bacteria','They attract pests and create odors; use a city compost cart or bokashi system instead','They make the compost excessively acidic, lowering pH to levels that damage plant roots','They are explicitly banned by local ordinances and composting regulations in most municipalities'],
     ans:1, exp:'Meat and dairy attract rodents, flies, and other pests, and create strong odors in backyard bins. Industrial composting or bokashi systems handle them safely.' },
 
   { id:90, cat:'food', q:'What is "food rescue" or "food recovery"?',
-    opts:['A government program to test food safety','Collecting surplus food from restaurants, farms, and stores to donate before it becomes waste','A composting technique for expired food','A process of extracting nutrients from food waste'],
+    opts:['A government-run program that tests food safety and freshness standards before products reach store shelves','Collecting surplus food from restaurants, farms, and stores to donate before it becomes waste','A specialized composting technique for processing expired or spoiled food in sealed containers','A process of extracting and concentrating nutrients from food waste into liquid fertilizer'],
     ans:1, exp:'Food rescue redirects surplus edible food to people in need, sitting at the very top of the waste hierarchy. The best outcome for food is always for it to be eaten.' },
 
   { id:91, cat:'food', q:'What does "compost maturity" mean?',
-    opts:['Compost that smells very strong','Fully broken-down compost that is safe to add to soil without harming plant roots','Compost that has been aged for at least 2 years','Compost produced by the oldest traditional technique'],
+    opts:['Compost with a very strong ammonia smell, indicating high nitrogen activity that is still ongoing','Fully broken-down compost that is safe to add to soil without harming plant roots','Compost that has been stored and aged for a minimum of two years before use','Compost produced using the oldest traditional techniques, such as pit composting or open heaps'],
     ans:1, exp:'Mature compost looks like dark crumbly soil, has an earthy smell, and will not burn plant roots with excess nitrogen. Immature compost can harm seedlings.' },
 
   { id:92, cat:'food', q:'Can you compost citrus peels and onions in a worm bin?',
-    opts:['Yes, worms love them','Avoid them; worms dislike the acidity and natural compounds, so use sparingly','Yes, but only if finely chopped','No, all fruits and vegetables harm worms'],
+    opts:['Yes, worms thrive on them and their natural oils even help keep the worm bin free of pests','Avoid them; worms dislike the acidity and natural compounds, so use sparingly','Yes, but only if finely chopped and well mixed with plenty of neutral bedding material','No, all fruits and vegetables are too acidic and will rapidly harm or kill the worms'],
     ans:1, exp:'Citrus peels and onions contain compounds that irritate worms and can make a worm bin too acidic. Use them very sparingly or stick to milder food scraps.' },
 
   { id:93, cat:'food', q:'What should be your first priority when dealing with excess food?',
-    opts:['Send it to a composting facility','Compost it at home','Reduce food waste by buying only what you need and planning meals','Feed it to pets'],
+    opts:['Send excess food to a commercial composting facility so it can be properly processed','Compost it at home in a backyard bin to recover its nutrients for your garden','Reduce food waste by buying only what you need and planning meals','Feed it to household pets or local farm animals to avoid wasting the nutrients'],
     ans:2, exp:'The waste hierarchy puts prevention first. Reducing food waste at the source (meal planning, proper storage) beats even the best composting or energy recovery.' },
 
   { id:94, cat:'food', q:'Why does adding too many kitchen scraps too quickly kill a compost pile?',
-    opts:['The scraps use up all the oxygen','The pile becomes too heavy','The nitrogen-rich scraps overwhelm beneficial bacteria and create a slimy, anaerobic, smelly mess','Kitchen scraps are incompatible with outdoor composting'],
+    opts:['The scraps instantly consume all available oxygen, suffocating the microbes and halting all activity','The pile becomes too heavy and compacts under its own weight, preventing airflow from reaching the center','The nitrogen-rich scraps overwhelm beneficial bacteria and create a slimy, anaerobic, smelly mess','Kitchen scraps are inherently incompatible with outdoor composting and must always be processed indoors'],
     ans:2, exp:'A compost pile needs a carbon-to-nitrogen balance. Overloading with wet nitrogen-rich scraps without enough browns causes anaerobic conditions, which are smelly and ineffective.' },
 
   { id:95, cat:'food', q:'What percentage of municipal solid waste in the US is made up of food scraps?',
@@ -573,47 +573,47 @@ const QUIZ_QUESTIONS = [
 
   /* Myth Busters */
   { id:108, cat:'myths', q:'MYTH: All plastic with a recycling symbol on it can be recycled curbside.',
-    opts:['True — the symbol means it\'s accepted everywhere','False — the number identifies the resin type, not whether your local program accepts it','True — all numbered plastics are recyclable','False — only plastics with a green symbol can be recycled'],
+    opts:['True — the symbol is a universal guarantee that every local recycling program must accept that plastic type','False — the number identifies the resin type, not whether your local program accepts it','True — all plastics numbered 1 through 7 are accepted at every curbside recycling program nationwide','False — only plastics marked with a green recycling symbol on a white background can be recycled'],
     ans:1, exp:'The resin ID code (1–7) only tells you what type of plastic it is. Whether your local program accepts it depends entirely on local markets and facility capabilities.' },
 
   { id:109, cat:'myths', q:'MYTH: Rinsing recyclables before putting them in the bin is a waste of water.',
-    opts:['True — it uses too much water to be worth it','False — a quick rinse prevents contamination that ruins entire loads and saves more resources overall','True — recycling facilities wash everything anyway','False — you need to run the dishwasher for all recyclables'],
+    opts:['True — rinsing uses far more water than recycling saves, making it a net negative for the environment','False — a quick rinse prevents contamination that ruins entire loads and saves more resources overall','True — all recycling facilities have industrial washing systems that fully clean every item on arrival','False — you should run every recyclable through a full dishwasher cycle to remove all food residue'],
     ans:1, exp:'A quick rinse (not a deep scrub) prevents grease and food residue from contaminating other recyclables. One greasy pizza box can ruin an entire bale of paper recycling.' },
 
   { id:110, cat:'myths', q:'MYTH: Glass recycling is not worth it because it\'s too heavy and expensive to transport.',
-    opts:['True — most glass just goes to landfill anyway','False — recycling glass saves significant energy and raw materials compared to making it from scratch','True — glass is better off reused than recycled','False — glass is the cheapest material to recycle'],
+    opts:['True — the majority of collected glass in the US is simply sent to landfill because transport costs exceed any benefit','False — recycling glass saves significant energy and raw materials compared to making it from scratch','True — glass is always better off being reused as-is, since remelting wastes more energy than it conserves','False — glass is the single cheapest and most energy-efficient material to recycle in any program'],
     ans:1, exp:'While transport costs are real, recycling glass still saves around 30% of the energy needed to make it from raw silica sand, limestone, and soda ash.' },
 
   { id:111, cat:'myths', q:'MYTH: Biodegradable plastic bags are better for the environment than regular plastic bags.',
-    opts:['True — they break down harmlessly in any environment','False — most biodegradable plastics require specific industrial conditions and can persist for years in landfills or oceans','True — they decompose in months in a landfill','False — biodegradable plastics are identical to regular plastics'],
+    opts:['True — they are specifically designed to break down safely and harmlessly in any environment, including oceans','False — most biodegradable plastics require specific industrial conditions and can persist for years in landfills or oceans','True — they naturally decompose within a few months in any landfill, leaving absolutely no harmful residue','False — biodegradable plastics are chemically and physically identical to conventional plastic bags in every way'],
     ans:1, exp:'"Biodegradable" plastics typically need sustained heat (above 140°F) found only in industrial composting facilities. In a landfill or ocean, they persist just like conventional plastic.' },
 
   { id:112, cat:'myths', q:'MYTH: It\'s fine to put your recyclables in a plastic bag before putting them in the recycling bin.',
-    opts:['True — it keeps recyclables clean and organized','False — plastic bags jam sorting machinery and cause millions in damage at recycling facilities annually','True — bags help workers sort materials faster','False — but only if the bag is labeled "recyclable"'],
+    opts:['True — bagging recyclables keeps them clean and organized, making it easier for facility workers to sort them','False — plastic bags jam sorting machinery and cause millions in damage at recycling facilities annually','True — bagging items speeds up sorting because workers can identify and grab a whole group at once','False — this is only a problem for bags that are not clearly labeled "recyclable" or "compostable"'],
     ans:1, exp:'Loose plastic bags wrap around conveyor belts and rollers at sorting facilities, causing equipment jams that halt operations. Always put recyclables loose in the bin.' },
 
   { id:113, cat:'myths', q:'MYTH: Recycling paper wastes more energy than just making new paper.',
-    opts:['True — the de-inking process uses enormous energy','False — recycling paper uses 40–64% less energy than making it from virgin wood pulp','True — only if the recycling facility is far away','False — recycled paper uses 90% less energy'],
+    opts:['True — the chemical de-inking process alone consumes more energy than simply harvesting and pulping fresh wood','False — recycling paper uses 40–64% less energy than making it from virgin wood pulp','True — it only saves energy when the recycling facility happens to be located very close to where paper is collected','False — recycled paper actually saves closer to 90% of the energy, far more than the commonly cited figure'],
     ans:1, exp:'Recycling paper uses approximately 40–64% less energy than virgin paper production. It also saves 7,000 gallons of water per ton and reduces greenhouse gas emissions significantly.' },
 
   { id:114, cat:'myths', q:'MYTH: Recycling has no real impact. Companies just ship it overseas anyway.',
-    opts:['True — most US recycling goes to China and is landfilled','False — while export markets exist, many materials are recycled domestically and global recycling still reduces raw material extraction','True — it\'s all greenwashing','False — nothing is ever exported'],
+    opts:['True — the majority of US recyclables are shipped to developing countries where they end up landfilled without processing','False — while export markets exist, many materials are recycled domestically and global recycling still reduces raw material extraction','True — it is all corporate greenwashing; recycling programs exist only to make consumers feel better about their waste','False — nothing in the US recycling system is ever exported; all collected materials are fully processed domestically'],
     ans:1, exp:'While exports are real (especially after China\'s 2018 National Sword policy changed trade), domestic recycling industries have grown significantly. Even imperfect recycling reduces mining, deforestation, and emissions.' },
 
   { id:115, cat:'myths', q:'MYTH: Pizza boxes are always recyclable as long as you remove the food.',
-    opts:['True — cardboard is cardboard','False — grease soaks into the cardboard fibers and cannot be removed during pulping, making grease-soaked portions non-recyclable','True — just scrape off any cheese','False — pizza boxes can never be recycled under any circumstances'],
+    opts:['True — cardboard is always cardboard regardless of grease, and recycling facilities are fully equipped to handle it','False — grease soaks into the cardboard fibers and cannot be removed during pulping, making grease-soaked portions non-recyclable','True — you just need to scrape off any cheese and the grease wipes clean enough for recycling','False — pizza boxes are completely non-recyclable under any circumstances and must always go in the trash'],
     ans:1, exp:'Grease bonds chemically with paper fibers and cannot be separated during the water-based pulping process. Best practice: tear off and recycle the clean lid; trash the greasy base.' },
 
   { id:116, cat:'myths', q:'MYTH: Buying products made from recycled content doesn\'t make a real difference.',
-    opts:['True — the product is the same either way','False — buying recycled content creates market demand that makes recycling economically viable and funds collection programs','True — companies just claim "recycled" for marketing','False — only if the item is 100% recycled content'],
+    opts:['True — the final product is physically identical whether it uses virgin or recycled materials, so it makes no difference','False — buying recycled content creates market demand that makes recycling economically viable and funds collection programs','True — companies only label products as "recycled" for marketing purposes; the claims are rarely verified or accurate','False — purchasing recycled content only makes a difference when the product is made from 100% recycled materials'],
     ans:1, exp:'Recycling only works as a system when there are buyers for recycled materials. Purchasing recycled-content products "closes the loop" and makes the economics work for recycling programs.' },
 
   { id:117, cat:'myths', q:'MYTH: Composting is complicated and smelly. Is it practical at home?',
-    opts:['True — home composting always produces bad odors','False — a properly maintained compost bin with balanced greens and browns produces little odor and is straightforward to manage','True — only city-run programs work well','False — but only if you have a large yard'],
+    opts:['True — home composting always produces strong unpleasant odors that nearby neighbors will inevitably complain about','False — a properly maintained compost bin with balanced greens and browns produces little odor and is straightforward to manage','True — only city-run or industrial composting programs have the proper equipment needed to avoid bad odors','False — home composting can work well, but only if you have a large yard with plenty of outdoor space available'],
     ans:1, exp:'Odor comes from imbalanced piles (too many food scraps, not enough carbon-rich browns). A properly balanced pile with a 2:1 brown-to-green ratio and occasional turning is nearly odor-free.' },
 
   { id:118, cat:'myths', q:'MYTH: Recycling aluminum is not important because bauxite ore is abundant.',
-    opts:['True — aluminum ore reserves will last thousands of years','False — recycling aluminum uses 95% less energy than mining and smelting new aluminum, making it one of the most valuable recyclables','True — the energy savings are minimal','False — but only in countries that lack bauxite deposits'],
+    opts:['True — aluminum ore reserves are so vast they will easily last thousands of years without any need for conservation','False — recycling aluminum uses 95% less energy than mining and smelting new aluminum, making it one of the most valuable recyclables','True — the energy difference between recycled and virgin aluminum production is minimal and not worth the collection effort','False — energy savings from recycling only apply to countries that import bauxite and do not have local deposits'],
     ans:1, exp:'Even though bauxite deposits exist, the smelting process is extraordinarily energy-intensive. Recycling uses 95% less energy; a recycled can can be back on shelves in just 60 days.' },
 
   { id:119, cat:'myths', q:'MYTH: Throwing one wrong item in a recycling bin doesn\'t affect the rest of the load.',
@@ -723,19 +723,19 @@ const QUIZ_QUESTIONS = [
 
   /* ---- NEW Myth questions ---- */
   { id:144, cat:'myths', q:'MYTH: Glass is recycled back into new glass bottles.',
-    opts:['True — glass is always recycled into new glass bottles','False — most collected glass is crushed for low-value uses like road fill, not new bottles','True — all glass goes into a closed loop','False — glass is turned into plastic, not new glass'],
+    opts:['True — all collected glass is always melted down and recycled into brand new glass bottles and jars','False — most collected glass is crushed for low-value uses like road fill, not new bottles','True — all glass in the US goes through a closed-loop system and is remelted into new containers','False — glass collected from recycling bins is chemically converted into plastic pellets, not new glass'],
     ans:1, exp:'Less than half of collected glass in the US ends up as new bottles. Much is "downcycled" into fiberglass insulation, sand for construction, or road aggregate.' },
 
   { id:145, cat:'myths', q:'MYTH: Recycling is always better for the environment than making new materials.',
-    opts:['True — recycling always uses less energy and resources','False — for some materials in some contexts, the transport and processing energy can rival virgin production','True — every recycled item saves resources','False — recycling never saves energy over virgin production'],
+    opts:['True — recycling universally and always uses significantly less energy and fewer resources than any virgin production','False — for some materials in some contexts, the transport and processing energy can rival virgin production','True — every single recycled item saves both energy and resources, with no exceptions under any conditions','False — recycling never saves energy over virgin production; it is always more energy-intensive to process used materials'],
     ans:1, exp:'Context matters. Transporting light materials long distances can offset savings. However, for metals and paper, recycling almost universally wins. The key is efficient local systems.' },
 
   { id:146, cat:'myths', q:'MYTH: Paper is the number-one material in US landfills.',
-    opts:['True — paper makes up most landfill volume','False — food waste is now the single largest material category in US landfills','True — even with recycling, paper dominates','False — plastic is by far the largest landfill material'],
+    opts:['True — paper makes up the majority of landfill volume even after decades of recycling programs','False — food waste is now the single largest material category in US landfills','True — even with widespread paper recycling, paper still dominates landfill content by weight','False — plastic packaging is by far the single largest material filling US landfills today'],
     ans:1, exp:'Food waste overtook paper as the largest landfill material in the US. About 22% of landfill content is food scraps, a key reason composting programs are expanding.' },
 
   { id:147, cat:'myths', q:'MYTH: Styrofoam is just another word for any foam plastic.',
-    opts:['True — Styrofoam is a generic term for all foam plastics','False — Styrofoam is a Dow Chemical trademark specifically for extruded polystyrene (XPS) insulation, not food containers','True — all food foam is technically Styrofoam','False — Styrofoam refers only to biodegradable foam'],
+    opts:['True — Styrofoam is an officially recognized generic term that applies to all types of foam plastic products','False — Styrofoam is a Dow Chemical trademark specifically for extruded polystyrene (XPS) insulation, not food containers','True — all white foam food containers, cups, and packing peanuts are technically and legally called Styrofoam','False — Styrofoam is a trademarked name that refers exclusively to biodegradable foam used in packaging'],
     ans:1, exp:'Styrofoam® is a Dow Chemical brand name for blue XPS foam used in building insulation. White foam food containers are expanded polystyrene (EPS), a different form of the same resin.' },
 
   /* E-Waste — extra pool */
@@ -863,7 +863,7 @@ const SHOP_PERMANENT = [
   { id:'sh_pu_freeze',    type:'powerup', puId:'streak_freeze', name:'Streak Freeze', cost:175 },
   { id:'sh_pu_boost',     type:'powerup', puId:'point_booster', name:'Point Booster', cost:400 },
   { id:'sh_pu_reset',     type:'powerup', puId:'daily_reset',   name:'Daily Reset',   cost:125 },
-  /* Profile Frames */
+  /* Profile Frames — always available */
   { id:'sh_frame_green',    type:'frame', frameId:'frame_green',    name:'Forest Frame 🌿',    cost:350  },
   { id:'sh_frame_blue',     type:'frame', frameId:'frame_blue',     name:'Ocean Frame 🌊',     cost:350  },
   { id:'sh_frame_silver',   type:'frame', frameId:'frame_silver',   name:'Silver Frame 🪙',    cost:500  },
@@ -874,16 +874,7 @@ const SHOP_PERMANENT = [
   { id:'sh_frame_emerald',  type:'frame', frameId:'frame_emerald',  name:'Emerald Frame 💚',   cost:700  },
   { id:'sh_frame_ice',      type:'frame', frameId:'frame_ice',      name:'Frost Frame ❄️',     cost:750  },
   { id:'sh_frame_crimson',  type:'frame', frameId:'frame_crimson',  name:'Crimson Frame ❤️',   cost:800  },
-  { id:'sh_frame_sunset',   type:'frame', frameId:'frame_sunset',   name:'Sunset Frame 🌅',    cost:900  },
-  { id:'sh_frame_gold',     type:'frame', frameId:'frame_gold',     name:'Gold Frame ✨',       cost:900  },
-  { id:'sh_frame_lava',     type:'frame', frameId:'frame_lava',     name:'Lava Frame 🌋',      cost:1000 },
-  { id:'sh_frame_electric', type:'frame', frameId:'frame_electric', name:'Electric Frame ⚡',  cost:1000 },
-  { id:'sh_frame_neon',     type:'frame', frameId:'frame_neon',     name:'Neon Frame 🟢',      cost:1000 },
-  { id:'sh_frame_void',     type:'frame', frameId:'frame_void',     name:'Void Frame 🌌',      cost:1200 },
-  { id:'sh_frame_rainbow',  type:'frame', frameId:'frame_rainbow',  name:'Rainbow Frame 🌈',   cost:1400 },
-  { id:'sh_frame_fire',     type:'frame', frameId:'frame_fire',     name:'Fire Frame 🔥',      cost:1400 },
-  { id:'sh_frame_galaxy',   type:'frame', frameId:'frame_galaxy',   name:'Galaxy Frame 🔮',    cost:1800 },
-  { id:'sh_frame_cosmic',   type:'frame', frameId:'frame_cosmic',   name:'Cosmic Frame 🌠',    cost:1800 },
+  /* The 10 frames below are daily-shop-only (see SHOP_ROTATING) */
 ];
 
 const SHOP_ROTATING = [

@@ -334,8 +334,8 @@ const ShopModule = (function () {
   }
 
   function renderFrameItem(item, profile) {
-    const owned  = (profile?.purchasedItems || []).includes(item.id);
-    const afford = (profile.points || 0) >= item.cost;
+    const owned  = isItemOwned(item, profile);
+    const afford = _isAdmin() || (profile.points || 0) >= item.cost;
     const frame  = FRAMES?.find(f => f.id === item.frameId) || {};
     const avatarCss = frame.css ? `avatar-frame-wrap ${frame.css}` : '';
     const preview = `
