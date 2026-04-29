@@ -108,32 +108,48 @@ const Scanner = (function () {
     lookupBarcode(barcode);
   }
 
-  /* ---- API Lookup ---- */
+  /* ---- API Lookup (multi-source with fallbacks) ---- */
   async function lookupBarcode(barcode) {
     clearResults();
     showLoading();
 
-    // Cache in sessionStorage to avoid redundant requests
     const cacheKey = 'rr_scan_' + barcode;
     const cached = sessionStorage.getItem(cacheKey);
     if (cached) {
       clearResults();
-      renderResult(JSON.parse(cached), 0); // no points for repeated lookup
+      renderResult(JSON.parse(cached), 0);
       return;
     }
 
     try {
-      const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
-      if (!res.ok) throw new Error('Network error');
-      const data = await res.json();
+      let result = null;
 
-      if (data.status === 0 || !data.product) {
+      // 1. Open Food Facts — best international + EU coverage
+      result = await _tryOFApi('food', barcode);
+
+      // 2. EAN-13 ↔ UPC-A normalization:
+      //    US barcodes are 12-digit UPC-A; OFT stores them as 13-digit EAN-13 with a leading 0.
+      if (!result && barcode.length === 12) {
+        result = await _tryOFApi('food', '0' + barcode);
+      } else if (!result && barcode.length === 13 && barcode.startsWith('0')) {
+        result = await _tryOFApi('food', barcode.slice(1));
+      }
+
+      // 3. Open Beauty Facts — cosmetics & personal care
+      if (!result) result = await _tryOFApi('beauty', barcode);
+
+      // 4. Open Pet Food Facts — pet products
+      if (!result) result = await _tryOFApi('petfood', barcode);
+
+      // 5. UPC Item DB — strong US product coverage; returns category for inference
+      if (!result) result = await _tryUpcItemDb(barcode);
+
+      if (!result) {
         clearResults();
-        showError(`Product not found for barcode <strong>${barcode}</strong>.<br>Try another barcode or check the number carefully.`);
+        showError(`No product data found for barcode <strong>${barcode}</strong>.<br>This item may not be in any public database yet — try checking the label directly.`);
         return;
       }
 
-      const result = parseProduct(barcode, data.product);
       sessionStorage.setItem(cacheKey, JSON.stringify(result));
       const pts = awardScanPoints(barcode);
       addToScanHistory(result);
@@ -149,22 +165,103 @@ const Scanner = (function () {
     }
   }
 
+  /* ---- Source helpers ---- */
+
+  // Tries an Open*Facts database (food / beauty / petfood)
+  async function _tryOFApi(db, barcode) {
+    try {
+      const host = db === 'beauty'  ? 'world.openbeautyfacts.org'
+                 : db === 'petfood' ? 'world.openpetfoodfacts.org'
+                 : 'world.openfoodfacts.org';
+      const res = await fetch(`https://${host}/api/v0/product/${barcode}.json`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (data.status === 0 || !data.product) return null;
+      return parseProduct(barcode, data.product);
+    } catch { return null; }
+  }
+
+  // Tries UPC Item DB (US-focused; returns product name + category for inference)
+  async function _tryUpcItemDb(barcode) {
+    try {
+      const res = await fetch(`https://api.upcitemdb.com/prod/trial/lookup?upc=${barcode}`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (!data.items?.length) return null;
+      const item = data.items[0];
+      const catStr = [item.category || '', item.description || ''].join(' ');
+      const materials = _inferFromCategory(catStr);
+      const { verdict, tips } = determineVerdict(materials);
+      return {
+        barcode,
+        name:      item.title || 'Unknown Product',
+        brand:     item.brand || '',
+        materials,
+        verdict:   materials.length ? verdict : 'unknown',
+        tips:      materials.length ? tips : ['Check the product label for recycling symbols.', 'Verify with your local recycling guidelines.'],
+        estimated: materials.length > 0,
+      };
+    } catch { return null; }
+  }
+
+  // Infers likely packaging materials from a product category string
+  function _inferFromCategory(catStr) {
+    const c = catStr.toLowerCase();
+
+    if (c.includes('canned') || c.includes('tinned'))
+      return extractMaterials('steel tin');
+
+    if (c.includes('beer') || c.includes('wine') || c.includes('spirit') || c.includes('liquor') || c.includes('whisky') || c.includes('whiskey') || c.includes('vodka') || c.includes('rum'))
+      return extractMaterials(c.includes('can') ? 'aluminum' : 'glass');
+
+    if (c.includes('beverage') || c.includes('drink') || c.includes('water') || c.includes('juice') || c.includes('soda') || c.includes('cola') || c.includes('lemonade') || c.includes('sports drink') || c.includes('energy drink'))
+      return extractMaterials(c.includes('can') ? 'aluminum' : 'pet');
+
+    if (c.includes('milk') || c.includes('dairy') || c.includes('yogurt') || c.includes('yoghurt') || c.includes('butter') || c.includes('cream cheese'))
+      return extractMaterials('hdpe');
+
+    if (c.includes('cereal') || c.includes('breakfast') || c.includes('cracker') || c.includes('cookie') || c.includes('biscuit') || c.includes('pasta') || c.includes('rice') || c.includes('flour') || c.includes('grain'))
+      return extractMaterials('cardboard');
+
+    if (c.includes('shampoo') || c.includes('conditioner') || c.includes('body wash') || c.includes('hair care') || c.includes('soap') || c.includes('lotion') || c.includes('beauty') || c.includes('cosmetic') || c.includes('skincare') || c.includes('deodorant'))
+      return extractMaterials('hdpe');
+
+    if (c.includes('cleaning') || c.includes('cleaner') || c.includes('detergent') || c.includes('laundry') || c.includes('bleach') || c.includes('dishwash'))
+      return extractMaterials('hdpe');
+
+    return []; // Cannot infer — leave as unknown
+  }
+
   /* ---- Parse Product & Determine Recyclability ---- */
   function parseProduct(barcode, product) {
-    const name  = product.product_name || product.product_name_en || 'Unknown Product';
+    const name  = product.product_name || product.product_name_en || product.abbreviated_product_name || 'Unknown Product';
     const brand = product.brands || '';
 
-    // Collect packaging info from multiple fields
+    // Collect packaging info from every available field
     const packagingFields = [
       product.packaging || '',
       (product.packaging_tags || []).join(', '),
       product.packaging_text || '',
+      product.packaging_text_en || '',
+      (product.packaging_materials_tags || []).join(', '),
     ].join(', ').toLowerCase();
 
-    const materials = extractMaterials(packagingFields);
-    const { verdict, tips } = determineVerdict(materials);
+    let materials = extractMaterials(packagingFields);
+    let estimated = false;
 
-    return { barcode, name, brand, materials, verdict, tips };
+    // If no explicit packaging data, try to infer from product categories
+    if (materials.length === 0) {
+      const catStr = [
+        product.categories || '',
+        (product.categories_tags || []).join(', '),
+        product.labels || '',
+      ].join(', ');
+      materials = _inferFromCategory(catStr);
+      if (materials.length > 0) estimated = true;
+    }
+
+    const { verdict, tips } = determineVerdict(materials);
+    return { barcode, name, brand, materials, verdict, tips, estimated };
   }
 
   function extractMaterials(packagingStr) {
@@ -323,6 +420,7 @@ const Scanner = (function () {
           <button class="btn btn-secondary btn-sm" onclick="Scanner.clear()">
             <i class="fas fa-times"></i> Clear
           </button>
+          ${result.estimated ? `<p class="result-estimated-note"><i class="fas fa-circle-info"></i> Verdict estimated from product category — check the label to confirm.</p>` : ''}
         </div>
       </div>`;
 

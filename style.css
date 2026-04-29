@@ -408,7 +408,10 @@ input[type="text"]:focus {
 .tips-list li { display: flex; gap: 8px; font-size: .87rem; color: var(--gray-700); align-items: flex-start; }
 .tips-list li i { color: var(--green-500); margin-top: 3px; flex-shrink: 0; }
 
-.result-footer { padding: 0 24px 20px; display: flex; gap: 8px; }
+.result-footer { padding: 0 24px 20px; display: flex; flex-direction: column; gap: 8px; }
+.result-footer > .btn { align-self: flex-start; }
+.result-estimated-note { font-size: .78rem; color: var(--gray-500); display: flex; align-items: center; gap: 5px; margin: 0; }
+.result-estimated-note i { color: var(--green-600); }
 
 .error-card {
   background: var(--white);
