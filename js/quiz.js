@@ -59,7 +59,7 @@ const Quiz = (function () {
     window.AuthModule?.syncProfileFlat?.(profile);
   }
   function newProfile(username, avatarIdx) {
-    return { username, avatarIdx, points: 0, quizzes: 0, bestStreak: 0, catsPlayed: [], badges: [] };
+    return { username, avatarIdx, points: 0, quizzes: 0, bestStreak: 0, catsPlayed: [], badges: [], equippedAccessories: {} };
   }
 
   /* ====================================================
@@ -239,7 +239,9 @@ const Quiz = (function () {
     document.getElementById('quiz-home').classList.remove('hidden');
 
     const isCloud = !!window.AuthModule?.currentUser;
-    document.getElementById('banner-avatar').textContent   = AVATARS[profile.avatarIdx] || AVATARS[0];
+    document.getElementById('banner-avatar').innerHTML = typeof renderAvatarDisplay === 'function'
+      ? renderAvatarDisplay(profile, 'sm')
+      : (AVATARS[profile.avatarIdx] || AVATARS[0]);
     document.getElementById('banner-username').textContent = profile.username;
     document.getElementById('stat-points').textContent     = profile.points.toLocaleString();
     document.getElementById('stat-level').textContent      = calcLevel(profile.totalPoints || profile.points || 0);
@@ -1419,9 +1421,8 @@ const Quiz = (function () {
       const rankClass  = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
       const rankLabel  = i < 3 ? ['🥇','🥈','🥉'][i] : `#${i + 1}`;
       const titleLabel = TITLES ? (TITLES.find(t => t.id === entry.selectedTitle) || TITLES[0]).label : '';
-      const frameCss   = FRAMES?.find(f => f.id === entry.equippedFrame)?.css || '';
-      const avatarHtml = frameCss
-        ? `<div class="avatar-frame-wrap ${frameCss}" style="width:36px;height:36px;font-size:1.5rem">${AVATARS[entry.avatarIdx || 0]}</div>`
+      const avatarHtml = typeof renderAvatarDisplay === 'function'
+        ? `<div class="lb-avatar">${renderAvatarDisplay(entry, 'sm')}</div>`
         : `<div class="lb-avatar">${AVATARS[entry.avatarIdx || 0]}</div>`;
       return `
         <div class="lb-entry ${entry.isMe ? 'is-me' : ''}">
@@ -1455,9 +1456,8 @@ const Quiz = (function () {
           const rankLabel  = i < 3 ? ['🥇','🥈','🥉'][i] : `#${i + 1}`;
           const titleLabel = TITLES ? (TITLES.find(t => t.id === entry.selectedTitle) || TITLES[0]).label : '';
           const pts = _lbMode === 'total' ? (entry.totalPoints || 0) : entry.points;
-          const frameCss = FRAMES?.find(f => f.id === entry.equippedFrame)?.css || '';
-          const avatarHtml = frameCss
-            ? `<div class="avatar-frame-wrap ${frameCss}" style="width:36px;height:36px;font-size:1.5rem">${AVATARS[entry.avatarIdx || 0]}</div>`
+          const avatarHtml = typeof renderAvatarDisplay === 'function'
+            ? `<div class="lb-avatar">${renderAvatarDisplay(entry, 'sm')}</div>`
             : `<div class="lb-avatar">${AVATARS[entry.avatarIdx || 0]}</div>`;
           return `
             <div class="lb-entry ${entry.isMe ? 'is-me' : ''}">

@@ -1543,6 +1543,95 @@ input[type="text"]:focus {
   line-height: 1;
   flex-shrink: 0;
 }
+
+/* ---- Layered Avatar: small/compact (leaderboard, friends, banner) ---- */
+.av-sm {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  gap: 0;
+}
+.av-sm-hat  { font-size: .55em; line-height: 1; margin-bottom: -3px; }
+.av-sm-base { line-height: 1; }
+.av-sm-shoes { font-size: .4em; line-height: 1; margin-top: -2px; }
+/* frame wrapping only the base in sm mode */
+.av-sm-base-frame {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- Layered Avatar: large / full character (profile page) ---- */
+.av-lg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  line-height: 1;
+}
+.av-lg-hat      { font-size: 1.5rem; line-height: 1; min-height: 1.5rem; }
+.av-lg-glasses  { font-size: 1rem;   line-height: 1; margin-top: -6px; }
+.av-lg-base     { font-size: 3rem;   line-height: 1; }
+.av-lg-shirt    { font-size: 1.4rem; line-height: 1; margin-top: -4px; }
+.av-lg-acc      { font-size: 1rem;   line-height: 1; }
+.av-lg-shoes    { font-size: 1.1rem; line-height: 1; min-height: 1.1rem; }
+/* frame in large mode */
+.av-lg-base.avatar-frame-wrap {
+  width: 60px;
+  height: 60px;
+  font-size: 2.5rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- Accessories Equip Panel (profile edit) ---- */
+.acc-equip-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+.acc-slot-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.acc-slot-label {
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--gray-600);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.acc-slot-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.acc-opt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
+  border-radius: var(--radius);
+  border: 2px solid var(--gray-200);
+  background: var(--white);
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  min-width: 52px;
+}
+.acc-opt:hover  { border-color: var(--green-400); background: var(--green-50); }
+.acc-opt-sel    { border-color: var(--green-500); background: var(--green-50); }
+.acc-opt-name   { font-size: .65rem; color: var(--gray-600); text-align: center; white-space: nowrap; }
+.acc-slot-empty { font-size: .75rem; color: var(--gray-400); padding: 4px 2px; }
+
+/* ---- Shop: accessory item card ---- */
+.acc-shop-item .shop-item-emoji { line-height: 1; }
 .profile-card-info {
   flex: 1;
   min-width: 0;
