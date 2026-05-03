@@ -328,11 +328,14 @@ const AuthModule = (function () {
   function subscribeIncomingRequests(callback) {
     if (!db || !_currentUser) return () => {};
     try {
+      // Query by toUid only (single-field index, no composite needed), filter pending client-side
       return db.collection('friendRequests')
-        .where('toUid',  '==', _currentUser.uid)
-        .where('status', '==', 'pending')
+        .where('toUid', '==', _currentUser.uid)
         .onSnapshot(snap => {
-          callback(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+          const pending = snap.docs
+            .map(d => ({ id: d.id, ...d.data() }))
+            .filter(r => r.status === 'pending');
+          callback(pending);
         }, err => console.error('Incoming requests error:', err));
     } catch(e) { return () => {}; }
   }
@@ -348,12 +351,41 @@ const AuthModule = (function () {
   async function getAcceptedSentRequests() {
     if (!db || !_currentUser) return [];
     try {
+      // Query by fromUid only, filter accepted client-side
       const snap = await db.collection('friendRequests')
         .where('fromUid', '==', _currentUser.uid)
-        .where('status',  '==', 'accepted')
         .get();
-      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      return snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(r => r.status === 'accepted');
     } catch(e) { return []; }
+  }
+
+  /* Delete all friendRequest docs between current user and otherUid (called on unfriend) */
+  async function deleteFriendRequestDocs(otherUid) {
+    if (!db || !_currentUser) return;
+    try {
+      const [sentSnap, recvSnap] = await Promise.all([
+        db.collection('friendRequests').where('fromUid', '==', _currentUser.uid).get(),
+        db.collection('friendRequests').where('toUid',   '==', _currentUser.uid).get(),
+      ]);
+      const toDelete = [
+        ...sentSnap.docs.filter(d => d.data().toUid   === otherUid),
+        ...recvSnap.docs.filter(d => d.data().fromUid === otherUid),
+      ];
+      await Promise.all(toDelete.map(d => d.ref.delete()));
+    } catch(err) { console.error('deleteFriendRequestDocs error:', err); }
+  }
+
+  /* Try to remove current user from another user's friends list (best-effort) */
+  async function removeFromOtherFriendsList(otherUid, myUid) {
+    if (!db) return;
+    try {
+      const snap = await db.collection('users').doc(otherUid).get();
+      if (!snap.exists) return;
+      const theirFriends = (snap.data().friends || []).filter(f => f.uid !== myUid);
+      await db.collection('users').doc(otherUid).set({ friends: theirFriends }, { merge: true });
+    } catch(err) { /* Security rules may block this — silently ignore */ }
   }
 
   /* ====================================================
@@ -506,6 +538,8 @@ const AuthModule = (function () {
     subscribeIncomingRequests,
     respondToFriendRequest,
     getAcceptedSentRequests,
+    deleteFriendRequestDocs,
+    removeFromOtherFriendsList,
     sendChallenge,
     getIncomingChallenges,
     getOutgoingChallenges,

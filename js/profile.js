@@ -94,8 +94,9 @@ const ProfileModule = (function () {
       const username = localStorage.getItem(KEY_CURRENT);
       const profile  = loadProfiles().find(p => p.username === username) || null;
       renderProfile(user, profile);
-      startReqListener(); // subscribe to incoming friend requests
-      checkAcceptedRequests(); // pull in any newly accepted requests
+      startReqListener();       // subscribe to incoming friend requests
+      checkAcceptedRequests();  // pull in any newly accepted requests
+      refreshFriendsStats();    // refresh cached stats for all existing friends
     }
   }
 
@@ -128,16 +129,48 @@ const ProfileModule = (function () {
     const friends = loadFriends();
     let changed = false;
     for (const req of accepted) {
-      if (!friends.find(f => f.uid === req.toUid)) {
-        friends.push({
-          uid: req.toUid, username: req.toUsername,
-          displayName: req.toUsername, avatarIdx: 0,
-          points: 0, quizzes: 0, bestStreak: 0,
-        });
-        changed = true;
-      }
+      if (friends.find(f => f.uid === req.toUid)) continue; // already in list
+      // Fetch real profile data instead of using zeros
+      const fresh = AuthModule.isAvailable ? await AuthModule.getUserByUid(req.toUid) : null;
+      friends.push({
+        uid:         req.toUid,
+        username:    fresh?.displayName || fresh?.username || req.toUsername,
+        displayName: fresh?.displayName || fresh?.username || req.toUsername,
+        avatarIdx:   fresh?.avatarIdx   || 0,
+        points:      fresh?.points      || 0,
+        quizzes:     fresh?.quizzes     || 0,
+        bestStreak:  fresh?.bestStreak  || 0,
+      });
+      changed = true;
     }
-    if (changed) saveFriends(friends);
+    if (changed) {
+      saveFriends(friends);
+      AuthModule.syncFriends?.(friends);
+      renderFriendsList();
+    }
+  }
+
+  /* Refresh all friends' stats from Firestore and update the local cache */
+  async function refreshFriendsStats() {
+    if (!AuthModule.isAvailable || !AuthModule.currentUser) return;
+    const friends = loadFriends();
+    if (friends.length === 0) return;
+    let changed = false;
+    for (const f of friends) {
+      const fresh = await AuthModule.getUserByUid(f.uid);
+      if (!fresh) continue;
+      f.displayName = fresh.displayName || fresh.username || f.displayName;
+      f.username    = fresh.username    || f.username;
+      f.avatarIdx   = fresh.avatarIdx   ?? f.avatarIdx;
+      f.points      = fresh.points      ?? f.points;
+      f.quizzes     = fresh.quizzes     ?? f.quizzes;
+      f.bestStreak  = fresh.bestStreak  ?? f.bestStreak;
+      changed = true;
+    }
+    if (changed) {
+      saveFriends(friends);
+      renderFriendsList();
+    }
   }
 
   /* ====================================================
@@ -405,13 +438,50 @@ const ProfileModule = (function () {
 
   async function _acceptReq(reqId, fromUid, fromUsername, fromAvatarIdx, fromPoints, fromQuizzes, fromBestStreak) {
     await AuthModule.respondToFriendRequest(reqId, true);
+
+    // Fetch fresh stats for the person we're accepting
+    const fresh = AuthModule.isAvailable ? await AuthModule.getUserByUid(fromUid) : null;
+
     const friends = loadFriends();
     if (!friends.find(f => f.uid === fromUid)) {
-      friends.push({ uid:fromUid, username:fromUsername, displayName:fromUsername,
-        avatarIdx:fromAvatarIdx, points:fromPoints, quizzes:fromQuizzes, bestStreak:fromBestStreak });
+      friends.push({
+        uid:         fromUid,
+        username:    fresh?.displayName || fresh?.username || fromUsername,
+        displayName: fresh?.displayName || fresh?.username || fromUsername,
+        avatarIdx:   fresh?.avatarIdx   ?? fromAvatarIdx,
+        points:      fresh?.points      ?? fromPoints,
+        quizzes:     fresh?.quizzes     ?? fromQuizzes,
+        bestStreak:  fresh?.bestStreak  ?? fromBestStreak,
+      });
       saveFriends(friends);
-      AuthModule.syncFriends?.(friends); // sync to Firestore
+      AuthModule.syncFriends?.(friends);
     }
+
+    // Also add ourselves to their friends list (best-effort — may fail due to security rules)
+    const myUsername = localStorage.getItem(KEY_CURRENT);
+    const myProfile  = loadProfiles().find(p => p.username === myUsername);
+    if (myProfile && AuthModule.isAvailable && AuthModule.currentUser) {
+      try {
+        const theirSnap = await AuthModule.getUserByUid(fromUid);
+        const theirFriends = theirSnap?.friends || [];
+        if (!theirFriends.find(f => f.uid === AuthModule.currentUser.uid)) {
+          theirFriends.push({
+            uid:         AuthModule.currentUser.uid,
+            username:    myProfile.username,
+            displayName: myProfile.username,
+            avatarIdx:   myProfile.avatarIdx   || 0,
+            points:      myProfile.points      || 0,
+            quizzes:     myProfile.quizzes     || 0,
+            bestStreak:  myProfile.bestStreak  || 0,
+          });
+          await AuthModule.getUserByUid; // no-op ref, just ensure function exists
+          // Write to their doc — requires permissive security rules
+          await firebase.firestore().collection('users').doc(fromUid)
+            .set({ friends: theirFriends }, { merge: true });
+        }
+      } catch(e) { /* Security rules may block cross-user write — silently ignore */ }
+    }
+
     renderFriendsList();
   }
 
@@ -536,11 +606,19 @@ const ProfileModule = (function () {
   async function _unfriend(uid) {
     _closeFriendModal();
     if (!confirm('Remove this person from your friends list?')) return;
+
     const friends = loadFriends().filter(f => f.uid !== uid);
     saveFriends(friends);
+
     if (AuthModule.isAvailable && AuthModule.currentUser) {
+      // Sync your own updated friends list
       await AuthModule.syncFriends(friends);
+      // Delete the friendRequest docs so checkAcceptedRequests won't re-add them
+      await AuthModule.deleteFriendRequestDocs?.(uid);
+      // Try to remove yourself from their friends list (best-effort)
+      await AuthModule.removeFromOtherFriendsList?.(uid, AuthModule.currentUser.uid);
     }
+
     renderFriendsList();
   }
 
