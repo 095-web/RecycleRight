@@ -1005,10 +1005,6 @@ const ProfileModule = (function () {
           <label>Profile Frame <span class="unlock-hint">Purchase frames in the Shop</span></label>
           <div class="frame-picker" id="frame-picker"></div>
         </div>
-        <div class="title-picker-section" style="margin-top:1.2rem">
-          <label>Accessories <span class="unlock-hint">Buy in the Shop · equip below</span></label>
-          <div class="acc-equip-panel" id="acc-equip-panel"></div>
-        </div>
         <div class="setup-form" style="margin-top:1.5rem">
           <label style="font-size:.85rem;color:var(--gray-600);margin-bottom:4px;display:block">
             Username
@@ -1034,16 +1030,13 @@ const ProfileModule = (function () {
     let selFrame = profile.equippedFrame || 'frame_none';
     buildFramePicker('frame-picker', selFrame, profile, id => { selFrame = id; });
 
-    let selAccessories = Object.assign({}, profile.equippedAccessories || {});
-    buildAccessoryEquip('acc-equip-panel', profile, (slot, id) => { selAccessories[slot] = id; });
-
     document.getElementById('profile-edit-save').addEventListener('click', () =>
-      saveEditedProfile(user, profile, selAvatar, selTitle, selFrame, selAccessories));
+      saveEditedProfile(user, profile, selAvatar, selTitle, selFrame));
     document.getElementById('profile-edit-cancel').addEventListener('click', () =>
       renderProfile(user, profile));
   }
 
-  async function saveEditedProfile(user, oldProfile, avatarIdx, selectedTitle, equippedFrame = 'frame_none', equippedAccessories = {}) {
+  async function saveEditedProfile(user, oldProfile, avatarIdx, selectedTitle, equippedFrame = 'frame_none') {
     const input = document.getElementById('profile-edit-username');
     const errEl = document.getElementById('profile-edit-error');
     const newUsername = (input?.value || '').trim();
@@ -1059,7 +1052,7 @@ const ProfileModule = (function () {
     }
 
     const finalUsername = usernameChanged ? newUsername : oldProfile.username;
-    const updated = { ...oldProfile, username: finalUsername, avatarIdx, selectedTitle, equippedFrame, equippedAccessories };
+    const updated = { ...oldProfile, username: finalUsername, avatarIdx, selectedTitle, equippedFrame };
     const profiles = loadProfiles().filter(p => p.username !== oldProfile.username && p.username !== finalUsername);
     profiles.push(updated);
     localStorage.setItem(KEY_PROFILES, JSON.stringify(profiles));
@@ -1104,60 +1097,6 @@ const ProfileModule = (function () {
         onSelect(parseInt(el.dataset.idx));
       });
     });
-  }
-
-  /* ====================================================
-     ACCESSORIES EQUIP PANEL
-     ==================================================== */
-  function buildAccessoryEquip(containerId, profile, onChange) {
-    const container = document.getElementById(containerId);
-    if (!container || !ACCESSORY_SLOTS || !ACCESSORIES) return;
-
-    function renderPanel() {
-      const eq = profile.equippedAccessories || {};
-      container.innerHTML = ACCESSORY_SLOTS.map(slot => {
-        // Find all accessories the user owns for this slot
-        const owned = ACCESSORIES.filter(a => {
-          if (a.slot !== slot.id) return false;
-          const shopItem = (typeof SHOP_PERMANENT !== 'undefined' ? SHOP_PERMANENT : [])
-            .find(s => s.type === 'accessory' && s.accId === a.id);
-          if (!shopItem) return false;
-          return window.ShopModule ? ShopModule.isAccessoryOwned(a.id, profile) : false;
-        });
-
-        const equipped = eq[slot.id] ? ACCESSORIES.find(a => a.id === eq[slot.id]) : null;
-
-        return `
-          <div class="acc-slot-row">
-            <div class="acc-slot-label">${slot.icon} <span>${slot.label}</span></div>
-            <div class="acc-slot-opts">
-              <div class="acc-opt${!equipped ? ' acc-opt-sel' : ''}" data-slot="${slot.id}" data-id="">
-                <span style="font-size:1.1rem;opacity:.4">✕</span>
-                <span class="acc-opt-name">None</span>
-              </div>
-              ${owned.map(a => `
-                <div class="acc-opt${equipped?.id === a.id ? ' acc-opt-sel' : ''}" data-slot="${slot.id}" data-id="${a.id}">
-                  <span style="font-size:1.4rem">${a.emoji}</span>
-                  <span class="acc-opt-name">${a.name}</span>
-                </div>`).join('')}
-              ${owned.length === 0 ? `<div class="acc-slot-empty">No ${slot.label.toLowerCase()}s owned — buy some in the Shop!</div>` : ''}
-            </div>
-          </div>`;
-      }).join('');
-
-      container.querySelectorAll('.acc-opt').forEach(el => {
-        el.addEventListener('click', () => {
-          const slot = el.dataset.slot;
-          const id   = el.dataset.id || null;
-          // Update equipped state visually
-          container.querySelectorAll(`.acc-opt[data-slot="${slot}"]`).forEach(o => o.classList.remove('acc-opt-sel'));
-          el.classList.add('acc-opt-sel');
-          onChange(slot, id || null);
-        });
-      });
-    }
-
-    renderPanel();
   }
 
   /* ====================================================

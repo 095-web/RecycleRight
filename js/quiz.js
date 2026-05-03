@@ -59,7 +59,7 @@ const Quiz = (function () {
     window.AuthModule?.syncProfileFlat?.(profile);
   }
   function newProfile(username, avatarIdx) {
-    return { username, avatarIdx, points: 0, quizzes: 0, bestStreak: 0, catsPlayed: [], badges: [], equippedAccessories: {} };
+    return { username, avatarIdx, points: 0, quizzes: 0, bestStreak: 0, catsPlayed: [], badges: [] };
   }
 
   /* ====================================================

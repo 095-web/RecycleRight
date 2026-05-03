@@ -863,33 +863,6 @@ const SHOP_PERMANENT = [
   { id:'sh_pu_freeze',    type:'powerup', puId:'streak_freeze', name:'Streak Freeze', cost:175 },
   { id:'sh_pu_boost',     type:'powerup', puId:'point_booster', name:'Point Booster', cost:400 },
   { id:'sh_pu_reset',     type:'powerup', puId:'daily_reset',   name:'Daily Reset',   cost:125 },
-  /* Accessories — always available */
-  { id:'sh_acc_hat_party',    type:'accessory', accId:'acc_hat_party',    name:'Party Hat 🎉',      cost:120  },
-  { id:'sh_acc_hat_helmet',   type:'accessory', accId:'acc_hat_helmet',   name:'Safety Helmet ⛑️',  cost:180  },
-  { id:'sh_acc_hat_sunhat',   type:'accessory', accId:'acc_hat_sunhat',   name:'Sun Hat 👒',         cost:190  },
-  { id:'sh_acc_hat_tophat',   type:'accessory', accId:'acc_hat_tophat',   name:'Top Hat 🎩',         cost:200  },
-  { id:'sh_acc_hat_cowboy',   type:'accessory', accId:'acc_hat_cowboy',   name:'Cowboy Hat 🤠',      cost:220  },
-  { id:'sh_acc_hat_grad',     type:'accessory', accId:'acc_hat_grad',     name:'Grad Cap 🎓',        cost:300  },
-  { id:'sh_acc_hat_leaf',     type:'accessory', accId:'acc_hat_leaf',     name:'Leaf Crown 🌿',      cost:350  },
-  { id:'sh_acc_hat_crown',    type:'accessory', accId:'acc_hat_crown',    name:'Crown 👑',           cost:800  },
-  { id:'sh_acc_glass_sun',    type:'accessory', accId:'acc_glass_sun',    name:'Sunglasses 🕶️',     cost:180  },
-  { id:'sh_acc_glass_goggle', type:'accessory', accId:'acc_glass_goggle', name:'Lab Goggles 🥽',    cost:250  },
-  { id:'sh_acc_glass_mono',   type:'accessory', accId:'acc_glass_mono',   name:'Monocle 🧐',        cost:300  },
-  { id:'sh_acc_shirt_tee',    type:'accessory', accId:'acc_shirt_tee',    name:'T-Shirt 👕',         cost:160  },
-  { id:'sh_acc_shirt_vest',   type:'accessory', accId:'acc_shirt_vest',   name:'Safety Vest 🦺',     cost:200  },
-  { id:'sh_acc_shirt_hoodie', type:'accessory', accId:'acc_shirt_hoodie', name:'Hoodie 🧥',          cost:280  },
-  { id:'sh_acc_shirt_suit',   type:'accessory', accId:'acc_shirt_suit',   name:'Suit & Tie 👔',      cost:400  },
-  { id:'sh_acc_shirt_lab',    type:'accessory', accId:'acc_shirt_lab',    name:'Lab Coat 🥼',        cost:500  },
-  { id:'sh_acc_item_beads',   type:'accessory', accId:'acc_item_beads',   name:'Bead Necklace 📿',   cost:140  },
-  { id:'sh_acc_item_leaf',    type:'accessory', accId:'acc_item_leaf',    name:'Leaf Pendant 🍃',    cost:160  },
-  { id:'sh_acc_item_star',    type:'accessory', accId:'acc_item_star',    name:'Star Badge ⭐',      cost:220  },
-  { id:'sh_acc_item_recycle', type:'accessory', accId:'acc_item_recycle', name:'Eco Badge ♻️',       cost:300  },
-  { id:'sh_acc_item_gem',     type:'accessory', accId:'acc_item_gem',     name:'Diamond 💎',         cost:550  },
-  { id:'sh_acc_shoe_sandal',  type:'accessory', accId:'acc_shoe_sandal',  name:'Sandals 👡',         cost:170  },
-  { id:'sh_acc_shoe_sneaker', type:'accessory', accId:'acc_shoe_sneaker', name:'Sneakers 👟',        cost:180  },
-  { id:'sh_acc_shoe_heel',    type:'accessory', accId:'acc_shoe_heel',    name:'High Heels 👠',      cost:220  },
-  { id:'sh_acc_shoe_boot2',   type:'accessory', accId:'acc_shoe_boot2',   name:'Rain Boots 👢',      cost:230  },
-  { id:'sh_acc_shoe_boot',    type:'accessory', accId:'acc_shoe_boot',    name:'Hiking Boots 🥾',    cost:260  },
   /* Profile Frames — always available */
   { id:'sh_frame_green',    type:'frame', frameId:'frame_green',    name:'Forest Frame 🌿',    cost:350  },
   { id:'sh_frame_blue',     type:'frame', frameId:'frame_blue',     name:'Ocean Frame 🌊',     cost:350  },
@@ -960,99 +933,21 @@ const SHOP_ROTATING = [
   { id:'sh_r_t_mythic',    type:'title',  titleId:'mythic',      name:'Recycling Mythic',cost:6200 },
 ];
 
-/* ---------- Accessory Slots ---------- */
-const ACCESSORY_SLOTS = [
-  { id:'hat',       label:'Hat',        icon:'🎩' },
-  { id:'glasses',   label:'Glasses',    icon:'🕶️' },
-  { id:'shirt',     label:'Shirt',      icon:'👔' },
-  { id:'accessory', label:'Accessory',  icon:'📿' },
-  { id:'shoes',     label:'Shoes',      icon:'👟' },
-];
-
-/* ---------- Accessories ---------- */
-const ACCESSORIES = [
-  /* Hats */
-  { id:'acc_hat_party',    slot:'hat',       emoji:'🎉', name:'Party Hat',      cost:120  },
-  { id:'acc_hat_helmet',   slot:'hat',       emoji:'⛑️', name:'Safety Helmet',  cost:180  },
-  { id:'acc_hat_sunhat',   slot:'hat',       emoji:'👒', name:'Sun Hat',        cost:190  },
-  { id:'acc_hat_tophat',   slot:'hat',       emoji:'🎩', name:'Top Hat',        cost:200  },
-  { id:'acc_hat_cowboy',   slot:'hat',       emoji:'🤠', name:'Cowboy Hat',     cost:220  },
-  { id:'acc_hat_grad',     slot:'hat',       emoji:'🎓', name:'Grad Cap',       cost:300  },
-  { id:'acc_hat_leaf',     slot:'hat',       emoji:'🌿', name:'Leaf Crown',     cost:350  },
-  { id:'acc_hat_crown',    slot:'hat',       emoji:'👑', name:'Crown',          cost:800  },
-  /* Glasses */
-  { id:'acc_glass_sun',    slot:'glasses',   emoji:'🕶️', name:'Sunglasses',    cost:180  },
-  { id:'acc_glass_goggle', slot:'glasses',   emoji:'🥽', name:'Lab Goggles',   cost:250  },
-  { id:'acc_glass_mono',   slot:'glasses',   emoji:'🧐', name:'Monocle',       cost:300  },
-  /* Shirts */
-  { id:'acc_shirt_tee',    slot:'shirt',     emoji:'👕', name:'T-Shirt',        cost:160  },
-  { id:'acc_shirt_vest',   slot:'shirt',     emoji:'🦺', name:'Safety Vest',    cost:200  },
-  { id:'acc_shirt_hoodie', slot:'shirt',     emoji:'🧥', name:'Hoodie',         cost:280  },
-  { id:'acc_shirt_suit',   slot:'shirt',     emoji:'👔', name:'Suit & Tie',     cost:400  },
-  { id:'acc_shirt_lab',    slot:'shirt',     emoji:'🥼', name:'Lab Coat',       cost:500  },
-  /* Accessories / Jewellery */
-  { id:'acc_item_beads',   slot:'accessory', emoji:'📿', name:'Bead Necklace',  cost:140  },
-  { id:'acc_item_leaf',    slot:'accessory', emoji:'🍃', name:'Leaf Pendant',   cost:160  },
-  { id:'acc_item_star',    slot:'accessory', emoji:'⭐', name:'Star Badge',     cost:220  },
-  { id:'acc_item_recycle', slot:'accessory', emoji:'♻️', name:'Eco Badge',      cost:300  },
-  { id:'acc_item_gem',     slot:'accessory', emoji:'💎', name:'Diamond',        cost:550  },
-  /* Shoes */
-  { id:'acc_shoe_sandal',  slot:'shoes',     emoji:'👡', name:'Sandals',        cost:170  },
-  { id:'acc_shoe_sneaker', slot:'shoes',     emoji:'👟', name:'Sneakers',       cost:180  },
-  { id:'acc_shoe_heel',    slot:'shoes',     emoji:'👠', name:'High Heels',     cost:220  },
-  { id:'acc_shoe_boot2',   slot:'shoes',     emoji:'👢', name:'Rain Boots',     cost:230  },
-  { id:'acc_shoe_boot',    slot:'shoes',     emoji:'🥾', name:'Hiking Boots',   cost:260  },
-];
-
-/* ---- Paper-Doll Avatar Renderer (shared across all modules) ----
-   mode: 'sm' = compact (leaderboard/banner), 'lg' = full character (profile)
+/* ---- Avatar Renderer (shared across all modules) ----
+   mode: 'sm' = compact (leaderboard/banner), 'lg' = full (profile)
    ----------------------------------------------------------------- */
 function renderAvatarDisplay(profile, mode) {
   const base     = AVATARS[profile?.avatarIdx ?? 0] ?? '♻️';
-  const eq       = profile?.equippedAccessories || {};
   const frameCss = FRAMES?.find(f => f.id === profile?.equippedFrame)?.css || '';
 
-  function findAcc(id) { return id ? (ACCESSORIES?.find(a => a.id === id) ?? null) : null; }
-  const hat     = findAcc(eq.hat);
-  const glasses = findAcc(eq.glasses);
-  const shirt   = findAcc(eq.shirt);
-  const accItem = findAcc(eq.accessory);
-  const shoes   = findAcc(eq.shoes);
-
   if (mode === 'lg') {
-    // Shirt → body colour
-    const shirtColors = {
-      acc_shirt_tee:    '#81C784',
-      acc_shirt_vest:   '#FFD54F',
-      acc_shirt_hoodie: '#90A4AE',
-      acc_shirt_suit:   '#546E7A',
-      acc_shirt_lab:    '#ECEFF1',
-    };
-    const bodyColor = shirt ? (shirtColors[shirt.id] || '#A5D6A7') : '#A5D6A7';
-
-    const headClass = frameCss ? `char-head avatar-frame-wrap ${frameCss}` : 'char-head';
-
-    return `
-      <div class="char-doll">
-        <div class="char-hat-row">${hat ? `<span class="char-hat">${hat.emoji}</span>` : '<span class="char-hat-empty"></span>'}</div>
-        <div class="char-head-wrap">
-          <div class="${headClass}"><span class="char-face">${base}</span></div>
-          ${glasses ? `<span class="char-glasses">${glasses.emoji}</span>` : ''}
-        </div>
-        <div class="char-neck">${accItem ? `<span class="char-acc">${accItem.emoji}</span>` : ''}</div>
-        <div class="char-body" style="background:${bodyColor}">${shirt ? `<span class="char-shirt-icon">${shirt.emoji}</span>` : ''}</div>
-        <div class="char-legs"><div class="char-leg"></div><div class="char-leg"></div></div>
-        <div class="char-shoes-row">
-          ${shoes
-            ? `<span class="char-shoe">${shoes.emoji}</span><span class="char-shoe char-shoe-r">${shoes.emoji}</span>`
-            : '<span class="char-shoe char-shoe-bare">🦶</span><span class="char-shoe char-shoe-r char-shoe-bare">🦶</span>'}
-        </div>
-      </div>`;
+    if (!frameCss) return `<div class="av-base-lg">${base}</div>`;
+    return `<div class="av-base-lg avatar-frame-wrap ${frameCss}">${base}</div>`;
   }
 
-  // 'sm' mode — compact: hat stacked above head circle
-  const headClass = frameCss ? `char-sm-head avatar-frame-wrap ${frameCss}` : 'char-sm-head';
-  return `<span class="char-sm">${hat ? `<span class="char-sm-hat">${hat.emoji}</span>` : ''}<span class="${headClass}">${base}</span></span>`;
+  // sm
+  if (!frameCss) return base;
+  return `<div class="avatar-frame-wrap ${frameCss}" style="display:inline-flex;align-items:center;justify-content:center">${base}</div>`;
 }
 
 /* ---------- Titles (unlocked by points) ---------- */

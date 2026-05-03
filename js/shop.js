@@ -145,19 +145,7 @@ const ShopModule = (function () {
             </div>
           </div>
           <div class="shop-grid">
-            ${SHOP_PERMANENT.filter(i => i.type !== 'accessory').map(item => renderItem(item, profile)).join('')}
-          </div>
-        </div>
-
-        <div class="shop-section">
-          <div class="shop-section-hdr">
-            <div>
-              <h3><i class="fas fa-shirt"></i> Accessories & Wardrobe</h3>
-              <p>Hats, glasses, shirts, jewellery &amp; shoes — equip them in your Profile</p>
-            </div>
-          </div>
-          <div class="shop-grid">
-            ${SHOP_PERMANENT.filter(i => i.type === 'accessory').map(item => renderItem(item, profile)).join('')}
+            ${SHOP_PERMANENT.map(item => renderItem(item, profile)).join('')}
           </div>
         </div>
 
@@ -320,8 +308,6 @@ const ShopModule = (function () {
   function renderItem(item, profile) {
     if (item.type === 'powerup')   return renderPowerupItem(item, profile);
     if (item.type === 'frame')     return renderFrameItem(item, profile);
-    if (item.type === 'accessory') return renderAccessoryItem(item, profile);
-
     const owned  = isItemOwned(item, profile);
     const afford = (profile.points || 0) >= item.cost;
     const preview = item.type === 'avatar'
@@ -370,27 +356,7 @@ const ShopModule = (function () {
       </div>`;
   }
 
-  function renderAccessoryItem(item, profile) {
-    const acc    = ACCESSORIES?.find(a => a.id === item.accId) || {};
-    const owned  = isItemOwned(item, profile);
-    const afford = _isAdmin() || (profile.points || 0) >= item.cost;
-    const slot   = ACCESSORY_SLOTS?.find(s => s.id === acc.slot) || {};
-    const equipped = (profile?.equippedAccessories || {})[acc.slot] === item.accId;
-    return `
-      <div class="shop-item acc-shop-item${owned ? ' owned' : ''}${!owned && !afford ? ' cant-afford' : ''}">
-        <div class="shop-item-emoji" style="font-size:2.2rem">${acc.emoji || '?'}</div>
-        <div class="shop-item-name">${acc.name || item.name}</div>
-        <div class="shop-item-type">${slot.icon || ''} ${slot.label || 'Accessory'}</div>
-        ${owned
-          ? `<div class="shop-item-badge owned-badge"><i class="fas fa-check-circle"></i> ${equipped ? 'Equipped' : 'Owned'}</div>`
-          : `<button class="btn btn-sm shop-buy-btn${afford ? '' : ' cant-afford'}"
-               onclick="ShopModule.purchase('${item.id}')"
-               ${afford ? '' : 'disabled'}>
-               <i class="fas fa-star"></i> ${item.cost.toLocaleString()} pts
-             </button>`}
-        ${!owned && !afford ? `<div class="shop-item-badge need-badge">Need ${(item.cost-(profile.points||0)).toLocaleString()} more</div>` : ''}
-      </div>`;
-  }
+
 
   function renderPowerupItem(item, profile) {
     const pu     = POWERUPS.find(p => p.id === item.puId) || {};
@@ -468,22 +434,13 @@ const ShopModule = (function () {
     if (item.type === 'avatar')    return isAvatarUnlocked(item.idx, profile);
     if (item.type === 'title')     return isTitleUnlocked(item.titleId, profile);
     if (item.type === 'frame')     return isFrameUnlocked(item.frameId, profile);
-    if (item.type === 'accessory') return isAccessoryOwned(item.accId, profile);
     return false;
-  }
-
-  function isAccessoryOwned(accId, profile) {
-    if (_isAdmin()) return true;
-    return (profile?.purchasedItems || []).some(id => {
-      const item = allShopItems().find(s => s.id === id);
-      return item?.type === 'accessory' && item.accId === accId;
-    });
   }
 
   /* ====================================================
      PUBLIC API
      ==================================================== */
-  return { init, render, purchase, doSpin, shuffleDailyShop, resetDailyShopSeed, isAvatarUnlocked, isTitleUnlocked, isFrameUnlocked, isAccessoryOwned };
+  return { init, render, purchase, doSpin, shuffleDailyShop, resetDailyShopSeed, isAvatarUnlocked, isTitleUnlocked, isFrameUnlocked };
 })();
 
 window.ShopModule = ShopModule;

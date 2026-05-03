@@ -1544,162 +1544,21 @@ input[type="text"]:focus {
   flex-shrink: 0;
 }
 
-/* ---- Paper-Doll Avatar: sm (leaderboard, banner) ---- */
-.char-sm {
+/* ---- Avatar large display (profile page) ---- */
+.av-base-lg {
+  font-size: 3rem;
+  line-height: 1;
   display: inline-flex;
-  flex-direction: column;
   align-items: center;
-  line-height: 1;
-  gap: 0;
+  justify-content: center;
 }
-.char-sm-hat  { font-size: .7em; line-height: 1; margin-bottom: -2px; }
-.char-sm-head {
-  font-size: 1.3em;
-  line-height: 1;
-  width: 1.5em;
-  height: 1.5em;
+.av-base-lg.avatar-frame-wrap {
+  width: 64px;
+  height: 64px;
+  font-size: 2.6rem;
   border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #e8f5e9;
-}
-.char-sm-head.avatar-frame-wrap { font-size: 1em; }
-
-/* ---- Paper-Doll Avatar: lg (profile page) ---- */
-.char-doll {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  line-height: 1;
-  user-select: none;
-}
-/* Hat row */
-.char-hat-row  { height: 1.8rem; display: flex; align-items: flex-end; justify-content: center; }
-.char-hat      { font-size: 1.6rem; line-height: 1; }
-.char-hat-empty{ height: 1.8rem; }
-
-/* Head */
-.char-head-wrap {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.char-head {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: #e8f5e9;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.2rem;
-  line-height: 1;
-}
-.char-head.avatar-frame-wrap { font-size: 2rem; }
-.char-face { line-height: 1; }
-/* Glasses overlaid on head */
-.char-glasses {
-  position: absolute;
-  bottom: 6px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 1.15rem;
-  line-height: 1;
-  pointer-events: none;
 }
 
-/* Neck / necklace */
-.char-neck {
-  height: 1.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.char-acc { font-size: 1rem; line-height: 1; }
-
-/* Body / shirt */
-.char-body {
-  width: 56px;
-  height: 44px;
-  border-radius: 10px 10px 4px 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 1px;
-}
-.char-shirt-icon { font-size: 1.4rem; line-height: 1; opacity: .85; }
-
-/* Legs */
-.char-legs {
-  display: flex;
-  gap: 6px;
-  margin-top: 2px;
-}
-.char-leg {
-  width: 20px;
-  height: 28px;
-  background: #78909C;
-  border-radius: 3px 3px 5px 5px;
-}
-
-/* Shoes */
-.char-shoes-row {
-  display: flex;
-  gap: 4px;
-  margin-top: 1px;
-}
-.char-shoe        { font-size: 1.1rem; line-height: 1; }
-.char-shoe-r      { transform: scaleX(-1); display: inline-block; }
-.char-shoe-bare   { opacity: .4; }
-
-/* ---- Accessories Equip Panel (profile edit) ---- */
-.acc-equip-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 6px;
-}
-.acc-slot-row {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.acc-slot-label {
-  font-size: .8rem;
-  font-weight: 600;
-  color: var(--gray-600);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.acc-slot-opts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.acc-opt {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: 6px 8px;
-  border-radius: var(--radius);
-  border: 2px solid var(--gray-200);
-  background: var(--white);
-  cursor: pointer;
-  transition: border-color .15s, background .15s;
-  min-width: 52px;
-}
-.acc-opt:hover  { border-color: var(--green-400); background: var(--green-50); }
-.acc-opt-sel    { border-color: var(--green-500); background: var(--green-50); }
-.acc-opt-name   { font-size: .65rem; color: var(--gray-600); text-align: center; white-space: nowrap; }
-.acc-slot-empty { font-size: .75rem; color: var(--gray-400); padding: 4px 2px; }
-
-/* ---- Shop: accessory item card ---- */
-.acc-shop-item .shop-item-emoji { line-height: 1; }
 .profile-card-info {
   flex: 1;
   min-width: 0;
