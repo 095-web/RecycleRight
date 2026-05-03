@@ -1004,9 +1004,9 @@ const ACCESSORIES = [
   { id:'acc_shoe_boot',    slot:'shoes',     emoji:'🥾', name:'Hiking Boots',   cost:260  },
 ];
 
-/* ---- Layered Avatar Renderer (shared across all modules) ----
-   mode: 'sm' = compact (leaderboard/friends), 'lg' = full character (profile)
-   ------------------------------------------------------------ */
+/* ---- Paper-Doll Avatar Renderer (shared across all modules) ----
+   mode: 'sm' = compact (leaderboard/banner), 'lg' = full character (profile)
+   ----------------------------------------------------------------- */
 function renderAvatarDisplay(profile, mode) {
   const base     = AVATARS[profile?.avatarIdx ?? 0] ?? '♻️';
   const eq       = profile?.equippedAccessories || {};
@@ -1020,29 +1020,39 @@ function renderAvatarDisplay(profile, mode) {
   const shoes   = findAcc(eq.shoes);
 
   if (mode === 'lg') {
-    const baseEl = frameCss
-      ? `<div class="av-lg-base avatar-frame-wrap ${frameCss}">${base}</div>`
-      : `<div class="av-lg-base">${base}</div>`;
+    // Shirt → body colour
+    const shirtColors = {
+      acc_shirt_tee:    '#81C784',
+      acc_shirt_vest:   '#FFD54F',
+      acc_shirt_hoodie: '#90A4AE',
+      acc_shirt_suit:   '#546E7A',
+      acc_shirt_lab:    '#ECEFF1',
+    };
+    const bodyColor = shirt ? (shirtColors[shirt.id] || '#A5D6A7') : '#A5D6A7';
+
+    const headClass = frameCss ? `char-head avatar-frame-wrap ${frameCss}` : 'char-head';
+
     return `
-      <div class="av-lg">
-        <div class="av-lg-hat">${hat ? hat.emoji : ''}</div>
-        ${glasses ? `<div class="av-lg-glasses">${glasses.emoji}</div>` : ''}
-        ${baseEl}
-        ${shirt   ? `<div class="av-lg-shirt">${shirt.emoji}</div>`    : ''}
-        ${accItem ? `<div class="av-lg-acc">${accItem.emoji}</div>`    : ''}
-        <div class="av-lg-shoes">${shoes ? shoes.emoji : ''}</div>
+      <div class="char-doll">
+        <div class="char-hat-row">${hat ? `<span class="char-hat">${hat.emoji}</span>` : '<span class="char-hat-empty"></span>'}</div>
+        <div class="char-head-wrap">
+          <div class="${headClass}"><span class="char-face">${base}</span></div>
+          ${glasses ? `<span class="char-glasses">${glasses.emoji}</span>` : ''}
+        </div>
+        <div class="char-neck">${accItem ? `<span class="char-acc">${accItem.emoji}</span>` : ''}</div>
+        <div class="char-body" style="background:${bodyColor}">${shirt ? `<span class="char-shirt-icon">${shirt.emoji}</span>` : ''}</div>
+        <div class="char-legs"><div class="char-leg"></div><div class="char-leg"></div></div>
+        <div class="char-shoes-row">
+          ${shoes
+            ? `<span class="char-shoe">${shoes.emoji}</span><span class="char-shoe char-shoe-r">${shoes.emoji}</span>`
+            : '<span class="char-shoe char-shoe-bare">🦶</span><span class="char-shoe char-shoe-r char-shoe-bare">🦶</span>'}
+        </div>
       </div>`;
   }
 
-  // 'sm' mode — hat floats above, shoes below, frame wraps just the base
-  const hasExtras = hat || shoes;
-  if (!hasExtras && !frameCss) return base;
-  if (!hasExtras) return `<div class="avatar-frame-wrap ${frameCss}" style="display:inline-flex;align-items:center;justify-content:center">${base}</div>`;
-
-  const baseWrap = frameCss
-    ? `<div class="avatar-frame-wrap ${frameCss} av-sm-base-frame">${base}</div>`
-    : `<span class="av-sm-base">${base}</span>`;
-  return `<span class="av-sm">${hat ? `<span class="av-sm-hat">${hat.emoji}</span>` : ''}${baseWrap}${shoes ? `<span class="av-sm-shoes">${shoes.emoji}</span>` : ''}</span>`;
+  // 'sm' mode — compact: hat stacked above head circle
+  const headClass = frameCss ? `char-sm-head avatar-frame-wrap ${frameCss}` : 'char-sm-head';
+  return `<span class="char-sm">${hat ? `<span class="char-sm-hat">${hat.emoji}</span>` : ''}<span class="${headClass}">${base}</span></span>`;
 }
 
 /* ---------- Titles (unlocked by points) ---------- */

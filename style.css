@@ -1544,48 +1544,116 @@ input[type="text"]:focus {
   flex-shrink: 0;
 }
 
-/* ---- Layered Avatar: small/compact (leaderboard, friends, banner) ---- */
-.av-sm {
+/* ---- Paper-Doll Avatar: sm (leaderboard, banner) ---- */
+.char-sm {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
   line-height: 1;
   gap: 0;
 }
-.av-sm-hat  { font-size: .55em; line-height: 1; margin-bottom: -3px; }
-.av-sm-base { line-height: 1; }
-.av-sm-shoes { font-size: .4em; line-height: 1; margin-top: -2px; }
-/* frame wrapping only the base in sm mode */
-.av-sm-base-frame {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ---- Layered Avatar: large / full character (profile page) ---- */
-.av-lg {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
+.char-sm-hat  { font-size: .7em; line-height: 1; margin-bottom: -2px; }
+.char-sm-head {
+  font-size: 1.3em;
   line-height: 1;
-}
-.av-lg-hat      { font-size: 1.5rem; line-height: 1; min-height: 1.5rem; }
-.av-lg-glasses  { font-size: 1rem;   line-height: 1; margin-top: -6px; }
-.av-lg-base     { font-size: 3rem;   line-height: 1; }
-.av-lg-shirt    { font-size: 1.4rem; line-height: 1; margin-top: -4px; }
-.av-lg-acc      { font-size: 1rem;   line-height: 1; }
-.av-lg-shoes    { font-size: 1.1rem; line-height: 1; min-height: 1.1rem; }
-/* frame in large mode */
-.av-lg-base.avatar-frame-wrap {
-  width: 60px;
-  height: 60px;
-  font-size: 2.5rem;
+  width: 1.5em;
+  height: 1.5em;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  background: #e8f5e9;
 }
+.char-sm-head.avatar-frame-wrap { font-size: 1em; }
+
+/* ---- Paper-Doll Avatar: lg (profile page) ---- */
+.char-doll {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  line-height: 1;
+  user-select: none;
+}
+/* Hat row */
+.char-hat-row  { height: 1.8rem; display: flex; align-items: flex-end; justify-content: center; }
+.char-hat      { font-size: 1.6rem; line-height: 1; }
+.char-hat-empty{ height: 1.8rem; }
+
+/* Head */
+.char-head-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.char-head {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #e8f5e9;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  line-height: 1;
+}
+.char-head.avatar-frame-wrap { font-size: 2rem; }
+.char-face { line-height: 1; }
+/* Glasses overlaid on head */
+.char-glasses {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.15rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* Neck / necklace */
+.char-neck {
+  height: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.char-acc { font-size: 1rem; line-height: 1; }
+
+/* Body / shirt */
+.char-body {
+  width: 56px;
+  height: 44px;
+  border-radius: 10px 10px 4px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+.char-shirt-icon { font-size: 1.4rem; line-height: 1; opacity: .85; }
+
+/* Legs */
+.char-legs {
+  display: flex;
+  gap: 6px;
+  margin-top: 2px;
+}
+.char-leg {
+  width: 20px;
+  height: 28px;
+  background: #78909C;
+  border-radius: 3px 3px 5px 5px;
+}
+
+/* Shoes */
+.char-shoes-row {
+  display: flex;
+  gap: 4px;
+  margin-top: 1px;
+}
+.char-shoe        { font-size: 1.1rem; line-height: 1; }
+.char-shoe-r      { transform: scaleX(-1); display: inline-block; }
+.char-shoe-bare   { opacity: .4; }
 
 /* ---- Accessories Equip Panel (profile edit) ---- */
 .acc-equip-panel {
