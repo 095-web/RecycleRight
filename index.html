@@ -2,13 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>RecycleRight - Learn Better Recycling Habits</title>
+  <meta name="description" content="Learn recycling habits, earn points, and scan products to help save the planet.">
+  <meta name="theme-color" content="#16a34a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="RecycleRight">
+  <link rel="apple-touch-icon" href="icons/icon-512.svg">
+  <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%2316a34a'/><text x='50' y='78' text-anchor='middle' font-size='62'>♻</text></svg>">
+  <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg">
 </head>
 <body>
 
@@ -528,6 +535,52 @@
     </div>
   </footer>
 
+  <!-- ==================== ONBOARDING OVERLAY ==================== -->
+  <div id="onboarding-overlay" class="ob-overlay" aria-modal="true" role="dialog" style="display:none">
+    <div class="ob-card">
+
+      <div class="ob-dots" id="ob-dots">
+        <span class="ob-dot ob-dot-active"></span>
+        <span class="ob-dot"></span>
+        <span class="ob-dot"></span>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="ob-step ob-step-active" data-step="1">
+        <div class="ob-emoji">♻️</div>
+        <h2 class="ob-title">Welcome to RecycleRight!</h2>
+        <p class="ob-text">Your personal recycling companion. Learn what can be recycled, earn points, and help save the planet — one scan at a time.</p>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="ob-step" data-step="2">
+        <div class="ob-emoji">🏆</div>
+        <h2 class="ob-title">Earn Points &amp; Level Up</h2>
+        <p class="ob-text">Complete quizzes, scan product barcodes, and log in daily for bonus points that grow the longer your streak!</p>
+        <div class="ob-features">
+          <div class="ob-feat"><span>📚</span><span>Quizzes</span></div>
+          <div class="ob-feat"><span>📱</span><span>Scanner</span></div>
+          <div class="ob-feat"><span>🎁</span><span>Daily bonus</span></div>
+          <div class="ob-feat"><span>👥</span><span>Friends</span></div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="ob-step" data-step="3">
+        <div class="ob-emoji">🌍</div>
+        <h2 class="ob-title">Ready to Start!</h2>
+        <p class="ob-text">Sign in to save your progress and compete on the leaderboard, or jump straight in and play — no account needed.</p>
+      </div>
+
+      <div class="ob-actions">
+        <button class="btn btn-outline ob-skip" id="ob-skip">Skip</button>
+        <button class="btn btn-primary ob-next" id="ob-next">
+          Next <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Firebase SDK (loaded first; safe if FIREBASE_CONFIG is placeholder) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -546,5 +599,15 @@
   <script src="js/shop.js"></script>
   <script src="js/profile.js"></script>
   <script src="js/app.js"></script>
+  <script>
+    /* Register Service Worker */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.info('[SW] Registered, scope:', reg.scope))
+          .catch(err => console.warn('[SW] Registration failed:', err));
+      });
+    }
+  </script>
 </body>
 </html>

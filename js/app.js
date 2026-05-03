@@ -64,6 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
      ==================================================== */
   AuthModule.init();
   LocationModule.init();
+  _initOnboarding();
+  _initPullToRefresh();
 
   /* ====================================================
      SCANNER INIT
@@ -298,6 +300,121 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   renderItemOfDay();
+
+  /* ====================================================
+     ONBOARDING
+     ==================================================== */
+  function _initOnboarding() {
+    if (localStorage.getItem('rr_onboarded')) return; // already seen
+
+    const overlay  = document.getElementById('onboarding-overlay');
+    const dotsEl   = document.getElementById('ob-dots');
+    const steps    = overlay?.querySelectorAll('.ob-step');
+    const nextBtn  = document.getElementById('ob-next');
+    const skipBtn  = document.getElementById('ob-skip');
+    if (!overlay || !steps?.length) return;
+
+    let current = 0;
+
+    function goTo(idx) {
+      steps.forEach((s, i) => s.classList.toggle('ob-step-active', i === idx));
+      dotsEl.querySelectorAll('.ob-dot').forEach((d, i) => d.classList.toggle('ob-dot-active', i === idx));
+      const isLast = idx === steps.length - 1;
+      nextBtn.innerHTML = isLast
+        ? '<i class="fas fa-check"></i> Get Started'
+        : 'Next <i class="fas fa-arrow-right"></i>';
+      skipBtn.style.display = isLast ? 'none' : '';
+      current = idx;
+      navigator.vibrate?.(15);
+    }
+
+    function finish() {
+      overlay.classList.add('ob-fade-out');
+      setTimeout(() => { overlay.style.display = 'none'; }, 300);
+      localStorage.setItem('rr_onboarded', '1');
+    }
+
+    nextBtn.addEventListener('click', () => {
+      if (current < steps.length - 1) goTo(current + 1);
+      else finish();
+    });
+    skipBtn.addEventListener('click', finish);
+
+    // Show after a brief delay so the app paints first
+    setTimeout(() => {
+      overlay.style.display = 'flex';
+      overlay.classList.add('ob-fade-in');
+    }, 600);
+  }
+
+  /* ====================================================
+     PULL TO REFRESH
+     ==================================================== */
+  function _initPullToRefresh() {
+    _attachPTR('tab-profile', () => {
+      ProfileModule.reload();
+      Toast?.show?.('🔄 Profile refreshed', 'info', 1500);
+    });
+    _attachPTR('tab-quiz', () => {
+      Quiz.reload?.();
+      Toast?.show?.('🔄 Refreshed', 'info', 1500);
+    });
+  }
+
+  function _attachPTR(tabId, onRefresh) {
+    const el = document.getElementById(tabId);
+    if (!el) return;
+
+    let startY    = 0;
+    let startX    = 0;
+    let pulling   = false;
+    let triggered = false;
+
+    // Create indicator element
+    const ind = document.createElement('div');
+    ind.className = 'ptr-indicator';
+    ind.innerHTML = '<i class="fas fa-arrow-rotate-right ptr-spin"></i>';
+    el.prepend(ind);
+
+    el.addEventListener('touchstart', e => {
+      startY    = e.touches[0].clientY;
+      startX    = e.touches[0].clientX;
+      pulling   = el.scrollTop <= 0;
+      triggered = false;
+    }, { passive: true });
+
+    el.addEventListener('touchmove', e => {
+      if (!pulling) return;
+      const dy = e.touches[0].clientY - startY;
+      const dx = Math.abs(e.touches[0].clientX - startX);
+      // Only react to downward, mostly-vertical drags
+      if (dy <= 0 || dx > dy * 0.8) { pulling = false; return; }
+
+      const progress = Math.min(dy / 80, 1);
+      ind.style.opacity    = String(progress);
+      ind.style.transform  = `translateY(${Math.min(dy * 0.45, 36)}px) rotate(${dy * 1.8}deg)`;
+      ind.classList.toggle('ptr-ready', dy > 72);
+    }, { passive: true });
+
+    el.addEventListener('touchend', e => {
+      if (!pulling) return;
+      const dy = e.changedTouches[0].clientY - startY;
+      ind.style.opacity   = '0';
+      ind.style.transform = '';
+      ind.classList.remove('ptr-ready');
+
+      if (dy > 72 && !triggered) {
+        triggered = true;
+        ind.classList.add('ptr-spinning');
+        navigator.vibrate?.(20);
+        setTimeout(() => {
+          onRefresh();
+          ind.classList.remove('ptr-spinning');
+        }, 600);
+      }
+      pulling = false;
+    }, { passive: true });
+  }
 
   /* ---- Expose needed globals ---- */
   window.App = { setCategory, toggleBookmark };

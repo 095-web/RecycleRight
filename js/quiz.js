@@ -276,19 +276,34 @@ const Quiz = (function () {
   /* ====================================================
      DAILY LOGIN BONUS
      ==================================================== */
+
+  /* Tiered bonus: longer streaks = more points */
+  function _loginBonusForStreak(streak) {
+    if (streak >= 30) return 75;
+    if (streak >= 14) return 50;
+    if (streak >= 7)  return 35;
+    if (streak >= 4)  return 20;
+    return 10;
+  }
+
+  function _loginTierLabel(streak) {
+    if (streak >= 30) return { label: 'Legend',    icon: '👑', next: null,     nextPts: null };
+    if (streak >= 14) return { label: 'Veteran',   icon: '🌟', next: 30,       nextPts: 75   };
+    if (streak >= 7)  return { label: 'Dedicated', icon: '🔥', next: 14,       nextPts: 50   };
+    if (streak >= 4)  return { label: 'Regular',   icon: '⚡', next: 7,        nextPts: 35   };
+    return              { label: 'Rookie',    icon: '🌱', next: 4,        nextPts: 20   };
+  }
+
   function _checkLoginBonus(profile) {
     const todayStr = today();
     if (profile.lastLoginDate === todayStr) return; // already claimed today
 
-    // Calculate consecutive day streak
     const prev = new Date();
     prev.setDate(prev.getDate() - 1);
     const yesterdayStr = prev.toISOString().slice(0, 10);
     const consecutive  = profile.lastLoginDate === yesterdayStr;
     const newStreak    = consecutive ? (profile.loginStreak || 1) + 1 : 1;
-
-    // Bonus: 10 pts base, +5 per streak day, capped at 50 pts
-    const bonus = Math.min(10 + (newStreak - 1) * 5, 50);
+    const bonus        = _loginBonusForStreak(newStreak);
 
     profile.lastLoginDate = todayStr;
     profile.loginStreak   = newStreak;
@@ -296,15 +311,45 @@ const Quiz = (function () {
     profile.totalPoints   = (profile.totalPoints || 0) + bonus;
     saveProfile(profile);
 
-    // Refresh the points counter on the home banner
     const ptEl = document.getElementById('stat-points');
     if (ptEl) ptEl.textContent = profile.points.toLocaleString();
 
-    // Show toast after the home screen settles
-    setTimeout(() => {
-      const streakMsg = newStreak > 1 ? ` · ${newStreak}-day streak! 🔥` : '';
-      window.Toast?.show?.(`🎁 Daily bonus: +${bonus} pts${streakMsg}`, 'success', 4000);
-    }, 700);
+    // Show bonus modal after home screen settles
+    setTimeout(() => _showLoginBonusModal(newStreak, bonus), 700);
+  }
+
+  function _showLoginBonusModal(streak, bonus) {
+    const tier   = _loginTierLabel(streak);
+    const isMilestone = [4, 7, 14, 30].includes(streak);
+
+    // Build modal
+    const overlay = document.createElement('div');
+    overlay.className = 'login-bonus-overlay';
+    overlay.innerHTML = `
+      <div class="login-bonus-card${isMilestone ? ' login-bonus-milestone' : ''}">
+        <div class="lb-tier-icon">${tier.icon}</div>
+        ${isMilestone ? `<div class="lb-milestone-badge">🎉 Milestone reached!</div>` : ''}
+        <div class="lb-title">Daily Login Bonus</div>
+        <div class="lb-points">+${bonus} pts</div>
+        <div class="lb-streak">
+          <i class="fas fa-fire"></i> ${streak}-day streak
+          <span class="lb-tier-chip">${tier.label}</span>
+        </div>
+        ${tier.next ? `
+          <div class="lb-next-tier">
+            Keep going! ${tier.next - streak} more day${tier.next - streak !== 1 ? 's' : ''}
+            until <strong>${tier.nextPts} pts/day</strong>
+          </div>` : `
+          <div class="lb-next-tier">Maximum tier reached! 👑</div>`}
+        <button class="btn btn-primary lb-close-btn">
+          <i class="fas fa-check"></i> Awesome!
+        </button>
+      </div>`;
+
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+    overlay.querySelector('.lb-close-btn').addEventListener('click', () => overlay.remove());
+    document.body.appendChild(overlay);
+    navigator.vibrate?.(isMilestone ? [30, 20, 30, 20, 60] : 25);
   }
 
   /* Wrap an avatar element with a frame div if needed */
@@ -808,6 +853,7 @@ const Quiz = (function () {
     });
 
     if (correct) {
+      navigator.vibrate?.(30); // short buzz
       window.Sounds?.correct?.();
       state.streak++;
       state.correct++;
@@ -835,6 +881,7 @@ const Quiz = (function () {
       state.score += pts;
       document.getElementById('live-score').textContent = state.score;
     } else {
+      navigator.vibrate?.([50, 30, 50]); // double pulse
       window.Sounds?.wrong?.();
       if (!state.wrongAnswers) state.wrongAnswers = [];
       state.wrongAnswers.push({ q: state.questions[state.current], chosen: chosenOrigIdx });
