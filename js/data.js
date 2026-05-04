@@ -805,7 +805,13 @@ const ACHIEVEMENTS = [
   { id:'pts500',           name:'500 Club',          desc:'Earn 500 total points',                               icon:'⭐', req: q => q.totalPoints >= 500,  hint: q => `${Math.min(q.totalPoints,500).toLocaleString()} / 500 pts` },
   { id:'pts1000',          name:'Point Millionaire', desc:'Earn 1,000 total points',                             icon:'💎', req: q => q.totalPoints >= 1000, hint: q => `${Math.min(q.totalPoints,1000).toLocaleString()} / 1,000 pts` },
   { id:'pts2000',          name:'Rising Star',       desc:'Earn 2,000 total points',                             icon:'🌟', req: q => q.totalPoints >= 2000, hint: q => `${Math.min(q.totalPoints,2000).toLocaleString()} / 2,000 pts` },
-  { id:'pts5000',          name:'Eco Champion',      desc:'Reach 5,000 total points',                            icon:'🚀', req: q => q.totalPoints >= 5000, hint: q => `${Math.min(q.totalPoints,5000).toLocaleString()} / 5,000 pts` },
+  { id:'pts5000',          name:'Eco Champion',      desc:'Reach 5,000 total points',                            icon:'🚀',  req: q => q.totalPoints >= 5000,   hint: q => `${Math.min(q.totalPoints,5000).toLocaleString()}   / 5,000 pts`   },
+  { id:'pts10000',         name:'Green Elite',       desc:'Reach 10,000 total points',                           icon:'🏅',  req: q => q.totalPoints >= 10000,  hint: q => `${Math.min(q.totalPoints,10000).toLocaleString()}  / 10,000 pts`  },
+  { id:'pts20000',         name:'Eco Legend',        desc:'Reach 20,000 total points',                           icon:'🥇',  req: q => q.totalPoints >= 20000,  hint: q => `${Math.min(q.totalPoints,20000).toLocaleString()}  / 20,000 pts`  },
+  { id:'pts35000',         name:'Planet Protector',  desc:'Reach 35,000 total points',                           icon:'🌏',  req: q => q.totalPoints >= 35000,  hint: q => `${Math.min(q.totalPoints,35000).toLocaleString()}  / 35,000 pts`  },
+  { id:'pts50000',         name:'Recycling Overlord', desc:'Reach 50,000 total points',                          icon:'👑',  req: q => q.totalPoints >= 50000,  hint: q => `${Math.min(q.totalPoints,50000).toLocaleString()}  / 50,000 pts`  },
+  { id:'pts75000',         name:'Eco Deity',         desc:'Reach 75,000 total points',                           icon:'🌠',  req: q => q.totalPoints >= 75000,  hint: q => `${Math.min(q.totalPoints,75000).toLocaleString()}  / 75,000 pts`  },
+  { id:'pts100000',        name:'♻ GOAT',            desc:'Reach 100,000 total points — the absolute pinnacle',  icon:'🐐',  req: q => q.totalPoints >= 100000, hint: q => `${Math.min(q.totalPoints,100000).toLocaleString()} / 100,000 pts` },
   /* Categories */
   { id:'all_cats',         name:'All-Rounder',       desc:'Complete every quiz category at least once',          icon:'🌍', req: q => q.catsPlayed && q.catsPlayed.size >= 5, hint: q => `${Math.min(q.catsPlayed?.size||0,5)} / 5 categories played` },
   /* Social */
@@ -834,6 +840,7 @@ const AVATARS = [
   '🌍','🌊','🦋','🌻','🍃','🌳','💚',                   // tier 1 (3-9)
   '🦝','🐸','🌵','🦉','🐬','🌈','⭐','🏆',             // tier 2 (10-17)
   '🦜','🐨','🦊','🦁','🐧','🌺','🍄','🌙',             // tier 3 (18-25)
+  '🐉','🔮','🌌','👾','🦅','🎭','💫','🌋',             // tier 4 (26-33)
 ];
 
 // Every index beyond 2 requires points OR a shop purchase.
@@ -841,6 +848,7 @@ const AVATAR_UNLOCKS = {
   3:75,   4:150,  5:250,  6:400,  7:600,  8:850,  9:1100,
   10:1400, 11:1800, 12:2200, 13:2700, 14:3200, 15:3800, 16:4500, 17:5500,
   18:7000, 19:9000, 20:11000, 21:14000, 22:17000, 23:20000, 24:25000, 25:30000,
+  26:35000, 27:42000, 28:50000, 29:60000, 30:70000, 31:80000, 32:90000, 33:100000,
 };
 
 /* ---------- Power-ups ---------- */
@@ -910,17 +918,37 @@ const SHOP_ROTATING = [
   { id:'sh_r_fr_void',     type:'frame', frameId:'frame_void',     name:'Void Frame 🌌',      cost:1200 },
   { id:'sh_r_fr_rainbow',  type:'frame', frameId:'frame_rainbow',  name:'Rainbow Frame 🌈',   cost:1400 },
   { id:'sh_r_fr_fire',     type:'frame', frameId:'frame_fire',     name:'Fire Frame 🔥',      cost:1400 },
-  { id:'sh_r_fr_galaxy',   type:'frame', frameId:'frame_galaxy',   name:'Galaxy Frame 🔮',    cost:1800 },
-  { id:'sh_r_fr_cosmic',   type:'frame', frameId:'frame_cosmic',   name:'Cosmic Frame 🌠',    cost:1800 },
+  { id:'sh_r_fr_galaxy',       type:'frame', frameId:'frame_galaxy',       name:'Galaxy Frame 🔮',       cost:1800 },
+  { id:'sh_r_fr_cosmic',       type:'frame', frameId:'frame_cosmic',       name:'Cosmic Frame 🌠',       cost:1800 },
+  /* New frames — daily-only */
+  { id:'sh_r_fr_aurora',       type:'frame', frameId:'frame_aurora',       name:'Aurora Frame 🌌',       cost:1100 },
+  { id:'sh_r_fr_sakura',       type:'frame', frameId:'frame_sakura',       name:'Sakura Frame 🌸',       cost:850  },
+  { id:'sh_r_fr_toxic',        type:'frame', frameId:'frame_toxic',        name:'Toxic Frame ☢️',        cost:950  },
+  { id:'sh_r_fr_diamond',      type:'frame', frameId:'frame_diamond',      name:'Diamond Frame 💎',      cost:1300 },
+  { id:'sh_r_fr_inferno',      type:'frame', frameId:'frame_inferno',      name:'Inferno Frame 🔥',      cost:1500 },
+  { id:'sh_r_fr_abyss',        type:'frame', frameId:'frame_abyss',        name:'Abyss Frame 🌑',        cost:1200 },
+  { id:'sh_r_fr_platinum',     type:'frame', frameId:'frame_platinum',     name:'Platinum Frame 🥈',     cost:1600 },
+  { id:'sh_r_fr_tidal',        type:'frame', frameId:'frame_tidal',        name:'Tidal Frame 🌊',        cost:1000 },
+  { id:'sh_r_fr_thunderstorm', type:'frame', frameId:'frame_thunderstorm', name:'Thunderstorm Frame ⚡',  cost:1700 },
+  { id:'sh_r_fr_magma',        type:'frame', frameId:'frame_magma',        name:'Magma Frame 🌋',        cost:1400 },
   /* Tier 3 avatars */
-  { id:'sh_r_av18',        type:'avatar', idx:18,         name:'Parrot 🦜',         cost:7200 },
-  { id:'sh_r_av19',        type:'avatar', idx:19,         name:'Koala 🐨',          cost:9200 },
+  { id:'sh_r_av18',        type:'avatar', idx:18,         name:'Parrot 🦜',         cost:7200  },
+  { id:'sh_r_av19',        type:'avatar', idx:19,         name:'Koala 🐨',          cost:9200  },
   { id:'sh_r_av20',        type:'avatar', idx:20,         name:'Fox 🦊',            cost:11200 },
   { id:'sh_r_av21',        type:'avatar', idx:21,         name:'Lion 🦁',           cost:14200 },
   { id:'sh_r_av22',        type:'avatar', idx:22,         name:'Penguin 🐧',        cost:17200 },
   { id:'sh_r_av23',        type:'avatar', idx:23,         name:'Hibiscus 🌺',       cost:20500 },
   { id:'sh_r_av24',        type:'avatar', idx:24,         name:'Mushroom 🍄',       cost:25500 },
   { id:'sh_r_av25',        type:'avatar', idx:25,         name:'Moon 🌙',           cost:30500 },
+  /* Tier 4 avatars */
+  { id:'sh_r_av26',        type:'avatar', idx:26,         name:'Dragon 🐉',         cost:36000 },
+  { id:'sh_r_av27',        type:'avatar', idx:27,         name:'Crystal Ball 🔮',   cost:43000 },
+  { id:'sh_r_av28',        type:'avatar', idx:28,         name:'Galaxy 🌌',         cost:51000 },
+  { id:'sh_r_av29',        type:'avatar', idx:29,         name:'Alien 👾',          cost:61000 },
+  { id:'sh_r_av30',        type:'avatar', idx:30,         name:'Eagle 🦅',          cost:71000 },
+  { id:'sh_r_av31',        type:'avatar', idx:31,         name:'Drama 🎭',          cost:81000 },
+  { id:'sh_r_av32',        type:'avatar', idx:32,         name:'Star Swirl 💫',     cost:91000 },
+  { id:'sh_r_av33',        type:'avatar', idx:33,         name:'Volcano 🌋',        cost:101000},
   /* Titles */
   { id:'sh_r_t_trailblz',  type:'title',  titleId:'trailblazer', name:'Trail Blazer',    cost:250  },
   { id:'sh_r_t_advocate',  type:'title',  titleId:'advocate',    name:'Eco Advocate',    cost:550  },
@@ -1092,9 +1120,20 @@ const FRAMES = [
   { id:'frame_cosmic',   label:'Cosmic',   css:'frame-cosmic',   desc:'Swirling cosmic gradient'    },
   { id:'frame_galaxy',   label:'Galaxy',   css:'frame-galaxy',   desc:'Galaxy purple swirl'         },
   { id:'frame_sunset',   label:'Sunset',   css:'frame-sunset',   desc:'Warm orange-pink gradient'   },
-  { id:'frame_lava',     label:'Lava',     css:'frame-lava',     desc:'Molten lava burst'           },
-  { id:'frame_mint',     label:'Mint',     css:'frame-mint',     desc:'Cool teal mint ring'         },
-  { id:'frame_void',     label:'Void',     css:'frame-void',     desc:'Deep space indigo pulse'     },
+  { id:'frame_lava',         label:'Lava',         css:'frame-lava',         desc:'Molten lava burst'             },
+  { id:'frame_mint',         label:'Mint',         css:'frame-mint',         desc:'Cool teal mint ring'           },
+  { id:'frame_void',         label:'Void',         css:'frame-void',         desc:'Deep space indigo pulse'       },
+  /* New frames */
+  { id:'frame_aurora',       label:'Aurora',       css:'frame-aurora',       desc:'Northern lights glow'          },
+  { id:'frame_sakura',       label:'Sakura',       css:'frame-sakura',       desc:'Cherry blossom pink'           },
+  { id:'frame_toxic',        label:'Toxic',        css:'frame-toxic',        desc:'Radioactive neon green'        },
+  { id:'frame_diamond',      label:'Diamond',      css:'frame-diamond',      desc:'Crystal clear sparkle'         },
+  { id:'frame_inferno',      label:'Inferno',      css:'frame-inferno',      desc:'Raging inferno blast'          },
+  { id:'frame_abyss',        label:'Abyss',        css:'frame-abyss',        desc:'Bottomless dark void'          },
+  { id:'frame_platinum',     label:'Platinum',     css:'frame-platinum',     desc:'Shimmering platinum sheen'     },
+  { id:'frame_tidal',        label:'Tidal',        css:'frame-tidal',        desc:'Crashing ocean tidal wave'     },
+  { id:'frame_thunderstorm', label:'Thunderstorm', css:'frame-thunderstorm', desc:'Lightning storm surge'         },
+  { id:'frame_magma',        label:'Magma',        css:'frame-magma',        desc:'Deep magma chamber pulse'      },
 ];
 
 /* ============================================================

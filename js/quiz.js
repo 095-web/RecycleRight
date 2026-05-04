@@ -92,6 +92,7 @@ const Quiz = (function () {
         localStorage.setItem('rr_quiz_length', String(_quizLength));
         document.querySelectorAll('.qlp-btn').forEach(b =>
           b.classList.toggle('active', b === btn));
+        buildQuizCategories(); // refresh counts shown on each card
       });
     });
 
@@ -601,6 +602,12 @@ const Quiz = (function () {
           <span class="cat-star${star2  ? ' earned' : ''}">★</span>
           <span class="cat-star${star3  ? ' earned' : ''}">★</span>
         </div>`;
+      const pool      = QUIZ_QUESTIONS.filter(q => q.cat === cat.id);
+      const available = pool.length;
+      const willPlay  = Math.min(available, _quizLength);
+      const shortNote = available < _quizLength
+        ? `<span class="cat-short-note" title="Only ${available} questions exist for this category">All ${available} available</span>`
+        : '';
       return `
         <div class="quiz-cat-card" onclick="Quiz.startQuiz('${cat.id}')">
           <div class="cat-icon"><i class="fas ${cat.icon}"></i></div>
@@ -608,7 +615,7 @@ const Quiz = (function () {
           <div class="cat-desc">${cat.desc}</div>
           ${stars}
           <div class="cat-meta">
-            <span><i class="fas fa-question-circle"></i> 10 questions</span>
+            <span><i class="fas fa-question-circle"></i> ${willPlay} question${willPlay !== 1 ? 's' : ''}${shortNote}</span>
             <span class="cat-best" id="best-${cat.id}">${best ? 'Best: ' + best + ' pts' : ''}</span>
           </div>
         </div>`;
