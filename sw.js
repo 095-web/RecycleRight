@@ -4,7 +4,7 @@
    Bump CACHE_VERSION whenever static assets change.
    ============================================================ */
 
-const CACHE_VERSION = 'rr-v1';
+const CACHE_VERSION = 'rr-v2';
 
 const APP_SHELL = [
   './',
@@ -22,10 +22,19 @@ const APP_SHELL = [
   './js/shop.js',
   './js/profile.js',
   './js/app.js',
+  './icons/icon-180.png',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-maskable.png',
   './icons/icon-192.svg',
   './icons/icon-512.svg',
   './icons/icon-maskable.svg',
 ];
+
+/* ---- Message: allow page to trigger skip-waiting ---- */
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
+});
 
 /* ---- Install: pre-cache app shell ---- */
 self.addEventListener('install', event => {
