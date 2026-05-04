@@ -4142,15 +4142,3 @@ input[type="text"]:focus {
 /* Magma — deep smouldering orange-red */
 .avatar-frame-wrap.frame-magma { box-shadow: 0 0 0 4px #b45309, 0 0 16px rgba(180,83,9,.8), 0 0 32px rgba(234,88,12,.45); animation: magmaPulse 1.4s infinite alternate; }
 @keyframes magmaPulse { from { box-shadow: 0 0 0 4px #b45309, 0 0 16px rgba(180,83,9,.8); } to { box-shadow: 0 0 0 5px #ea580c, 0 0 26px rgba(234,88,12,1), 0 0 44px rgba(180,83,9,.5); } }
-
-/* Category card — "X available" note */
-.cat-short-note {
-  font-size: .72rem;
-  color: var(--amber-700);
-  margin-left: 5px;
-  background: var(--amber-100);
-  border-radius: 8px;
-  padding: 1px 6px;
-  font-weight: 500;
-}
-[data-theme="dark"] .cat-short-note { background: rgba(255,193,7,.15); color: #fbbf24; }
