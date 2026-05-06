@@ -784,23 +784,6 @@ const ProfileModule = (function () {
     const topCatId  = Object.entries(catCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
     const topCat    = QUIZ_CATEGORIES?.find(c => c.id === topCatId) || null;
 
-    // Category bar chart (catBests)
-    const catBests = profile.catBests || {};
-    const maxBest  = Math.max(...Object.values(catBests), 1);
-    const catBars  = QUIZ_CATEGORIES?.map(cat => {
-      const best    = catBests[cat.id] || 0;
-      const pct     = best > 0 ? Math.max(4, Math.round((best / maxBest) * 100)) : 0;
-      const unplayed = best === 0;
-      return `
-        <div class="cat-bar-wrap${unplayed ? ' cat-bar-wrap-unplayed' : ''}">
-          <div class="cat-bar-header">
-            <span class="cat-bar-label">${cat.name}</span>
-            <span class="cat-bar-val${unplayed ? ' cat-bar-val-unplayed' : ''}">${best || 'Not played'}</span>
-          </div>
-          ${unplayed ? '' : `<div class="cat-bar-track"><div class="cat-bar-fill" style="width:${pct}%"></div></div>`}
-        </div>`;
-    }).join('') || '';
-
     container.innerHTML = `
       <div class="stats-dashboard">
         <div class="stat-tile">
@@ -820,8 +803,7 @@ const ProfileModule = (function () {
           <div class="stat-tile-lbl">Best Streak</div>
         </div>
       </div>
-      ${topCat ? `<p class="stat-fave-cat"><i class="fas ${topCat.icon}"></i> Favorite category: <strong>${esc(topCat.name)}</strong></p>` : ''}
-      ${catBars ? `<div class="cat-bars-section"><div class="cat-bars-title">Best Score per Category</div>${catBars}</div>` : ''}`;
+      ${topCat ? `<p class="stat-fave-cat"><i class="fas ${topCat.icon}"></i> Favorite category: <strong>${esc(topCat.name)}</strong></p>` : ''}`;
   }
 
   /* ====================================================
