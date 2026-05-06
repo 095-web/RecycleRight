@@ -4213,3 +4213,129 @@ input[type="text"]:focus {
 [data-theme="dark"] .pwa-banner         { background: var(--gray-900); }
 [data-theme="dark"] .pwa-banner-update  { background: #1e3a8a; }
 [data-theme="dark"] .pwa-banner-offline { background: #78350f; }
+
+/* ============================================================
+   MOBILE BOTTOM TAB NAV + PWA SAFE AREAS
+   These rules come last so they win specificity battles.
+   ============================================================ */
+
+/* ── 1. Notch / Dynamic Island top padding (standalone only) ── */
+@media (display-mode: standalone) {
+  .header {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+
+/* ── 2. Everything that changes on narrow screens ── */
+@media (max-width: 640px) {
+
+  /* --- Bottom tab bar --- */
+  .nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 400;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: stretch;
+    gap: 0;
+    background: var(--white);
+    border-top: 1.5px solid var(--border);
+    box-shadow: 0 -4px 20px rgba(0,0,0,.09);
+    padding: 4px 0 calc(4px + env(safe-area-inset-bottom, 0px));
+    border-radius: 0;
+  }
+
+  /* Stacked icon + label */
+  .nav-btn {
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 6px 2px;
+    border-radius: 0;
+    font-size: .64rem;
+    font-weight: 600;
+    min-height: 52px;
+    color: var(--gray-400);
+    white-space: nowrap;
+  }
+  .nav-btn i { font-size: 1.25rem; transition: transform .15s, color .15s; }
+
+  /* Show labels again (overrides the earlier display:none) */
+  .nav-btn span { display: flex !important; font-size: .64rem; line-height: 1.2; }
+
+  /* Hover — no pill on mobile */
+  .nav-btn:hover { background: transparent; color: var(--gray-600); }
+
+  /* Active — green text/icon, tiny lift, no gradient pill */
+  .nav-btn.active {
+    background: transparent;
+    color: var(--green-600);
+    box-shadow: none;
+  }
+  .nav-btn.active i { transform: translateY(-2px); }
+
+  /* Badge + dot: re-anchor for column layout */
+  .nav-badge {
+    top: 5px;
+    right: calc(50% - 20px);
+    border-color: var(--white);
+  }
+  .nav-dot {
+    top: 6px;
+    right: calc(50% - 20px);
+  }
+
+  /* Compact header — nav is gone from it */
+  .header-inner { height: 54px; padding: 0 12px; gap: 10px; }
+
+  /* Main content clears the fixed bottom nav */
+  .main { padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px)); }
+  /* Override the 60px the earlier media query set */
+  .container { padding-bottom: 20px; }
+
+  /* --- Touch targets --- */
+  .option-btn   { min-height: 52px; font-size: .95rem; padding: 14px 16px; }
+  .sort-bin-btn { min-height: 60px; }
+  .filter-chip  { min-height: 38px; padding: 7px 14px; }
+  .qlp-btn      { min-height: 40px; padding: 8px 18px; }
+
+  /* --- Prevent iOS font-size zoom on inputs (must be ≥16px) --- */
+  input[type="text"],
+  input[type="email"],
+  input[type="search"],
+  input[type="number"],
+  textarea,
+  select { font-size: 16px !important; }
+
+  /* --- Back-to-top: float above bottom nav --- */
+  .back-to-top {
+    bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    right: 14px;
+  }
+
+  /* --- PWA banners: slide up above bottom nav --- */
+  .pwa-banner {
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+}
+
+/* ── 3. Extra safe-area padding in standalone (notch phones) ── */
+@media (display-mode: standalone) {
+  .nav {
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+  .main {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* ── 4. Dark mode — bottom nav ── */
+[data-theme="dark"] .nav {
+  background: var(--white); /* --white is dark surface in dark mode */
+  border-top-color: var(--border);
+}
+[data-theme="dark"] .nav-badge { border-color: var(--white); }
+[data-theme="dark"] .nav-btn.active { color: var(--green-400); }
