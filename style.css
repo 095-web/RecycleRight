@@ -3684,6 +3684,7 @@ input[type="text"]:focus {
   font-size: .82rem;
 }
 /* Unplayed rows: no bar track, just muted card appearance */
+.cat-bar-wrap-unplayed .cat-bar-header { margin-bottom: 0; }
 .cat-bar-wrap-unplayed {
   background: transparent;
   border-color: var(--border);
