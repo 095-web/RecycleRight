@@ -113,6 +113,15 @@
           </div>
         </div>
 
+        <!-- Scan cap banner — only visible when daily limit (5/5) is hit -->
+        <div id="scan-cap-banner" class="scan-cap-banner hidden">
+          <i class="fas fa-moon"></i>
+          <span>Daily scan limit reached <strong>(5/5)</strong> — no more points until midnight.</span>
+          <button class="btn btn-sm scan-reset-btn" id="scan-cap-reset-btn" onclick="Scanner.useDailyReset()">
+            🔄 Use Daily Reset
+          </button>
+        </div>
+
         <div id="scan-result" class="scan-result hidden"></div>
         <div id="scan-error" class="scan-error hidden"></div>
 

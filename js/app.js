@@ -164,7 +164,44 @@ document.addEventListener('DOMContentLoaded', () => {
       no:      { label: 'Not Recyclable',  icon: 'fa-circle-xmark',    cls: 'no'      },
       special: { label: 'Special Drop-Off',icon: 'fa-location-dot',    cls: 'special' },
     };
-    const sc       = statusConfig[item.status] || statusConfig.no;
+
+    let sc = statusConfig[item.status] || statusConfig.no;
+
+    // Override 'check' items with location-aware answer when ZIP is available
+    if (item.status === 'check') {
+      const locData = window.LocationModule?.getLocData?.();
+      if (locData) {
+        const rules    = window.LocationModule?.getRules?.();
+        const locLabel = locData.city
+          ? `${locData.city}, ${locData.stateAbbr}`
+          : (locData.stateAbbr || locData.state || 'your area');
+
+        if (rules) {
+          const cat = item.category;
+          if (cat === 'glass') {
+            sc = rules.glass === 'curbside'
+              ? { label: `Curbside in ${locLabel}`,  icon: 'fa-check-circle',    cls: 'yes'     }
+              : { label: `Drop-off in ${locLabel}`,  icon: 'fa-location-dot',    cls: 'special' };
+          } else if (cat === 'food') {
+            // yard waste / organics
+            sc = rules.organics === 'statewide'
+              ? { label: `Compost in ${locLabel}`,        icon: 'fa-check-circle',    cls: 'yes'   }
+              : rules.organics === 'some-cities'
+                ? { label: `Check Compost in ${locLabel}`, icon: 'fa-circle-question', cls: 'check' }
+                : { label: `No Compost in ${locLabel}`,    icon: 'fa-circle-xmark',    cls: 'no'    };
+          } else if (cat === 'plastics') {
+            // State accepts #5 (PP) or higher → likely accepted
+            sc = rules.plastics.some(n => n >= 5)
+              ? { label: `Accepted in ${locLabel}`,    icon: 'fa-check-circle',    cls: 'yes'   }
+              : { label: `Check in ${locLabel}`,       icon: 'fa-circle-question', cls: 'check' };
+          } else {
+            sc = { label: `Check in ${locLabel}`, icon: 'fa-circle-question', cls: 'check' };
+          }
+        } else {
+          sc = { label: `Check in ${locLabel}`, icon: 'fa-circle-question', cls: 'check' };
+        }
+      }
+    }
     const cat      = CATEGORIES.find(c => c.id === item.category);
     const saved    = bms.includes(item.id);
 

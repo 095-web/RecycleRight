@@ -34,6 +34,37 @@ const Scanner = (function () {
 
     // Render existing scan history on load
     renderScanHistory();
+
+    // Show persistent cap banner if already at limit
+    _updateCapBanner();
+  }
+
+  /* ---- Scan cap banner ---- */
+  function _updateCapBanner() {
+    const banner = document.getElementById('scan-cap-banner');
+    const resetBtn = document.getElementById('scan-cap-reset-btn');
+    if (!banner) return;
+
+    const username = localStorage.getItem('rr_current');
+    const today    = new Date().toISOString().slice(0, 10);
+    const daily    = JSON.parse(localStorage.getItem('rr_scan_daily') || '{}');
+    const capHit   = daily.date === today && (daily.barcodes || []).length >= 5;
+
+    if (!capHit) {
+      banner.classList.add('hidden');
+      return;
+    }
+
+    // Check if user has a Daily Reset powerup
+    const hasReset = (() => {
+      if (!username) return false;
+      const profiles = JSON.parse(localStorage.getItem('rr_profiles') || '[]');
+      const p = profiles.find(p => p.username === username);
+      return p && (p.powerups?.daily_reset || 0) > 0;
+    })();
+
+    banner.classList.remove('hidden');
+    if (resetBtn) resetBtn.style.display = hasReset ? 'inline-flex' : 'none';
   }
 
   function _initDropOffFinder() {
@@ -155,6 +186,7 @@ const Scanner = (function () {
       addToScanHistory(result);
       clearResults();
       renderResult(result, pts);
+      _updateCapBanner();
     } catch (err) {
       clearResults();
       if (err.message === 'Failed to fetch') {
@@ -494,6 +526,7 @@ const Scanner = (function () {
       // Just refresh the scan cap message away
       clearResults();
     }
+    _updateCapBanner();
   }
 
   function clearResults() {

@@ -3040,6 +3040,41 @@ input[type="text"]:focus {
 }
 
 /* ============================================================
+   SCAN CAP BANNER (persistent, shows when 5/5 daily scans hit)
+   ============================================================ */
+.scan-cap-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: .875rem;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+.scan-cap-banner i { flex-shrink: 0; font-size: 1rem; }
+.scan-cap-banner span { flex: 1; }
+.scan-cap-banner .scan-reset-btn {
+  margin-left: auto;
+  background: #d97706;
+  color: #fff;
+  border: none;
+  white-space: nowrap;
+}
+.scan-cap-banner .scan-reset-btn:hover { background: #b45309; }
+[data-theme="dark"] .scan-cap-banner {
+  background: #451a03;
+  color: #fde68a;
+  border-color: #92400e;
+}
+[data-theme="dark"] .scan-cap-banner .scan-reset-btn { background: #b45309; }
+[data-theme="dark"] .scan-cap-banner .scan-reset-btn:hover { background: #92400e; }
+
+/* ============================================================
    CONFETTI (no extra CSS needed — canvas-confetti handles it)
    ============================================================ */
 
@@ -3648,27 +3683,14 @@ input[type="text"]:focus {
   font-style: italic;
   font-size: .82rem;
 }
-.cat-bar-unplayed {
-  background: repeating-linear-gradient(
-    90deg,
-    var(--gray-100) 0px,
-    var(--gray-100) 6px,
-    transparent 6px,
-    transparent 10px
-  );
-  border: 1px dashed var(--gray-300);
+/* Unplayed rows: no bar track, just muted card appearance */
+.cat-bar-wrap-unplayed {
+  background: transparent;
+  border-color: var(--border);
+  opacity: 0.7;
 }
-[data-theme="dark"] .cat-bar-unplayed {
-  background: repeating-linear-gradient(
-    90deg,
-    var(--gray-200) 0px,
-    var(--gray-200) 6px,
-    transparent 6px,
-    transparent 10px
-  );
-  border-color: var(--gray-500);
-}
-[data-theme="dark"] .cat-bar-val-unplayed { color: var(--gray-500); }
+[data-theme="dark"] .cat-bar-wrap-unplayed { opacity: 0.6; }
+[data-theme="dark"] .cat-bar-val-unplayed  { color: var(--gray-500); }
 .stat-fave-cat {
   margin: 12px 0 4px;
   font-size: .85rem;

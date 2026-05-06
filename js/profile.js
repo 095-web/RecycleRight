@@ -792,14 +792,12 @@ const ProfileModule = (function () {
       const pct     = best > 0 ? Math.max(4, Math.round((best / maxBest) * 100)) : 0;
       const unplayed = best === 0;
       return `
-        <div class="cat-bar-wrap">
+        <div class="cat-bar-wrap${unplayed ? ' cat-bar-wrap-unplayed' : ''}">
           <div class="cat-bar-header">
             <span class="cat-bar-label">${cat.name}</span>
             <span class="cat-bar-val${unplayed ? ' cat-bar-val-unplayed' : ''}">${best || 'Not played'}</span>
           </div>
-          <div class="cat-bar-track${unplayed ? ' cat-bar-unplayed' : ''}">
-            ${unplayed ? '' : `<div class="cat-bar-fill" style="width:${pct}%"></div>`}
-          </div>
+          ${unplayed ? '' : `<div class="cat-bar-track"><div class="cat-bar-fill" style="width:${pct}%"></div></div>`}
         </div>`;
     }).join('') || '';
 
