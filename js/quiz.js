@@ -15,7 +15,7 @@ const Quiz = (function () {
     questions: [], current: 0, score: 0, streak: 0,
     bestStreak: 0, correct: 0, answered: false, category: null,
     pointBooster: false, freezeArmed: false, fiftyFiftyUsed: false,
-    isDaily: false, isChallenge: false, challengeId: null,
+    isDaily: false,
   };
 
   /* ---- Timer state ---- */
@@ -301,7 +301,16 @@ const Quiz = (function () {
     const prev = new Date();
     prev.setDate(prev.getDate() - 1);
     const yesterdayStr = prev.toISOString().slice(0, 10);
-    const consecutive  = profile.lastLoginDate === yesterdayStr;
+
+    let consecutive = profile.lastLoginDate === yesterdayStr;
+
+    // Auto-consume Streak Shield if a day was missed but user has one
+    if (!consecutive && profile.lastLoginDate && (profile.powerups?.streak_shield || 0) > 0) {
+      profile.powerups.streak_shield -= 1;
+      consecutive = true;
+      setTimeout(() => window.Toast?.show?.('🛡️ Streak Shield activated — your streak is safe!', 'success', 4000), 800);
+    }
+
     const newStreak    = consecutive ? (profile.loginStreak || 1) + 1 : 1;
     const bonus        = _loginBonusForStreak(newStreak);
 
@@ -453,7 +462,7 @@ const Quiz = (function () {
       questions: info.questions, current: 0, score: 0, streak: 0,
       bestStreak: 0, correct: 0, answered: false, category: info.category,
       pointBooster: false, freezeArmed: false, fiftyFiftyUsed: false,
-      isDaily: true, isChallenge: false, challengeId: null,
+      isDaily: true,
       wrongAnswers: [],
     };
 
@@ -663,25 +672,10 @@ const Quiz = (function () {
       questions: shuffled, current: 0, score: 0, streak: 0,
       bestStreak: 0, correct: 0, answered: false, category: categoryId,
       pointBooster: false, freezeArmed: false, fiftyFiftyUsed: false,
-      isDaily: false, isChallenge: false, challengeId: null,
+      isDaily: false,
       wrongAnswers: [],
     };
 
-    _hideAll();
-    document.getElementById('quiz-active').classList.remove('hidden');
-    updatePowerupBar();
-    renderQuestion();
-  }
-
-  /* Start a friend challenge with pre-seeded questions */
-  function startChallengeQuiz(challengeId, questions, category) {
-    state = {
-      questions, current: 0, score: 0, streak: 0,
-      bestStreak: 0, correct: 0, answered: false, category,
-      pointBooster: false, freezeArmed: false, fiftyFiftyUsed: false,
-      isDaily: false, isChallenge: true, challengeId,
-      wrongAnswers: [],
-    };
     _hideAll();
     document.getElementById('quiz-active').classList.remove('hidden');
     updatePowerupBar();
@@ -988,11 +982,6 @@ const Quiz = (function () {
     if (missionBonus > 0) {
       profile.points      += missionBonus;
       profile.totalPoints  = (profile.totalPoints || 0) + missionBonus;
-    }
-
-    // Challenge friend — write result back to Firestore
-    if (state.isChallenge && state.challengeId) {
-      window.AuthModule?.markChallengeComplete?.(state.challengeId, finalScore);
     }
 
     // Achievements
@@ -1706,7 +1695,7 @@ const Quiz = (function () {
      PUBLIC API
      ==================================================== */
   const publicAPI = {
-    init, startQuiz, startDailyChallenge, startChallengeQuiz,
+    init, startQuiz, startDailyChallenge,
     playAgain, goHome, exit,
     shareScore,
     startSortGame, exitSortGame, _sortAnswer,

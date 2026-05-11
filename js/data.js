@@ -853,10 +853,11 @@ const AVATAR_UNLOCKS = {
 
 /* ---------- Power-ups ---------- */
 const POWERUPS = [
-  { id:'fifty_fifty',   icon:'⚡', name:'50/50',         desc:'Remove 2 wrong answers from the current question.'             },
-  { id:'streak_freeze', icon:'🧊', name:'Streak Freeze',  desc:'Protect your streak from breaking once if you answer wrong.'   },
-  { id:'point_booster', icon:'🚀', name:'Point Booster',  desc:'Double all points earned during the quiz session.'             },
-  { id:'daily_reset',   icon:'🔄', name:'Daily Reset',    desc:'Reset your 5-scan daily cap to earn scan points again today.'  },
+  { id:'fifty_fifty',    icon:'⚡', name:'50/50',          desc:'Remove 2 wrong answers from the current question.'                                      },
+  { id:'streak_freeze',  icon:'🧊', name:'Streak Freeze',   desc:'Protect your streak from breaking once if you answer wrong.'                            },
+  { id:'point_booster',  icon:'🚀', name:'Point Booster',   desc:'Double all points earned during the quiz session.'                                      },
+  { id:'daily_reset',    icon:'🔄', name:'Daily Reset',     desc:'Reset your 5-scan daily cap to earn scan points again today.'                           },
+  { id:'streak_shield',  icon:'🛡️', name:'Streak Shield',   desc:'Auto-activates when you miss a login day — keeps your streak and bonus points intact.' },
 ];
 
 /* ---------- Shop ---------- */
@@ -871,6 +872,7 @@ const SHOP_PERMANENT = [
   { id:'sh_pu_freeze',    type:'powerup', puId:'streak_freeze', name:'Streak Freeze', cost:175 },
   { id:'sh_pu_boost',     type:'powerup', puId:'point_booster', name:'Point Booster', cost:400 },
   { id:'sh_pu_reset',     type:'powerup', puId:'daily_reset',   name:'Daily Reset',   cost:125 },
+  { id:'sh_pu_shield',    type:'powerup', puId:'streak_shield',  name:'Streak Shield', cost:300 },
   /* Profile Frames — always available */
   { id:'sh_frame_green',    type:'frame', frameId:'frame_green',    name:'Forest Frame 🌿',    cost:350  },
   { id:'sh_frame_blue',     type:'frame', frameId:'frame_blue',     name:'Ocean Frame 🌊',     cost:350  },
@@ -1069,12 +1071,6 @@ function getDailyChallengeInfo(dateStr) {
 function getDailyMissions(dateStr) {
   const rng = seededRNG(dateSeed(dateStr + '_ms'));
   return shuffleSeeded(MISSION_POOL, rng).slice(0, 3);
-}
-
-/* Returns 10 seeded questions for a friend challenge (same for both players) */
-function getChallengeQuestions(seed, category) {
-  const pool = (category === 'mixed') ? QUIZ_QUESTIONS : QUIZ_QUESTIONS.filter(q => q.cat === category);
-  return shuffleSeeded(pool, seededRNG(seed)).slice(0, 10);
 }
 
 /* ============================================================

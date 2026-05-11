@@ -373,7 +373,6 @@ const ProfileModule = (function () {
     renderQuizHistory(profile);
     renderStreakCalendar(profile);
     renderStatsDashboard(profile);
-    renderChallengeFriendSection();
   }
 
   /* ====================================================
@@ -807,160 +806,6 @@ const ProfileModule = (function () {
   }
 
   /* ====================================================
-     CHALLENGE A FRIEND
-     ==================================================== */
-  function renderChallengeFriendSection() {
-    // Inject a challenge section after the friends list if signed in
-    const friendsCard = document.querySelector('.profile-section-card:has(#prof-friends-list)');
-    if (!friendsCard) return;
-    if (!AuthModule.isAvailable || !AuthModule.currentUser) return;
-
-    let challengeDiv = document.getElementById('prof-challenge-section');
-    if (!challengeDiv) {
-      challengeDiv = document.createElement('div');
-      challengeDiv.id = 'prof-challenge-section';
-      friendsCard.appendChild(challengeDiv);
-    }
-    _renderChallenges(challengeDiv);
-  }
-
-  async function _renderChallenges(container) {
-    const friends = loadFriends();
-    if (friends.length === 0) { container.innerHTML = ''; return; }
-
-    // Get incoming challenges
-    const [incoming, outgoing] = await Promise.all([
-      AuthModule.getIncomingChallenges?.() || Promise.resolve([]),
-      AuthModule.getOutgoingChallenges?.() || Promise.resolve([]),
-    ]);
-
-    const pendingIn  = incoming.filter(c => c.status === 'pending');
-    const pendingOut = outgoing.filter(c => c.status === 'pending');
-    const done       = [...incoming, ...outgoing].filter(c => c.status === 'completed').slice(0, 5);
-
-    let html = `<div class="challenge-section"><div class="challenge-section-title"><i class="fas fa-swords"></i> Friend Challenges</div>`;
-
-    if (pendingIn.length > 0) {
-      html += pendingIn.map(c => {
-        const catInfo = QUIZ_CATEGORIES?.find(q => q.id === c.category) || { name: c.category };
-        return `
-          <div class="challenge-card cc-incoming">
-            <div class="cc-avatar">⚔️</div>
-            <div class="cc-info">
-              <div class="cc-name">${esc(c.fromUsername)} challenged you!</div>
-              <div class="cc-meta">${esc(catInfo.name)}</div>
-            </div>
-            <div class="cc-actions">
-              <button class="btn btn-sm btn-primary" onclick="ProfileModule._acceptChallenge('${c.id}','${c.category}',${c.seed})">
-                <i class="fas fa-play"></i> Play
-              </button>
-            </div>
-          </div>`;
-      }).join('');
-    }
-
-    if (pendingOut.length > 0) {
-      html += pendingOut.map(c => {
-        const catInfo = QUIZ_CATEGORIES?.find(q => q.id === c.category) || { name: c.category };
-        return `
-          <div class="challenge-card cc-pending">
-            <div class="cc-avatar">⏳</div>
-            <div class="cc-info">
-              <div class="cc-name">Challenged ${esc(c.toUsername)}</div>
-              <div class="cc-meta">${esc(catInfo.name)} · waiting for response</div>
-            </div>
-          </div>`;
-      }).join('');
-    }
-
-    if (done.length > 0) {
-      html += done.map(c => {
-        const myScore   = c.fromUid === AuthModule.currentUser?.uid ? c.fromScore : c.toScore;
-        const theirScore= c.fromUid === AuthModule.currentUser?.uid ? c.toScore   : c.fromScore;
-        const theirName = c.fromUid === AuthModule.currentUser?.uid ? c.toUsername : c.fromUsername;
-        const won = myScore >= theirScore;
-        return `
-          <div class="challenge-card cc-done">
-            <div class="cc-avatar">${won ? '🏆' : '💪'}</div>
-            <div class="cc-info">
-              <div class="cc-name">vs ${esc(theirName)}</div>
-              <div class="cc-meta">${myScore} vs ${theirScore} pts · ${won ? 'You won!' : 'They won'}</div>
-            </div>
-          </div>`;
-      }).join('');
-    }
-
-    // Challenge buttons for each friend
-    html += `<div class="challenge-friend-list" style="margin-top:10px">`;
-    html += `<div style="font-size:.78rem;color:var(--gray-500);margin-bottom:8px">Challenge a friend:</div>`;
-    html += friends.slice(0, 6).map(f => `
-      <button class="btn btn-sm btn-outline" style="margin-right:6px;margin-bottom:6px"
-        onclick="ProfileModule._openChallengeModal('${f.uid}','${esc(f.username)}')">
-        ${AVATARS[f.avatarIdx||0]} ${esc(f.username)}
-      </button>`).join('');
-    html += `</div></div>`;
-
-    container.innerHTML = html;
-  }
-
-  function _openChallengeModal(toUid, toUsername) {
-    // Build category picker modal
-    const existing = document.getElementById('challenge-cat-modal');
-    if (existing) existing.remove();
-
-    const modal = document.createElement('div');
-    modal.id = 'challenge-cat-modal';
-    modal.className = 'challenge-cat-modal';
-    modal.innerHTML = `
-      <div class="challenge-cat-inner">
-        <div class="challenge-cat-title">⚔️ Challenge ${esc(toUsername)}</div>
-        <div class="challenge-cat-grid" id="cc-grid"></div>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-primary" id="cc-send-btn" disabled>
-            <i class="fas fa-paper-plane"></i> Send Challenge
-          </button>
-          <button class="btn btn-outline" onclick="document.getElementById('challenge-cat-modal').remove()">Cancel</button>
-        </div>
-        <p id="cc-msg" style="margin-top:8px;font-size:.82rem;color:var(--red-600)"></p>
-      </div>`;
-    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
-    document.body.appendChild(modal);
-
-    let selectedCat = null;
-    const grid = document.getElementById('cc-grid');
-    grid.innerHTML = QUIZ_CATEGORIES.filter(c => c.id !== 'mixed').map(c => `
-      <button class="challenge-cat-btn" data-cat="${c.id}">${c.name}</button>`).join('');
-
-    grid.querySelectorAll('.challenge-cat-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        grid.querySelectorAll('.challenge-cat-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        selectedCat = btn.dataset.cat;
-        document.getElementById('cc-send-btn').disabled = false;
-      });
-    });
-
-    document.getElementById('cc-send-btn').addEventListener('click', async () => {
-      if (!selectedCat) return;
-      const msgEl = document.getElementById('cc-msg');
-      msgEl.textContent = 'Sending...';
-      const seed = Math.floor(Math.random() * 2147483647);
-      const result = await AuthModule.sendChallenge?.(toUid, toUsername, selectedCat, seed);
-      if (result?.error) { msgEl.textContent = result.error === 'already_pending' ? 'You already have a pending challenge with this person!' : 'Something went wrong.'; return; }
-      modal.remove();
-    });
-  }
-
-  async function _acceptChallenge(challengeId, category, seed) {
-    if (typeof getChallengeQuestions !== 'function') return;
-    const questions = getChallengeQuestions(seed, category);
-    document.getElementById('challenge-cat-modal')?.remove();
-    // Switch to quiz tab and start challenge
-    document.querySelector('.nav-btn[data-tab="quiz"]')?.click();
-    setTimeout(() => window.QuizModule?.startChallengeQuiz?.(challengeId, questions, category), 200);
-  }
-
-  /* ====================================================
      ACHIEVEMENTS
      ==================================================== */
   function renderAchievementsList(profile) {
@@ -1219,7 +1064,7 @@ const ProfileModule = (function () {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  return { init, reload, isProfane, _acceptReq, _declineReq, _viewFriend, _closeFriendModal, _unfriend, _openChallengeModal, _acceptChallenge };
+  return { init, reload, isProfane, _acceptReq, _declineReq, _viewFriend, _closeFriendModal, _unfriend };
 })();
 
 window.ProfileModule = ProfileModule;
